@@ -1,0 +1,80 @@
+<header class="sticky top-0 z-30 border-b border-base-300/60 bg-base-100/95 backdrop-blur">
+  <div class="navbar mx-auto min-h-16 w-full max-w-360 px-4 sm:px-6 lg:px-8">
+    <div class="navbar-start">
+      <a routerLink="/" class="flex items-center gap-2">
+        <img src="/assets/purrlist/brand/logo-mark.webp" alt="" class="size-9 object-contain" />
+
+        <span class="text-xl font-bold tracking-tight sm:text-2xl"> PurrList </span>
+      </a>
+    </div>
+
+    <nav class="navbar-center hidden lg:flex" aria-label="Головна навігація">
+      <ul class="menu menu-horizontal gap-1 px-1">
+        <li>
+          <a href="#how-it-works">Як це працює</a>
+        </li>
+
+        <li>
+          <a href="#benefits">Переваги</a>
+        </li>
+
+        <li>
+          <a href="/wishlists/example">Приклад вішліста</a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="navbar-end">
+      <a href="/?action=auth" class="btn btn-primary hidden lg:inline-flex"> Створити вішліст </a>
+
+      @if (IS_DEV) {
+        <button
+          class="btn btn-circle size-4"
+          [class.bg-success]="authStore.isAuthenticated()"
+          [class.bg-error]="authStore.isUnauthenticated()"
+          (click)="login()"
+        ></button>
+      }
+      <!-- Mobile menu without JavaScript -->
+      <details class="dropdown dropdown-end lg:hidden">
+        <summary class="btn btn-square btn-ghost list-none" aria-label="Відкрити меню">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="size-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 6h16" />
+            <path d="M4 12h16" />
+            <path d="M4 18h16" />
+          </svg>
+        </summary>
+
+        <ul
+          class="menu dropdown-content z-40 mt-3 w-64 rounded-2xl border border-base-300 bg-base-100 p-3 shadow-xl"
+        >
+          <li>
+            <a href="#how-it-works">Як це працює</a>
+          </li>
+
+          <li>
+            <a href="#benefits">Переваги</a>
+          </li>
+
+          <li>
+            <a href="/wishlists/example">Приклад вішліста</a>
+          </li>
+
+          <li class="mt-2">
+            <a href="/?action=auth" class="btn btn-primary"> Створити вішліст </a>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
