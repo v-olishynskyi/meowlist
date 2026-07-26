@@ -60,7 +60,11 @@
       </div>
 
       <div class="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md sm:flex-row lg:mx-0">
-        <a href="/?action=auth" class="btn btn-primary min-h-12 flex-1 rounded-xl shadow-sm">
+        <a
+          [routerLink]="['/']"
+          [queryParams]="{ action: ModalsAction.NEW_WISHLIST }"
+          class="btn btn-primary min-h-12 flex-1 rounded-xl shadow-sm"
+        >
           Створити мій вішліст
 
           <svg
@@ -78,10 +82,7 @@
           </svg>
         </a>
 
-        <a
-          href="/wishlists/example"
-          class="btn btn-outline btn-primary min-h-12 flex-1 rounded-xl bg-base-100"
-        >
+        <a class="btn btn-outline btn-primary min-h-12 flex-1 rounded-xl bg-base-100">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             class="size-5"
@@ -95,7 +96,7 @@
             <circle cx="12" cy="12" r="3" />
           </svg>
 
-          Відкрити приклад
+          Відкрити приклад (НЕ ГОТОВО)
         </a>
       </div>
 

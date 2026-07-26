@@ -1,0 +1,43 @@
+<div class="text-base-content p-4 flex flex-col">
+  <!-- header + close button -->
+  <div class="flex flex-row justify-between" [class.justify-end]="!showBackButton()">
+    <!-- arrow back button show only when history have prev route -->
+    @if (showBackButton()) {
+      <button class="btn btn-ghost btn-square btn-sm" (click)="onBackButtonClick()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
+        </svg>
+      </button>
+    }
+
+    <!-- cross button for closing modal -->
+    <button class="btn btn-ghost btn-square btn-sm" (click)="closeModal()">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke-width="1.5"
+        stroke="currentColor"
+        class="w-6 h-6"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  @if (title()) {
+    <h2 class="mt-3">{{ title() }}</h2>
+  }
+  <ng-content select="[modal-content]"></ng-content>
+</div>

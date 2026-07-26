@@ -1,7 +1,9 @@
-import { Component, inject, Injectable, signal, Type } from '@angular/core';
+import { Component, computed, inject, Injectable, signal, Type } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalService } from './modals.service';
 import { BehaviorSubject, tap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ComponentType } from '@angular/cdk/portal';
 
 @Injectable({
   providedIn: 'root',
@@ -9,33 +11,13 @@ import { BehaviorSubject, tap } from 'rxjs';
 export class ModalRouterStore {
   route = inject(ActivatedRoute);
 
-  private _activeComponent = new BehaviorSubject<Type<any> | null>(null);
-  activeComponent$ = this._activeComponent.asObservable();
+  private _activeComponentSubject$ = new BehaviorSubject<ComponentType<unknown> | null>(null);
+  private readonly _activeComponent$ = this._activeComponentSubject$.asObservable();
+  private readonly _activeComponent = toSignal(this._activeComponent$);
 
-  modalService = inject(ModalService);
-
-  isLoadingContent = signal(false);
-
-  subscribeToRouteChanges() {
-    return this.route.queryParams.pipe(
-      tap((queryParams) => {
-        console.log('queryParams', queryParams);
-        switch (queryParams['action']) {
-          case 'auth-otp': {
-            this.modalService.openModal(ModalAuthOtpComponent);
-          }
-        }
-      }),
-    );
-  }
+  activeComponent = computed(() => this._activeComponent());
 
   changeActiveComponent(component: Type<any> | null) {
-    this._activeComponent.next(component);
+    this._activeComponentSubject$.next(component);
   }
 }
-
-@Component({
-  selector: 'app-modal-auth-otp',
-  template: `<div>dialog works!</div>`,
-})
-export class ModalAuthOtpComponent {}

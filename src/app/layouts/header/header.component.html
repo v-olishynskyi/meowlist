@@ -19,13 +19,19 @@
         </li>
 
         <li>
-          <a href="/wishlists/example">Приклад вішліста</a>
+          <a>Приклад вішліста (НЕ ГОТОВО)</a>
         </li>
       </ul>
     </nav>
 
     <div class="navbar-end">
-      <a href="/?action=auth" class="btn btn-primary hidden lg:inline-flex"> Створити вішліст </a>
+      <a
+        [routerLink]="['/']"
+        [queryParams]="{ action: ModalsAction.NEW_WISHLIST }"
+        class="btn btn-primary hidden lg:inline-flex"
+      >
+        Створити вішліст
+      </a>
 
       @if (IS_DEV) {
         <button
@@ -71,7 +77,13 @@
           </li>
 
           <li class="mt-2">
-            <a href="/?action=auth" class="btn btn-primary"> Створити вішліст </a>
+            <a
+              [routerLink]="['/']"
+              [queryParams]="{ action: ModalsAction.NEW_WISHLIST }"
+              class="btn btn-primary"
+            >
+              Створити вішліст
+            </a>
           </li>
         </ul>
       </details>
