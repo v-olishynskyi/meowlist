@@ -8,12 +8,12 @@ export class ModalContentStore {
   private readonly modalStore = inject(ModalStore);
 
   modalContent = computed(() => {
-    const step = this.modalStore.activeStep();
     const flow = this.modalStore.activeFlow();
+    const step = this.modalStore.activeStep();
 
     if (!flow) return null;
 
-    const component = step?.component ?? flow[0]?.initialStep.component;
+    const component = step!.component;
 
     return component;
   });

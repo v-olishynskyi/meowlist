@@ -74,12 +74,7 @@
     <div class="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md sm:flex-row lg:mx-0">
       <a
         [routerLink]="['/']"
-        [queryParams]="
-          utilsService.buildFlowQueryParams(
-            utilsService.ModalFlowKey.NEW_WISHLIST,
-            utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
-          )
-        "
+        [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)"
         class="btn btn-primary min-h-12 flex-1 rounded-xl shadow-sm z-999"
       >
         Створити мій вішліст
@@ -353,10 +348,7 @@
           <a
             [routerLink]="['/']"
             [queryParams]="
-              utilsService.buildFlowQueryParams(
-                utilsService.ModalFlowKey.NEW_WISHLIST,
-                utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
-              )
+              utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)
             "
             class="btn btn-primary min-h-12 w-full max-w-sm rounded-xl sm:w-auto sm:px-10"
           >

@@ -1,7 +1,15 @@
 import { inject, Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { tap } from 'rxjs';
-import { MODAL_FLOWS, ModalFlowKey, modalFlowKeys, ModalFlowStepKey } from './modal.types';
+import {
+  AuthOtpStepKey,
+  getFlowDefinition,
+  getStepDefinition,
+  MODAL_FLOWS,
+  ModalFlowKey,
+  RouteIntent,
+  StepOf,
+} from './modal.types';
 import { ModalStore } from './modal.store';
 import { AuthStore } from '../../../core/auth.store';
 import { ModalFlowRuntimeStore } from './modal-flow-runtime.store';
@@ -20,44 +28,69 @@ export class ModalRouteCoordinator {
 
   private authStore = inject(AuthStore);
 
+  resolveRouteIntent(flowParam: string | null, stepParam: string | null): RouteIntent | null {
+    switch (flowParam) {
+      case ModalFlowKey.AUTH_OTP: {
+        const flow = getFlowDefinition(ModalFlowKey.AUTH_OTP);
+
+        const step = this.utilsService.isKeyOf(stepParam, flow.steps)
+          ? stepParam
+          : flow.initialStep;
+
+        return {
+          flow: ModalFlowKey.AUTH_OTP,
+          step,
+        };
+      }
+      case ModalFlowKey.NEW_WISHLIST: {
+        const flow = getFlowDefinition(ModalFlowKey.NEW_WISHLIST);
+
+        const step = this.utilsService.isKeyOf(stepParam, flow.steps)
+          ? stepParam
+          : flow.initialStep;
+
+        return {
+          flow: ModalFlowKey.NEW_WISHLIST,
+          step,
+        };
+      }
+      default:
+        return null;
+    }
+  }
+
   subscribeToRouteChanges() {
     return this.activatedRoute.queryParamMap
       .pipe(
         tap((queryParam) => {
           const flowParam = queryParam.get('flow') as ModalFlowKey;
-          const stepParam = queryParam.get('step') as ModalFlowStepKey;
+          const stepParam = queryParam.get('step') as StepOf<ModalFlowKey>;
 
-          const isFlowValid = modalFlowKeys.includes(flowParam);
+          const isFlowValid = this.utilsService.isKeyOf(flowParam, MODAL_FLOWS);
+          const routeIntent = this.resolveRouteIntent(flowParam, stepParam);
 
-          if (!flowParam || !isFlowValid) {
+          if (!flowParam || !isFlowValid || !routeIntent) {
             const [path] = this.router.url.split('?');
             this.router.navigate([path], { queryParams: {} });
 
             return;
           }
 
-          const flow = MODAL_FLOWS[flowParam];
-          const step = flow.steps[stepParam] ?? flow.initialStep.component;
-          const routeIntent = { flow, step, context: {} };
+          const flow = getFlowDefinition(routeIntent.flow);
+          const step = getStepDefinition(routeIntent.flow, routeIntent.step);
 
           if (flow.isProtected && !this.authStore.isAuthenticated()) {
             // First we set the route intent, so that when the user logs in, we can redirect them to the correct step
             this.modalStore.setModalRouteIntent(routeIntent);
             this.modalFlowRuntimeStore.applyRouteIntent(routeIntent);
 
-            const redirectParams = encodeURIComponent(
-              JSON.stringify({
-                flow: flowParam,
-                step: stepParam,
-                context: {},
-              }),
-            );
+            const redirectParams = encodeURIComponent(JSON.stringify(routeIntent));
 
             this.router.navigate([], {
               queryParams: {
                 ...this.utilsService.buildFlowQueryParams(
                   ModalFlowKey.AUTH_OTP,
-                  ModalFlowStepKey.AUTH_OTP_STEP_PHONE,
+                  AuthOtpStepKey.PHONE,
                 ),
                 redirectFlow: redirectParams,
               },

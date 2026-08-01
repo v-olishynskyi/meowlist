@@ -1,0 +1,165 @@
+<form [formGroup]="newEventForm" (ngSubmit)="submitForm()" class="w-full text-base-content">
+  <!-- Заголовок -->
+  <header class="mb-7 text-center">
+    <div class="mb-2 flex items-center justify-center gap-3">
+      <!-- <span class="text-primary">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.9"
+          class="size-8"
+        >
+          <rect x="3" y="8" width="18" height="13" rx="2" />
+          <path
+            d="M12 8v13M3 12h18M12 8H8.5a2.5 2.5 0 1 1 2.5-2.5V8Zm0 0h3.5A2.5 2.5 0 1 0 13 5.5V8Z"
+          />
+        </svg>
+      </span> -->
+
+      <h2 class="text-xl font-bold tracking-tight sm:text-2xl">Новий список бажань</h2>
+    </div>
+
+    <p class="text-sm text-base-content/60 sm:text-base">Розкажіть нам про вашу подію</p>
+  </header>
+
+  <div class="space-y-4">
+    <!-- Назва події -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">
+        Назва події
+        <span class="text-error">*</span>
+      </legend>
+
+      <input
+        formControlName="name"
+        id="wishlist-title"
+        name="title"
+        type="text"
+        autocomplete="off"
+        placeholder="Введіть назву події"
+        class="input input-bordered w-full"
+      />
+    </fieldset>
+
+    <!-- Опис -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">
+        Опис
+        <span class="font-normal text-base-content/50"> (необов’язково) </span>
+      </legend>
+
+      <div class="relative">
+        <textarea
+          formControlName="description"
+          id="wishlist-description"
+          name="description"
+          maxlength="160"
+          rows="5"
+          placeholder="Розкажіть гостям трохи про цю подію"
+          class="textarea textarea-bordered min-h-28 w-full resize-none pb-8 text-base"
+        ></textarea>
+
+        <span class="pointer-events-none absolute bottom-3 right-4 text-xs text-base-content/45">
+          0/160
+        </span>
+      </div>
+    </fieldset>
+
+    <!-- Дата події -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">Дата події</legend>
+
+      <input
+        formControlName="date"
+        id="wishlist-date"
+        name="date"
+        type="datetime-local"
+        class="input input-bordered w-full text-base"
+      />
+    </fieldset>
+
+    <!-- Місце проведення -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">
+        Місце проведення
+        <span class="font-normal text-base-content/50"> (необов’язково) </span>
+      </legend>
+
+      <label class="input input-bordered flex w-full items-center gap-3">
+        <input
+          formControlName="location"
+          id="wishlist-location"
+          name="location"
+          type="text"
+          autocomplete="off"
+          placeholder="Введіть місце проведення події"
+          class="grow text-base"
+        />
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          class="size-5 shrink-0 text-base-content/40"
+        >
+          <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+          <circle cx="12" cy="10" r="2.5" />
+        </svg>
+      </label>
+    </fieldset>
+
+    <!-- Обкладинка -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">
+        Обкладинка
+        <span class="font-normal text-base-content/50"> (необов’язково) </span>
+      </legend>
+
+      <label
+        for="wishlist-cover"
+        class="group flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-box border-2 border-dashed border-base-300 bg-base-100 px-5 py-5 text-center transition hover:border-primary hover:bg-primary/5 focus-within:border-primary focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary"
+      >
+        <input
+          formControlName="coverImage"
+          id="wishlist-cover"
+          name="cover"
+          type="file"
+          accept="image/jpeg,image/png"
+          class="sr-only"
+        />
+
+        <span
+          class="mb-2 grid size-10 place-items-center rounded-box text-base-content/40 transition group-hover:text-primary"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            class="size-7"
+          >
+            <path
+              stroke-linejoin="round"
+              d="M5 7h3l1.2-2h5.6L16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"
+            />
+            <circle cx="12" cy="13" r="3.5" />
+          </svg>
+        </span>
+
+        <span class="text-sm font-semibold"> Додати обкладинку </span>
+
+        <span class="mt-1 text-xs text-base-content/50"> JPG або PNG, до 5 МБ </span>
+      </label>
+    </fieldset>
+  </div>
+
+  <!-- Кнопка надсилання -->
+  <button type="submit" class="btn btn-secondary mt-6 w-full text-base">
+    Створити список бажань
+  </button>
+</form>

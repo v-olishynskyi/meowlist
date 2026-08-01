@@ -4,9 +4,11 @@
   (click)="onBackdropClick($event)"
   class="border border-base-300 rounded-3xl shadow-xl p-0 m-auto w-[calc(100vw-24px)] max-w-105 max-h-[calc(100dvh-16px)]"
 >
-  <div class="text-base-content flex flex-col">
+  <div class="relative text-base-content rounded-3xl">
     <!-- header + close button -->
-    <div class="flex flex-row justify-between p-4 border-b border-base-300">
+    <div
+      class="sticky top-0 w-full flex flex-row justify-between p-4 border-b bg-base-100 z-10 border-base-300"
+    >
       <!-- arrow back button show only when history have prev route -->
       @if (true) {
         <button class="btn btn-ghost btn-square btn-sm">

@@ -1,5 +1,11 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
-import { RouteIntent } from './modal.types';
+import {
+  getFlowDefinition,
+  ModalFlowKey,
+  ModalFlowSession,
+  ModalFlowSessions,
+  RouteIntent,
+} from './modal.types';
 import { ModalStore } from './modal.store';
 
 @Injectable({
@@ -8,56 +14,53 @@ import { ModalStore } from './modal.store';
 export class ModalFlowRuntimeStore {
   modalStore = inject(ModalStore);
 
-  sessions = signal<Record<string, unknown>>({});
-
-  readonly activeFlowSession = computed(
-    () => this.sessions()[this.modalStore.activeFlow()?.key] ?? null,
-  );
+  private readonly _sessions = signal<ModalFlowSessions>({});
+  readonly sessions = this._sessions.asReadonly();
 
   constructor() {
-    effect(() => {
-      console.log('Active Flow Session:', this.activeFlowSession());
-      console.log('Sessions:', this.sessions());
-    });
+    effect(() => {});
   }
 
-  initializeFlowSession(flow: any, step: any, context: Record<string, unknown> = {}) {}
+  getSession<K extends ModalFlowKey>(flow: K): ModalFlowSession<K> | undefined {
+    return this._sessions()[flow];
+  }
 
-  startSession(intent: RouteIntent) {
-    this.sessions.update((sessions) => ({
+  startSession<K extends ModalFlowKey>(flow: K): ModalFlowSession<K> {
+    const existingSession = this.getSession(flow);
+
+    if (existingSession) {
+      return existingSession;
+    }
+
+    const flowDefinition = getFlowDefinition(flow);
+
+    const newSession: ModalFlowSession<K> = {
+      flow,
+      state: flowDefinition.createInitialState(),
+    };
+
+    this._sessions.update((sessions) => ({
       ...sessions,
-      [intent.flow.key]: {
-        flow: intent.flow,
-        step: intent.step,
-        context: intent.context ?? {},
-      },
+      [flow]: newSession,
     }));
+
+    return newSession;
   }
 
-  clearSession(flowKey: string) {
-    this.sessions.update((sessions) => {
+  clearSession(flowKey: ModalFlowKey) {
+    this._sessions.update((sessions) => {
       const { [flowKey]: _, ...rest } = sessions;
       return rest;
     });
   }
 
   clearAllSessions() {
-    this.sessions.set({});
+    this._sessions.set({});
   }
 
   applyRouteIntent(intent: RouteIntent) {
     if (intent.flow in this.sessions()) return;
 
-    this.startSession(intent);
+    this.startSession(intent.flow);
   }
 }
-
-// ModalFlowRuntimeStore
-// ├── sessions
-// ├── activeSession
-// ├── applyRouteIntent()
-// ├── initializeFlowSession()
-// ├── activateStep()
-// ├── pushSession()
-// ├── popSession()
-// └── clear()

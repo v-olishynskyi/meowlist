@@ -1,26 +1,37 @@
 import { Injectable } from '@angular/core';
-import { ModalFlowKey, ModalFlowStepKey } from '../../components/modal/data/modal.types';
-import { Params } from '@angular/router';
+import {
+  AuthOtpStepKey,
+  ModalFlowKey,
+  NewWishlistStepKey,
+  RouteIntent,
+  StepOf,
+} from '../../components/modal/data/modal.types';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UtilsService {
   ModalFlowKey = ModalFlowKey;
-  ModalFlowStepKey = ModalFlowStepKey;
 
-  buildFlowQueryParams = (
-    flow: ModalFlowKey,
-    step: ModalFlowStepKey,
-    context: Record<string, any> = {},
-  ): Params => {
+  buildFlowQueryParams = <K extends ModalFlowKey>(flow: K, step?: StepOf<K>): RouteIntent => {
     switch (flow) {
       case ModalFlowKey.AUTH_OTP:
-        return { flow: ModalFlowKey.AUTH_OTP, step, context };
+        return {
+          flow: ModalFlowKey.AUTH_OTP,
+          step: (step as StepOf<ModalFlowKey.AUTH_OTP>) ?? AuthOtpStepKey.PHONE,
+        };
       case ModalFlowKey.NEW_WISHLIST:
-        return { flow: ModalFlowKey.NEW_WISHLIST, step, context };
-      default:
-        return {};
+        return {
+          flow: ModalFlowKey.NEW_WISHLIST,
+          step: (step as StepOf<ModalFlowKey.NEW_WISHLIST>) ?? NewWishlistStepKey.EVENT,
+        };
     }
+  };
+
+  isKeyOf = <T extends object>(
+    value: PropertyKey | null | undefined,
+    object: T,
+  ): value is keyof T => {
+    return value !== null && value !== undefined && value in object;
   };
 }

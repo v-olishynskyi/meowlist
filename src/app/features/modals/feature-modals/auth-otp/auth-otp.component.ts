@@ -71,7 +71,6 @@ export class AuthOtpModal {
             queryParams: this.utilsService.buildFlowQueryParams(
               redirectFlow.flow,
               redirectFlow.step,
-              redirectFlow.context,
             ),
             queryParamsHandling: 'merge',
           });

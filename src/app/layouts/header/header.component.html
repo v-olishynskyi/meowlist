@@ -31,12 +31,7 @@
     <div class="navbar-end">
       <a
         [routerLink]="['/']"
-        [queryParams]="
-          utilsService.buildFlowQueryParams(
-            utilsService.ModalFlowKey.NEW_WISHLIST,
-            utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
-          )
-        "
+        [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)"
         class="btn btn-primary hidden lg:inline-flex"
       >
         Створити вішліст
@@ -93,10 +88,7 @@
             <a
               [routerLink]="['/']"
               [queryParams]="
-                utilsService.buildFlowQueryParams(
-                  utilsService.ModalFlowKey.NEW_WISHLIST,
-                  utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
-                )
+                utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)
               "
               class="btn btn-primary"
             >

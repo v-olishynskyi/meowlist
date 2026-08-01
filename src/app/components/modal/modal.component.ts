@@ -1,8 +1,6 @@
 import { Component, DOCUMENT, ElementRef, inject, OnInit, viewChild } from '@angular/core';
 import { ModalFlowRuntimeStore } from './data/modal-flow-runtime.store';
 import { ModalStore } from './data/modal.store';
-import { AuthOtpModal } from '../../features/modals/feature-modals/auth-otp/auth-otp.component';
-import { AddNewGiftModal } from '../../features/modals/feature-modals/add-new-gift/add-new-gift.component';
 import { NgComponentOutlet } from '@angular/common';
 import { ModalContentStore } from './data/modal-content.store';
 import { Router } from '@angular/router';
@@ -18,8 +16,6 @@ export class ModalComponent implements OnInit {
   modalStore = inject(ModalStore);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   modalContentStore = inject(ModalContentStore);
-  AuthOtpModal = AuthOtpModal;
-  AddNewGiftModal = AddNewGiftModal;
 
   private document = inject(DOCUMENT);
 
@@ -48,6 +44,7 @@ export class ModalComponent implements OnInit {
 
   ngOnInit() {
     this.modalDialog()?.nativeElement.addEventListener('close', () => {
+      console.log('Modal closed');
       // TODO:
       this.router.navigateByUrl(this.router.url.split('?')[0]);
       this.modalStore.clearModalRouteIntent();
