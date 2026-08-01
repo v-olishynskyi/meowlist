@@ -21,7 +21,7 @@
   ></div>
 
   <div
-    class="mx-auto grid min-h-[calc(100svh-4rem)] w-full max-w-7xl items-center gap-8 px-4 py-4 sm:px-6 sm:py-14 lg:grid-cols-2 lg:px-8 lg:py-20"
+    class="mx-auto grid min-h-[calc(50svh-4rem)] w-full max-w-360 items-center gap-8 px-4 py-4 sm:px-6 sm:py-14 lg:grid-cols-2 lg:py-10"
   >
     <!-- Hero content -->
     <div class="relative z-10 text-center lg:text-left">
@@ -41,63 +41,16 @@
       </p>
 
       <!-- Hero illustration -->
-      <div class="relative flex items-center justify-center">
+      <div class="relative">
         <div
-          class="absolute left-[4%] top-[18%] h-32 w-24 rounded-full bg-primary/10 blur-3xl sm:h-48 sm:w-36"
+          class="absolute left-[4%] -z-1 top-[18%] h-32 w-24 rounded-full bg-primary/10 blur-3xl sm:h-48 sm:w-36"
           aria-hidden="true"
         ></div>
 
         <div
-          class="absolute bottom-[10%] right-[4%] h-32 w-24 rounded-full bg-secondary/15 blur-3xl sm:h-48 sm:w-36"
+          class="absolute bottom-[10%] -z-1 right-[4%] h-32 w-24 rounded-full bg-secondary/15 blur-3xl sm:h-48 sm:w-36"
           aria-hidden="true"
         ></div>
-
-        <img
-          src="/assets/cat-with-gift.png"
-          alt="Святковий кіт тримає фіолетовий подарунок серед повітряних кульок"
-          class="relative z-10 w-full max-w-sm sm:max-w-md lg:max-w-xl"
-        />
-      </div>
-
-      <div class="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md sm:flex-row lg:mx-0">
-        <a
-          [routerLink]="['/']"
-          [queryParams]="{ action: ModalsAction.NEW_WISHLIST }"
-          class="btn btn-primary min-h-12 flex-1 rounded-xl shadow-sm"
-        >
-          Створити мій вішліст
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path d="m12 3-1.2 3.6L7 8l3.8 1.4L12 13l1.2-3.6L17 8l-3.8-1.4L12 3Z" />
-            <path d="m5 14-.8 2.2L2 17l2.2.8L5 20l.8-2.2L8 17l-2.2-.8L5 14Z" />
-            <path d="m19 13-.8 2.2L16 16l2.2.8L19 19l.8-2.2L22 16l-2.2-.8L19 13Z" />
-          </svg>
-        </a>
-
-        <a class="btn btn-outline btn-primary min-h-12 flex-1 rounded-xl bg-base-100">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            aria-hidden="true"
-          >
-            <path d="M2.1 12a10.8 10.8 0 0 1 19.8 0 10.8 10.8 0 0 1-19.8 0Z" />
-            <circle cx="12" cy="12" r="3" />
-          </svg>
-
-          Відкрити приклад (НЕ ГОТОВО)
-        </a>
       </div>
 
       <!-- <div
@@ -112,6 +65,56 @@
               <span class="text-secondary">♥</span>
             </span>
           </div> -->
+    </div>
+    <img
+      src="/assets/cat-with-gift.png"
+      alt="Святковий кіт тримає фіолетовий подарунок серед повітряних кульок"
+      class="relative z-10 object-contain w-full max-w-sm"
+    />
+    <div class="mt-8 flex flex-col gap-3 sm:mx-auto sm:max-w-md sm:flex-row lg:mx-0">
+      <a
+        [routerLink]="['/']"
+        [queryParams]="
+          utilsService.buildFlowQueryParams(
+            utilsService.ModalFlowKey.NEW_WISHLIST,
+            utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
+          )
+        "
+        class="btn btn-primary min-h-12 flex-1 rounded-xl shadow-sm z-999"
+      >
+        Створити мій вішліст
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="m12 3-1.2 3.6L7 8l3.8 1.4L12 13l1.2-3.6L17 8l-3.8-1.4L12 3Z" />
+          <path d="m5 14-.8 2.2L2 17l2.2.8L5 20l.8-2.2L8 17l-2.2-.8L5 14Z" />
+          <path d="m19 13-.8 2.2L16 16l2.2.8L19 19l.8-2.2L22 16l-2.2-.8L19 13Z" />
+        </svg>
+      </a>
+
+      <a class="btn btn-outline btn-primary min-h-12 flex-1 rounded-xl bg-base-100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="size-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          aria-hidden="true"
+        >
+          <path d="M2.1 12a10.8 10.8 0 0 1 19.8 0 10.8 10.8 0 0 1-19.8 0Z" />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+
+        Відкрити приклад (НЕ ГОТОВО)
+      </a>
     </div>
   </div>
 </section>
@@ -349,7 +352,12 @@
 
           <a
             [routerLink]="['/']"
-            [queryParams]="{ action: 'auth-otp' }"
+            [queryParams]="
+              utilsService.buildFlowQueryParams(
+                utilsService.ModalFlowKey.NEW_WISHLIST,
+                utilsService.ModalFlowStepKey.NEW_WISHLIST_STEP_NEW_EVENT
+              )
+            "
             class="btn btn-primary min-h-12 w-full max-w-sm rounded-xl sm:w-auto sm:px-10"
           >
             Створити вішліст

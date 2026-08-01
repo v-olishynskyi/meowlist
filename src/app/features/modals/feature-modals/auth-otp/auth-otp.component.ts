@@ -2,9 +2,10 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthStore } from '../../../../core/auth.store';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalBaseContainer } from '../../components/modal-container/modal-container.component';
 import IntlTelInput from '@intl-tel-input/angular';
 import 'intl-tel-input/styles';
+import { RouteIntent } from '../../../../components/modal/data/modal.types';
+import { UtilsService } from '../../../../shared/utils/utils.service';
 
 export enum AuthStep {
   PHONE = 'phone',
@@ -14,10 +15,11 @@ export enum AuthStep {
 @Component({
   selector: 'app-modal-auth-otp',
   templateUrl: './auth-otp.component.html',
-  imports: [ModalBaseContainer, IntlTelInput, ReactiveFormsModule],
+  imports: [IntlTelInput, ReactiveFormsModule],
 })
 export class AuthOtpModal {
   loadUtils = () => import('intl-tel-input/utils');
+  utilsService = inject(UtilsService);
   console = console;
   authStore = inject(AuthStore);
   router = inject(Router);
@@ -61,13 +63,17 @@ export class AuthOtpModal {
     this.authStore.signIn().subscribe({
       next: () => {
         // check if router statte has a redirect url, if so, navigate to that url, otherwise navigate to the home page
-        const redirectUrl = this.activatedRoute.snapshot.queryParams['returnAction'];
+        const redirectUrl = this.activatedRoute.snapshot.queryParams['redirectFlow'];
+        const redirectFlow = JSON.parse(decodeURIComponent(redirectUrl)) as RouteIntent;
+
         if (redirectUrl) {
           this.router.navigate([], {
-            queryParams: { action: redirectUrl, returnAction: null },
+            queryParams: this.utilsService.buildFlowQueryParams(
+              redirectFlow.flow,
+              redirectFlow.step,
+              redirectFlow.context,
+            ),
             queryParamsHandling: 'merge',
-            state: { closeModal: true },
-            replaceUrl: true,
           });
         } else {
           this.router.navigate(['/']);

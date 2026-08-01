@@ -1,6 +1,8 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, catchError, interval, of, take, tap, timer } from 'rxjs';
+import { ModalFlowRuntimeStore } from '../components/modal/data/modal-flow-runtime.store';
+import { ModalFlowKey } from '../components/modal/data/modal.types';
 
 export enum AuthStatus {
   Authenticated = 'authenticated',
@@ -14,6 +16,8 @@ const OTP_REQUEST_DEBOUNCE_TIME = 60; // seconds
   providedIn: 'root',
 })
 export class AuthStore {
+  modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+
   private readonly _authStatusSubject$ = new BehaviorSubject<AuthStatus>(AuthStatus.Loading);
   private readonly _authStatus$ = this._authStatusSubject$.asObservable();
   private readonly authStatus = toSignal(this._authStatus$, { initialValue: AuthStatus.Loading });
@@ -77,6 +81,11 @@ export class AuthStore {
   }
 
   signIn() {
-    return of(null).pipe(tap(() => this.setAuthStatus(AuthStatus.Authenticated)));
+    return of(null).pipe(
+      tap(() => {
+        this.setAuthStatus(AuthStatus.Authenticated);
+        this.modalFlowRuntimeStore.clearSession(ModalFlowKey.AUTH_OTP);
+      }),
+    );
   }
 }

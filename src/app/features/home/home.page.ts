@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ModalsAction } from '../modals/data/modals.service';
+import { UtilsService } from '../../shared/utils/utils.service';
 
 @Component({
   selector: 'app-home',
@@ -8,5 +8,5 @@ import { ModalsAction } from '../modals/data/modals.service';
   imports: [RouterLink],
 })
 export class HomePage {
-  ModalsAction = ModalsAction;
+  utilsService = inject(UtilsService);
 }

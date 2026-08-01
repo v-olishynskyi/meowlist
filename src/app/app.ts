@@ -6,10 +6,9 @@ import '@fontsource/poppins/700.css';
 import { Component, inject } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { OnInit } from '@angular/core';
-import { ModalRouterStore } from './features/modals/data/modals.store';
 import { RouterOutlet } from '@angular/router';
 import { AuthStore } from './core/auth.store';
-import { ModalService } from './features/modals/data/modals.service';
+import { ModalRouteCoordinator } from './components/modal/data/modal-route-coordinator';
 
 @Component({
   selector: 'app-root',
@@ -17,11 +16,11 @@ import { ModalService } from './features/modals/data/modals.service';
   imports: [RouterOutlet, MatDialogModule],
 })
 export class App implements OnInit {
-  modalsService = inject(ModalService);
   authStore = inject(AuthStore);
+  modalRouteCoordinator = inject(ModalRouteCoordinator);
 
   ngOnInit() {
     this.authStore.checkAuth().subscribe();
-    this.modalsService.subscribeToRouteHandler();
+    this.modalRouteCoordinator.subscribeToRouteChanges();
   }
 }

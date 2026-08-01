@@ -1,0 +1,52 @@
+<dialog
+  #modalElement
+  (close)="modalStore.closeModal()"
+  (click)="onBackdropClick($event)"
+  class="border border-base-300 rounded-3xl shadow-xl p-0 m-auto w-[calc(100vw-24px)] max-w-105 max-h-[calc(100dvh-16px)]"
+>
+  <div class="text-base-content flex flex-col">
+    <!-- header + close button -->
+    <div class="flex flex-row justify-between p-4 border-b border-base-300">
+      <!-- arrow back button show only when history have prev route -->
+      @if (true) {
+        <button class="btn btn-ghost btn-square btn-sm">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+            />
+          </svg>
+        </button>
+      }
+
+      <!-- cross button for closing modal -->
+      <button class="btn btn-ghost btn-square btn-sm" (click)="modalStore.closeModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="w-6 h-6"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="p-4">
+      @if (modalContentStore.modalContent(); as component) {
+        <ng-container [ngComponentOutlet]="component"></ng-container>
+      } @else {
+        <p class="text-center text-base-content/45">No content</p>
+      }
+    </div>
+  </div>
+</dialog>
