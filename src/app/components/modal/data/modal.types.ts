@@ -4,9 +4,28 @@ import { AuthOtpModal } from '../../../features/modals/feature-modals/auth-otp/a
 import { NewEventModal } from '../../../features/modals/feature-modals/new-event/new-event.component';
 import { EditWishlistModal } from '../../../features/modals/feature-modals/edit-wishlist/edit-wishlist.component';
 
-class FlowState<T> {
+export class FlowState<T extends object> {
   constructor(readonly state: T) {
-    return this;
+    Object.assign(this, state);
+  }
+
+  update(updater: (state: T) => T): FlowState<T> {
+    return new FlowState(updater(this.state));
+  }
+}
+
+export class ModalFlowSession<Key extends ModalFlowKey> {
+  constructor(
+    readonly flow: Key,
+    private readonly flowState: FlowState<StateOf<Key>>,
+  ) {}
+
+  get state(): StateOf<Key> {
+    return this.flowState.state;
+  }
+
+  updateState(updater: (state: StateOf<Key>) => StateOf<Key>): ModalFlowSession<Key> {
+    return new ModalFlowSession(this.flow, this.flowState.update(updater));
   }
 }
 
@@ -55,21 +74,32 @@ export type GiftDraft = {
   description: string | null;
   link: string | null;
   price: number | null;
-  imageUrl: string | null;
+  imageUrl: string;
+
+  // TODO
+  status: string;
+};
+
+export type Gift = GiftDraft & {
+  status: string;
 };
 
 export type ModalFlowSpecMap = {
   [ModalFlowKey.AUTH_OTP]: {
     step: AuthOtpStepKey;
-  } & FlowState<AuthOtpFlowState>;
+    state: FlowState<AuthOtpFlowState>;
+  };
 
   [ModalFlowKey.NEW_WISHLIST]: {
     step: NewWishlistStepKey;
-  } & FlowState<NewWishlistFlowState>;
+    state: FlowState<NewWishlistFlowState>;
+  };
 };
 
 export type StepOf<K extends ModalFlowKey> = ModalFlowSpecMap[K]['step'];
-export type StateOf<K extends ModalFlowKey> = FlowState<ModalFlowSpecMap[K]['state']>;
+
+export type FlowStateOf<K extends ModalFlowKey> = ModalFlowSpecMap[K]['state'];
+export type StateOf<K extends ModalFlowKey> = FlowStateOf<K> extends FlowState<infer T> ? T : never;
 
 export type ModalStepDefinition = {
   component: Type<unknown>;
@@ -81,16 +111,11 @@ export type ModalFlowDefinition<Key extends ModalFlowKey> = {
 
   initialStep: StepOf<Key>;
 
-  createInitialState: () => StateOf<Key>;
+  createInitialState: () => FlowState<StateOf<Key>>;
 
   steps: {
     [Step in StepOf<Key>]: ModalStepDefinition;
   };
-};
-
-export type ModalFlowSession<Key extends ModalFlowKey> = {
-  readonly flow: Key;
-  state: StateOf<Key>;
 };
 
 export type ModalFlowDefinitions = {
@@ -114,56 +139,60 @@ export function defineModalFlow<K extends ModalFlowKey>(
   return definition;
 }
 
-export const MODAL_FLOWS = {
-  [ModalFlowKey.AUTH_OTP]: defineModalFlow<ModalFlowKey.AUTH_OTP>({
-    key: ModalFlowKey.AUTH_OTP,
-    isProtected: false,
-    initialStep: AuthOtpStepKey.PHONE,
-    steps: {
-      [AuthOtpStepKey.PHONE]: {
-        component: AuthOtpModal,
-      },
+export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
+  key: ModalFlowKey.NEW_WISHLIST,
+  isProtected: true,
+  initialStep: NewWishlistStepKey.EVENT,
+  steps: {
+    [NewWishlistStepKey.EVENT]: {
+      component: NewEventModal,
     },
-    createInitialState: (): FlowState<AuthOtpFlowState> =>
-      new FlowState({
-        phoneNumber: null,
-      }),
-  }),
+    [NewWishlistStepKey.EDIT_WISHLIST]: {
+      component: EditWishlistModal,
+    },
+    [NewWishlistStepKey.ADD_GIFT]: {
+      component: AddNewGiftModal,
+    },
+    [NewWishlistStepKey.EDIT_GIFT]: {
+      component: AddNewGiftModal,
+    },
+    [NewWishlistStepKey.REMOVE_GIFT]: {
+      component: AddNewGiftModal,
+    },
+  },
+  createInitialState: (): FlowState<NewWishlistFlowState> => {
+    return new FlowState<NewWishlistFlowState>({
+      event: {
+        coverImage: null,
+        date: null,
+        description: null,
+        location: null,
+        name: '',
+      },
+      gifts: [],
+    });
+  },
+});
 
-  [ModalFlowKey.NEW_WISHLIST]: defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
-    key: ModalFlowKey.NEW_WISHLIST,
-    isProtected: true,
-    initialStep: NewWishlistStepKey.EVENT,
-    steps: {
-      [NewWishlistStepKey.EVENT]: {
-        component: NewEventModal,
-      },
-      [NewWishlistStepKey.EDIT_WISHLIST]: {
-        component: EditWishlistModal,
-      },
-      [NewWishlistStepKey.ADD_GIFT]: {
-        component: AddNewGiftModal,
-      },
-      [NewWishlistStepKey.EDIT_GIFT]: {
-        component: AddNewGiftModal,
-      },
-      [NewWishlistStepKey.REMOVE_GIFT]: {
-        component: AddNewGiftModal,
-      },
+export const AUTH_OTP_FLOW = defineModalFlow<ModalFlowKey.AUTH_OTP>({
+  key: ModalFlowKey.AUTH_OTP,
+  isProtected: false,
+  initialStep: AuthOtpStepKey.PHONE,
+  steps: {
+    [AuthOtpStepKey.PHONE]: {
+      component: AuthOtpModal,
     },
-    createInitialState() {
-      return new FlowState<NewWishlistFlowState>({
-        event: {
-          coverImage: null,
-          date: null,
-          description: null,
-          location: null,
-          name: '',
-        },
-        gifts: [],
-      });
-    },
-  }),
+  },
+  createInitialState: (): FlowState<AuthOtpFlowState> =>
+    new FlowState<AuthOtpFlowState>({
+      phoneNumber: null,
+    }),
+});
+
+export const MODAL_FLOWS = {
+  [ModalFlowKey.AUTH_OTP]: AUTH_OTP_FLOW,
+
+  [ModalFlowKey.NEW_WISHLIST]: NEW_WISHLIST_FLOW,
 } satisfies ModalFlowDefinitions;
 
 export const modalFlowKeys = Object.values(ModalFlowKey);

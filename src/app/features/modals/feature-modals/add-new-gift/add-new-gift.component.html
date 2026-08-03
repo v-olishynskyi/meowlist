@@ -3,7 +3,7 @@
   <header class="mb-7 flex items-center justify-between gap-4">
     <h2 class="text-xl font-bold tracking-tight sm:text-2xl">Додати новий подарунок</h2>
 
-    <button
+    <!-- <button
       type="button"
       aria-label="Закрити"
       class="btn btn-circle btn-ghost btn-sm shrink-0 text-base-content/50"
@@ -19,7 +19,7 @@
       >
         <path stroke-linecap="round" d="M6 6l12 12M18 6 6 18" />
       </svg>
-    </button>
+    </button> -->
   </header>
 
   <div class="space-y-4">
@@ -32,12 +32,10 @@
 
       <input
         formControlName="name"
-        id="gift-name"
-        name="name"
         type="text"
         autocomplete="off"
         placeholder="Наприклад, навушники Sony WH-1000XM5"
-        class="input input-bordered w-full"
+        class="input input-bordered w-full validator"
       />
 
       @if (newGiftForm.controls.name.invalid && newGiftForm.controls.name.touched) {
@@ -45,11 +43,31 @@
       }
     </fieldset>
 
+    <!-- Опис -->
+    <fieldset class="fieldset p-0">
+      <legend class="fieldset-legend">
+        Опис
+        <span class="font-normal text-base-content/50">(необов’язково) </span>
+      </legend>
+
+      <input
+        formControlName="description"
+        type="text"
+        autocomplete="off"
+        placeholder="Наприклад, бездротові навушники з активним шумопоглинанням"
+        class="input input-bordered w-full"
+      />
+
+      @if (newGiftForm.controls.description.invalid && newGiftForm.controls.description.touched) {
+        <p class="fieldset-label text-error">Введіть коректний опис</p>
+      }
+    </fieldset>
+
     <!-- Посилання -->
     <fieldset class="fieldset p-0">
       <legend class="fieldset-legend">
         Посилання
-        <span class="font-normal text-base-content/50"> (необов’язково) </span>
+        <span class="font-normal text-base-content/50">(необов’язково) </span>
       </legend>
 
       <input
@@ -94,56 +112,91 @@
 
     <!-- Зображення -->
     <fieldset class="fieldset p-0">
-      <legend class="fieldset-legend">
-        Зображення
-        <span class="font-normal text-base-content/50"> (необов’язково) </span>
-      </legend>
-
-      <label
-        for="gift-image"
-        class="group flex min-h-32 cursor-pointer flex-col items-center justify-center rounded-box border-2 border-dashed border-base-300 bg-base-100 px-5 py-5 text-center transition hover:border-primary hover:bg-primary/5 focus-within:border-primary focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary"
-      >
-        <input
-          id="gift-image"
-          name="image"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          class="sr-only"
-          /* (change)="onImageSelected($event)" */
-        />
-
-        <span
-          class="mb-2 grid size-10 place-items-center rounded-box text-base-content/40 transition group-hover:text-primary"
+      <legend class="fieldset-legend">Зображення<span class="text-error">*</span></legend>
+      @if (previewImageUrl) {
+        <div class="relative">
+          <img
+            [src]="previewImageUrl"
+            alt="Preview Image"
+            class="h-32 w-full rounded-box object-cover"
+          />
+          <div class="absolute right-2 top-2 flex flex-row">
+            <button
+              type="button"
+              class="btn btn-circle btn-sm btn-ghost text-error"
+              aria-label="Видалити зображення"
+              (click)="previewImageUrl = ''"
+            >
+              <!-- trash icon -->
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                class="size-5"
+              >
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path
+                  d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                ></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      } @else {
+        <label
+          for="gift-image"
+          class="group flex h-32 cursor-pointer flex-col items-center justify-center rounded-box border-2 border-dashed border-base-300 bg-base-100 px-5 py-5 text-center transition hover:border-primary hover:bg-primary/5 focus-within:border-primary focus-within:outline focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-primary"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.8"
-            class="size-7"
+          <input
+            id="gift-image"
+            name="image"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="sr-only"
+            (change)="onImageSelected($event)"
+          />
+
+          <span
+            class="mb-2 grid size-10 place-items-center rounded-box text-base-content/40 transition group-hover:text-primary"
           >
-            <path
-              stroke-linejoin="round"
-              d="M5 7h3l1.2-2h5.6L16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"
-            />
-            <circle cx="12" cy="13" r="3.5" />
-          </svg>
-        </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              class="size-7"
+            >
+              <path
+                stroke-linejoin="round"
+                d="M5 7h3l1.2-2h5.6L16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"
+              />
+              <circle cx="12" cy="13" r="3.5" />
+            </svg>
+          </span>
 
-        <span class="text-sm font-semibold"> Завантажити зображення </span>
+          <span class="text-sm font-semibold"> Завантажити зображення </span>
 
-        <span class="mt-1 text-xs text-base-content/50"> JPG, PNG або WebP, до 5 МБ </span>
-      </label>
+          <span class="mt-1 text-xs text-base-content/50"> JPG, PNG або WebP, до 5 МБ </span>
+        </label>
+      }
     </fieldset>
   </div>
 
   <!-- Дії -->
-  <div class="mt-7 grid grid-cols-2 gap-3">
-    <button type="button" class="btn btn-outline" (click)="cancel()">Скасувати</button>
+  <app-modal-actions>
+    <button type="button" class="btn btn-outline" (click)="close()">Скасувати</button>
 
-    <button type="submit" class="btn btn-secondary" [disabled]="newGiftForm.invalid">
+    <button
+      type="submit"
+      class="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="newGiftForm.invalid || !previewImageUrl"
+    >
       Додати подарунок
     </button>
-  </div>
+  </app-modal-actions>
 </form>

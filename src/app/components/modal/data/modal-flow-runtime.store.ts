@@ -1,10 +1,12 @@
 import { computed, effect, inject, Injectable, signal } from '@angular/core';
 import {
+  FlowState,
   getFlowDefinition,
   ModalFlowKey,
   ModalFlowSession,
   ModalFlowSessions,
   RouteIntent,
+  StateOf,
 } from './modal.types';
 import { ModalStore } from './modal.store';
 
@@ -34,10 +36,7 @@ export class ModalFlowRuntimeStore {
 
     const flowDefinition = getFlowDefinition(flow);
 
-    const newSession: ModalFlowSession<K> = {
-      flow,
-      state: flowDefinition.createInitialState(),
-    };
+    const newSession = new ModalFlowSession<K>(flow, flowDefinition.createInitialState());
 
     this._sessions.update((sessions) => ({
       ...sessions,
@@ -45,6 +44,25 @@ export class ModalFlowRuntimeStore {
     }));
 
     return newSession;
+  }
+
+  updateSessionState<K extends ModalFlowKey>(
+    flow: K,
+    updater: (state: StateOf<K>) => StateOf<K>,
+  ): void {
+    const session = this.getSession(flow);
+
+    if (!session) {
+      throw new Error(`No session found for flow: ${flow}`);
+    }
+
+    const updatedState = session.updateState(updater);
+    console.log('🚀 - ModalFlowRuntimeStore - updateSessionState - updatedState:', updatedState);
+
+    this._sessions.update((sessions) => ({
+      ...sessions,
+      [flow]: updatedState,
+    }));
   }
 
   clearSession(flowKey: ModalFlowKey) {

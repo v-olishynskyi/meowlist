@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalFlowKey, NewWishlistEventDraft } from '../../../../components/modal/data/modal.types';
 import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
+import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
 
 type NewEventForm = {
   name: FormControl<NewWishlistEventDraft['name']>;
@@ -15,27 +16,38 @@ type NewEventForm = {
 @Component({
   selector: 'app-new-event',
   templateUrl: './new-event.component.html',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, ModalActionsComponent],
 })
 export class NewEventModal {
   router = inject(Router);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
 
-  newEventForm = new FormGroup<NewEventForm>({
-    name: new FormControl('', { nonNullable: true }),
-    description: new FormControl(''),
-    date: new FormControl(new Date().toISOString().split('T')[0]),
-    location: new FormControl(''),
-    coverImage: new FormControl(''),
-  });
+  minDate = new Date().toISOString().split('T')[0];
+
+  newEventForm = new FormGroup<NewEventForm>(
+    {
+      name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      description: new FormControl('', { validators: [Validators.maxLength(160)] }),
+      date: new FormControl(new Date().toISOString().split('T')[0]),
+      location: new FormControl(''),
+      coverImage: new FormControl(''),
+    },
+    { updateOn: 'change' },
+  );
 
   submitForm() {
-    console.log('Form submitted:', this.newEventForm.value);
     if (!this.newEventForm.valid) return;
 
-    // this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST)?.state.event
+    this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
+      ...state,
+      event: {
+        ...state.event,
+        ...this.newEventForm.value,
+      },
+    }));
 
     this.router.navigate([], {
+      // TODO
       queryParams: {
         flow: 'new-wishlist',
         step: 'edit-wishlist',

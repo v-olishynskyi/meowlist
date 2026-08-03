@@ -9,6 +9,10 @@ import { OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthStore } from './core/auth.store';
 import { ModalRouteCoordinator } from './components/modal/data/modal-route-coordinator';
+import { registerLocaleData } from '@angular/common';
+import localeUa from '@angular/common/locales/uk';
+
+registerLocaleData(localeUa);
 
 @Component({
   selector: 'app-root',
