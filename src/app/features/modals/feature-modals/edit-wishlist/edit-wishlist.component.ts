@@ -1,20 +1,42 @@
-import { DatePipe, DecimalPipe, registerLocaleData } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import { ModalFlowKey } from '../../../../components/modal/data/modal.types';
 import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
+import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
+
+export enum SortBy {
+  PRICE_ASC = 'price-asc',
+  PRICE_DESC = 'price-desc',
+}
 @Component({
   selector: 'app-edit-wishlist',
   templateUrl: './edit-wishlist.component.html',
-  imports: [DecimalPipe, DatePipe, ModalActionsComponent],
+  imports: [DecimalPipe, DatePipe, ModalActionsComponent, NgTemplateOutlet, SortMenuComponent],
 })
 export class EditWishlistModal {
+  SortBy = SortBy;
   router = inject(Router);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
-  event = this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST)?.state.event;
+  session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
+  event = computed(() => this.session()?.state.event);
+  gifts = computed(
+    () =>
+      this.session()?.state.gifts.sort((a, b) => {
+        if (this.sortsBy() === SortBy.PRICE_ASC) {
+          return (a.price ?? 0) - (b.price ?? 0);
+        } else {
+          return (b.price ?? 0) - (a.price ?? 0);
+        }
+      }) || [],
+  );
 
-  gifts = this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST)?.state.gifts || [];
+  sortsBy = signal<SortBy>(SortBy.PRICE_DESC);
+
+  setSortsBy(sort: SortBy) {
+    this.sortsBy.set(sort);
+  }
 
   addGift() {
     this.router.navigate([], {

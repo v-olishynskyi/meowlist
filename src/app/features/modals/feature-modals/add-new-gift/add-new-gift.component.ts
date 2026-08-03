@@ -20,7 +20,6 @@ interface NewGiftForm {
 export class AddNewGiftModal {
   router = inject(Router);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
-  session = this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST);
 
   previewImageUrl: string = '';
 
@@ -36,13 +35,12 @@ export class AddNewGiftModal {
     if (!this.newGiftForm.valid) return;
 
     const gift: GiftDraft = {
-      id: 'name' + Date.now().toString(),
+      id: 'temp-' + Date.now().toString(),
       name: this.newGiftForm.value.name!,
       description: this.newGiftForm.value.description || null,
       link: this.newGiftForm.value.link || null,
       price: this.newGiftForm.value.price || null,
       imageUrl: this.previewImageUrl,
-      status: 'draft',
     };
 
     this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({

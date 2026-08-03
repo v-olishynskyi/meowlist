@@ -33,6 +33,7 @@ export class ModalFlowSession<Key extends ModalFlowKey> {
 export enum ModalFlowKey {
   AUTH_OTP = 'auth-otp',
   NEW_WISHLIST = 'new-wishlist',
+  EDIT_WISHLIST = 'edit-wishlist',
 }
 
 // FLOW STEP KEYS
@@ -48,6 +49,14 @@ export enum NewWishlistStepKey {
   REMOVE_GIFT = 'remove-gift',
 }
 
+export enum EditWishListStepKey {
+  EVENT = 'edit-event',
+  EDIT_WISHLIST = 'edit-wishlist',
+  ADD_GIFT = 'add-gift',
+  EDIT_GIFT = 'edit-gift',
+  REMOVE_GIFT = 'remove-gift',
+}
+
 export enum ViewWishlistStepKey {}
 
 // FLOW STATE
@@ -56,11 +65,11 @@ export type AuthOtpFlowState = {
 };
 
 export type NewWishlistFlowState = {
-  event: NewWishlistEventDraft;
+  event: EventDraft;
   gifts: GiftDraft[];
 };
 
-export type NewWishlistEventDraft = {
+export type EventDraft = {
   name: string;
   description: string | null;
   date: string | null;
@@ -75,13 +84,20 @@ export type GiftDraft = {
   link: string | null;
   price: number | null;
   imageUrl: string;
+};
 
+export type Gift = GiftDraft & {
   // TODO
   status: string;
 };
 
-export type Gift = GiftDraft & {
-  status: string;
+export type Event = EventDraft & {
+  id: string;
+};
+
+export type EditWishlistFlowState = {
+  event: Event;
+  gifts: Gift[];
 };
 
 export type ModalFlowSpecMap = {
@@ -93,6 +109,11 @@ export type ModalFlowSpecMap = {
   [ModalFlowKey.NEW_WISHLIST]: {
     step: NewWishlistStepKey;
     state: FlowState<NewWishlistFlowState>;
+  };
+
+  [ModalFlowKey.EDIT_WISHLIST]: {
+    step: EditWishListStepKey;
+    state: FlowState<EditWishlistFlowState>;
   };
 };
 
@@ -111,7 +132,7 @@ export type ModalFlowDefinition<Key extends ModalFlowKey> = {
 
   initialStep: StepOf<Key>;
 
-  createInitialState: () => FlowState<StateOf<Key>>;
+  createInitialState: (state?: StateOf<Key>) => FlowState<StateOf<Key>>;
 
   steps: {
     [Step in StepOf<Key>]: ModalStepDefinition;
@@ -174,6 +195,42 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
   },
 });
 
+export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
+  key: ModalFlowKey.EDIT_WISHLIST,
+  isProtected: true,
+  initialStep: EditWishListStepKey.EVENT,
+  steps: {
+    [EditWishListStepKey.EVENT]: {
+      component: NewEventModal,
+    },
+    [EditWishListStepKey.EDIT_WISHLIST]: {
+      component: EditWishlistModal,
+    },
+    [EditWishListStepKey.ADD_GIFT]: {
+      component: AddNewGiftModal,
+    },
+    [EditWishListStepKey.EDIT_GIFT]: {
+      component: AddNewGiftModal,
+    },
+    [EditWishListStepKey.REMOVE_GIFT]: {
+      component: AddNewGiftModal,
+    },
+  },
+  createInitialState: (wishlist): FlowState<EditWishlistFlowState> => {
+    return new FlowState<EditWishlistFlowState>({
+      event: wishlist?.event || {
+        id: '',
+        coverImage: null,
+        date: null,
+        description: null,
+        location: null,
+        name: '',
+      },
+      gifts: wishlist?.gifts || [],
+    });
+  },
+});
+
 export const AUTH_OTP_FLOW = defineModalFlow<ModalFlowKey.AUTH_OTP>({
   key: ModalFlowKey.AUTH_OTP,
   isProtected: false,
@@ -193,6 +250,8 @@ export const MODAL_FLOWS = {
   [ModalFlowKey.AUTH_OTP]: AUTH_OTP_FLOW,
 
   [ModalFlowKey.NEW_WISHLIST]: NEW_WISHLIST_FLOW,
+
+  [ModalFlowKey.EDIT_WISHLIST]: EDIT_WISHLIST_FLOW,
 } satisfies ModalFlowDefinitions;
 
 export const modalFlowKeys = Object.values(ModalFlowKey);

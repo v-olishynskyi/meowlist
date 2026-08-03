@@ -96,12 +96,10 @@
       <label class="input input-bordered flex w-full items-center gap-3">
         <input
           formControlName="price"
-          id="gift-price"
-          name="price"
           type="number"
           inputmode="decimal"
           min="0"
-          step="0.01"
+          step="1"
           placeholder="0"
           class="grow"
         />
@@ -189,14 +187,16 @@
 
   <!-- Дії -->
   <app-modal-actions>
-    <button type="button" class="btn btn-outline" (click)="close()">Скасувати</button>
+    <div class="grid grid-cols-2 gap-4">
+      <button type="button" class="btn btn-outline" (click)="close()">Скасувати</button>
 
-    <button
-      type="submit"
-      class="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-50"
-      [disabled]="newGiftForm.invalid || !previewImageUrl"
-    >
-      Додати подарунок
-    </button>
+      <button
+        type="submit"
+        class="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-50"
+        [disabled]="newGiftForm.invalid || !previewImageUrl"
+      >
+        Додати подарунок
+      </button>
+    </div>
   </app-modal-actions>
 </form>

@@ -63,6 +63,8 @@ export class ModalFlowRuntimeStore {
       ...sessions,
       [flow]: updatedState,
     }));
+
+    console.log('🚀 - ModalFlowRuntimeStore - updateSessionState - sessions:', this._sessions());
   }
 
   clearSession(flowKey: ModalFlowKey) {

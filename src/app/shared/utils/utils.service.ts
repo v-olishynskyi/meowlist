@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   AuthOtpStepKey,
+  EditWishListStepKey,
   ModalFlowKey,
   NewWishlistStepKey,
   RouteIntent,
@@ -24,6 +25,12 @@ export class UtilsService {
         return {
           flow: ModalFlowKey.NEW_WISHLIST,
           step: (step as StepOf<ModalFlowKey.NEW_WISHLIST>) ?? NewWishlistStepKey.EVENT,
+        };
+
+      case ModalFlowKey.EDIT_WISHLIST:
+        return {
+          flow: ModalFlowKey.EDIT_WISHLIST,
+          step: (step as StepOf<ModalFlowKey.EDIT_WISHLIST>) ?? EditWishListStepKey.EVENT,
         };
     }
   };

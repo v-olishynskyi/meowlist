@@ -1,16 +1,16 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ModalFlowKey, NewWishlistEventDraft } from '../../../../components/modal/data/modal.types';
+import { ModalFlowKey, EventDraft } from '../../../../components/modal/data/modal.types';
 import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
 
 type NewEventForm = {
-  name: FormControl<NewWishlistEventDraft['name']>;
-  description: FormControl<NewWishlistEventDraft['description']>;
-  date: FormControl<NewWishlistEventDraft['date']>;
-  location: FormControl<NewWishlistEventDraft['location']>;
-  coverImage: FormControl<NewWishlistEventDraft['coverImage']>;
+  name: FormControl<EventDraft['name']>;
+  description: FormControl<EventDraft['description']>;
+  date: FormControl<EventDraft['date']>;
+  location: FormControl<EventDraft['location']>;
+  coverImage: FormControl<EventDraft['coverImage']>;
 };
 
 @Component({
