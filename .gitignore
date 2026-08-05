@@ -42,3 +42,13 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Supabase
+.branches
+.temp
+
+# dotenvx
+.env
+.env.keys
+.env.local
+.env.*.local

@@ -21,26 +21,24 @@
       <h2 class="text-xl font-bold tracking-tight sm:text-2xl">Новий список бажань</h2>
     </div>
 
-    <p class="text-sm text-base-content/60 sm:text-base">Розкажіть нам про вашу подію</p>
+    <p class="text-sm text-base-content/60 sm:text-base">
+      Розкажіть нам про вашу подію (необов’язково)
+    </p>
   </header>
 
   <div class="space-y-2">
     <!-- Назва події -->
     <fieldset class="fieldset p-0">
-      <legend class="fieldset-legend">
-        Назва події
-        <span class="text-error">*</span>
-      </legend>
+      <legend class="fieldset-legend">Назва події</legend>
 
       <input
         formControlName="name"
         type="text"
         autocomplete="off"
         placeholder="Введіть назву події"
-        class="input input-bordered w-full validator"
-        required
+        class="input input-bordered w-full"
+        maxlength="100"
       />
-      <div class="validator-hint mt-1 hidden">Введіть назву події</div>
     </fieldset>
 
     <!-- Опис -->
@@ -112,7 +110,7 @@
     </fieldset>
 
     <!-- Обкладинка -->
-    <fieldset class="fieldset p-0">
+    <!-- <fieldset class="fieldset p-0">
       <legend class="fieldset-legend">
         Обкладинка
         <span class="font-normal text-base-content/50"> (необов’язково) </span>
@@ -154,7 +152,7 @@
 
         <span class="mt-1 text-xs text-base-content/50"> JPG або PNG, до 5 МБ </span>
       </label>
-    </fieldset>
+    </fieldset> -->
   </div>
   <!-- Кнопка надсилання -->
   <app-modal-actions>
@@ -163,7 +161,11 @@
       class="sticky bottom-0 border-t border-base-300 btn btn-secondary w-full text-base disabled:cursor-not-allowed disabled:opacity-50"
       [disabled]="newEventForm.invalid"
     >
-      Створити список бажань
+      @if (name?.value) {
+        Створити нову подію
+      } @else {
+        Пропустити
+      }
     </button>
   </app-modal-actions>
 </form>

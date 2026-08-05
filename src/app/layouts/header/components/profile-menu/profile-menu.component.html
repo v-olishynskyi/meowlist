@@ -1,0 +1,74 @@
+<details #profileMenu class="dropdown dropdown-end" [open]="isOpen()">
+  <summary
+    class="btn btn-circle btn-ghost list-none"
+    aria-label="Відкрити меню профілю"
+    (click)="toggleOpen()"
+  >
+    <div class="grid size-9 place-items-center rounded-full bg-primary/10 text-primary">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        class="size-5"
+        aria-hidden="true"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 0 0-16 0" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    </div>
+  </summary>
+
+  <ul
+    class="menu dropdown-content z-50 mt-2 w-56 rounded-box border border-base-300 bg-base-100 p-2 shadow-xl"
+  >
+    <li class="menu-title px-3 py-2">
+      <span>Мій профіль</span>
+    </li>
+
+    <li>
+      <a routerLink="/wishlists" class="gap-3">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          class="size-5"
+          aria-hidden="true"
+        >
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path stroke-linecap="round" d="M8 3v4M16 3v4M3 10h18" />
+        </svg>
+
+        Мої вішлісти
+      </a>
+    </li>
+
+    <div class="divider my-1"></div>
+
+    <li>
+      <button type="button" class="gap-3 text-error" (click)="logout.emit(); toggleOpen()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          class="size-5"
+          aria-hidden="true"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 17l5-5-5-5M15 12H3" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M14 4h4a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-4"
+          />
+        </svg>
+
+        Вийти
+      </button>
+    </li>
+  </ul>
+</details>

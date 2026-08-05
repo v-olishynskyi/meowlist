@@ -73,9 +73,9 @@
         <button
           type="submit"
           class="btn btn-primary btn-lg mt-8 w-full rounded-xl"
-          [disabled]="otpForm.invalid || otpForm.pending"
+          [disabled]="otpForm.invalid || otpForm.pending || isLoading()"
         >
-          @if (otpForm.pending) {
+          @if (isLoading()) {
             <span class="loading loading-spinner loading-sm"></span>
           }
 
@@ -149,13 +149,22 @@
         <button
           type="submit"
           class="btn btn-primary btn-lg mt-7 w-full rounded-xl"
-          [disabled]="phoneNumberForm.invalid || phoneNumberForm.pending"
+          [disabled]="
+            phoneNumberForm.invalid ||
+            phoneNumberForm.pending ||
+            isLoading() ||
+            !authStore.isOtpRequestAvailable()
+          "
         >
-          @if (phoneNumberForm.pending) {
+          @if (isLoading()) {
             <span class="loading loading-spinner loading-sm"></span>
           }
 
-          Continue
+          @if (!authStore.isOtpRequestAvailable()) {
+            <span class="mr-2"> Please wait {{ authStore.otpRequestDebounce() }} seconds </span>
+          } @else {
+            Continue
+          }
         </button>
       </form>
 

@@ -23,8 +23,8 @@ export class App implements OnInit {
   authStore = inject(AuthStore);
   modalRouteCoordinator = inject(ModalRouteCoordinator);
 
-  ngOnInit() {
-    this.authStore.checkAuth().subscribe();
+  async ngOnInit() {
     this.modalRouteCoordinator.subscribeToRouteChanges();
+    this.authStore.checkAuth();
   }
 }

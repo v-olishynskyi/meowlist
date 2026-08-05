@@ -3,6 +3,10 @@ import { AddNewGiftModal } from '../../../features/modals/feature-modals/add-new
 import { AuthOtpModal } from '../../../features/modals/feature-modals/auth-otp/auth-otp.component';
 import { NewEventModal } from '../../../features/modals/feature-modals/new-event/new-event.component';
 import { EditWishlistModal } from '../../../features/modals/feature-modals/edit-wishlist/edit-wishlist.component';
+import { Tables } from '../../../../database.types';
+import { OmitMeta, WishlistStatus } from '../../../core/types';
+
+export type StateUpdater<T> = ((state: T) => T) | Partial<T>;
 
 export class FlowState<T extends object> {
   constructor(readonly state: T) {
@@ -10,7 +14,16 @@ export class FlowState<T extends object> {
   }
 
   update(updater: (state: T) => T): FlowState<T> {
+    // if (typeof updater === 'function') {
     return new FlowState(updater(this.state));
+    // }
+
+    // const newState: T = {
+    //   ...this.state,
+    //   ...updater,
+    // };
+
+    // return new FlowState(newState);
   }
 }
 
@@ -64,21 +77,20 @@ export type AuthOtpFlowState = {
   phoneNumber: string | null;
 };
 
-export type NewWishlistFlowState = {
+export type CreateWishlistFlowState = {
+  wishlist: Wishlist | null;
   event: EventDraft;
-  gifts: GiftDraft[];
+  gifts: Gift[];
 };
 
 export type EventDraft = {
-  name: string;
+  name: string | null;
   description: string | null;
-  date: string | null;
+  event_date: string | null;
   location: string | null;
-  coverImage: string | null;
 };
 
 export type GiftDraft = {
-  id: string;
   name: string;
   description: string | null;
   link: string | null;
@@ -86,16 +98,12 @@ export type GiftDraft = {
   imageUrl: string;
 };
 
-export type Gift = GiftDraft & {
-  // TODO
-  status: string;
-};
-
-export type Event = EventDraft & {
-  id: string;
-};
+export type Gift = OmitMeta<Tables<'gifts'>>;
+export type Event = OmitMeta<Tables<'events'>>;
+export type Wishlist = OmitMeta<Tables<'wishlists'>>;
 
 export type EditWishlistFlowState = {
+  wishlist: Wishlist;
   event: Event;
   gifts: Gift[];
 };
@@ -108,7 +116,7 @@ export type ModalFlowSpecMap = {
 
   [ModalFlowKey.NEW_WISHLIST]: {
     step: NewWishlistStepKey;
-    state: FlowState<NewWishlistFlowState>;
+    state: FlowState<CreateWishlistFlowState>;
   };
 
   [ModalFlowKey.EDIT_WISHLIST]: {
@@ -181,11 +189,11 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
       component: AddNewGiftModal,
     },
   },
-  createInitialState: (): FlowState<NewWishlistFlowState> => {
-    return new FlowState<NewWishlistFlowState>({
+  createInitialState: (): FlowState<CreateWishlistFlowState> => {
+    return new FlowState<CreateWishlistFlowState>({
+      wishlist: null,
       event: {
-        coverImage: null,
-        date: null,
+        event_date: null,
         description: null,
         location: null,
         name: '',
@@ -216,17 +224,21 @@ export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
       component: AddNewGiftModal,
     },
   },
-  createInitialState: (wishlist): FlowState<EditWishlistFlowState> => {
+  createInitialState: (state): FlowState<EditWishlistFlowState> => {
     return new FlowState<EditWishlistFlowState>({
-      event: wishlist?.event || {
+      wishlist: state?.wishlist || {
         id: '',
-        coverImage: null,
-        date: null,
-        description: null,
-        location: null,
-        name: '',
+        owner_id: '',
+        status: WishlistStatus.DRAFT,
       },
-      gifts: wishlist?.gifts || [],
+      event: state?.event || {
+        wishlist_id: '',
+        name: '',
+        description: null,
+        event_date: null,
+        location: null,
+      },
+      gifts: state?.gifts || [],
     });
   },
 });

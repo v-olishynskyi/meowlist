@@ -44,7 +44,6 @@ export class ModalComponent implements OnInit {
 
   ngOnInit() {
     this.modalDialog()?.nativeElement.addEventListener('close', () => {
-      console.log('Modal closed');
       // TODO:
       this.router.navigateByUrl(this.router.url.split('?')[0]);
       this.modalStore.clearModalRouteIntent();

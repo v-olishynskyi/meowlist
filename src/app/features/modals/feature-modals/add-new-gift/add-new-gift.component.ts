@@ -4,6 +4,7 @@ import { GiftDraft, ModalFlowKey } from '../../../../components/modal/data/modal
 import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
+import { WishlistStore } from '../data/wishlist.store';
 
 interface NewGiftForm {
   name: FormControl<GiftDraft['name']>;
@@ -19,7 +20,7 @@ interface NewGiftForm {
 })
 export class AddNewGiftModal {
   router = inject(Router);
-  modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  wishlistStore = inject(WishlistStore);
 
   previewImageUrl: string = '';
 
@@ -30,23 +31,18 @@ export class AddNewGiftModal {
     price: new FormControl(null),
   });
 
-  submitForm() {
-    console.log('Form submitted:', this.newGiftForm.value);
+  async submitForm() {
     if (!this.newGiftForm.valid) return;
 
-    const gift: GiftDraft = {
-      id: 'temp-' + Date.now().toString(),
-      name: this.newGiftForm.value.name!,
-      description: this.newGiftForm.value.description || null,
-      link: this.newGiftForm.value.link || null,
-      price: this.newGiftForm.value.price || null,
+    const giftData: GiftDraft = {
+      name: this.newGiftForm.get('name')?.value!,
+      description: this.newGiftForm.get('description')?.value || null,
+      link: this.newGiftForm.get('link')?.value || null,
+      price: this.newGiftForm.get('price')?.value || null,
       imageUrl: this.previewImageUrl,
     };
 
-    this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-      ...state,
-      gifts: [...state.gifts, gift],
-    }));
+    this.wishlistStore.addNewGift(giftData);
 
     this.close();
   }

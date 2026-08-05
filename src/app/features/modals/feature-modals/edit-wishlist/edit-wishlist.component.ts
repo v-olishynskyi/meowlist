@@ -5,6 +5,7 @@ import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-f
 import { ModalFlowKey } from '../../../../components/modal/data/modal.types';
 import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
 import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
+import { WishlistApi } from '../../../../core/wishlist.api';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -18,9 +19,10 @@ export enum SortBy {
 export class EditWishlistModal {
   SortBy = SortBy;
   router = inject(Router);
+  wishlistApi = inject(WishlistApi);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
-  event = computed(() => this.session()?.state.event);
+  event = computed(() => (this.session()?.state.event.name ? this.session()?.state.event : null));
   gifts = computed(
     () =>
       this.session()?.state.gifts.sort((a, b) => {
@@ -52,5 +54,10 @@ export class EditWishlistModal {
       ...state,
       gifts: state.gifts.filter((gift) => gift.id !== giftId),
     }));
+  }
+
+  async createWishlist() {
+    // const res = await this.wishlistApi.createWishlist(this.);
+    // console.log('createWishlist data', res);
   }
 }

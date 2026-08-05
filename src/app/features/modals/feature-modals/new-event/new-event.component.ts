@@ -4,13 +4,13 @@ import { ModalFlowKey, EventDraft } from '../../../../components/modal/data/moda
 import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
+import { WishlistStore } from '../data/wishlist.store';
 
 type NewEventForm = {
   name: FormControl<EventDraft['name']>;
   description: FormControl<EventDraft['description']>;
-  date: FormControl<EventDraft['date']>;
+  date: FormControl<EventDraft['event_date']>;
   location: FormControl<EventDraft['location']>;
-  coverImage: FormControl<EventDraft['coverImage']>;
 };
 
 @Component({
@@ -21,30 +21,35 @@ type NewEventForm = {
 export class NewEventModal {
   router = inject(Router);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  wishlistStore = inject(WishlistStore);
 
   minDate = new Date().toISOString().split('T')[0];
 
   newEventForm = new FormGroup<NewEventForm>(
     {
-      name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+      name: new FormControl('', { validators: [Validators.maxLength(100)] }),
       description: new FormControl('', { validators: [Validators.maxLength(160)] }),
-      date: new FormControl(new Date().toISOString().split('T')[0]),
+      date: new FormControl(null),
       location: new FormControl(''),
-      coverImage: new FormControl(''),
     },
     { updateOn: 'change' },
   );
 
-  submitForm() {
-    if (!this.newEventForm.valid) return;
+  get name() {
+    return this.newEventForm.get('name');
+  }
 
-    this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-      ...state,
-      event: {
-        ...state.event,
-        ...this.newEventForm.value,
-      },
-    }));
+  async submitForm() {
+    // if (!this.newEventForm.valid) return;
+
+    const eventData: EventDraft = {
+      name: this.newEventForm.get('name')?.value || null,
+      description: this.newEventForm.get('description')?.value || null,
+      event_date: this.newEventForm.get('date')?.value || null,
+      location: this.newEventForm.get('location')?.value || null,
+    };
+
+    await this.wishlistStore.handleEvent(eventData);
 
     this.router.navigate([], {
       // TODO

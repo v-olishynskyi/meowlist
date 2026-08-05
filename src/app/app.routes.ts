@@ -14,6 +14,11 @@ export const routes: Routes = [
           (await import('./features/wishlists/wishlists.page')).WishlistsPage,
       },
       {
+        path: 'wishlists',
+        loadComponent: async () =>
+          (await import('./features/wishlists/wishlists.page')).WishlistsPage,
+      },
+      {
         path: '**',
         redirectTo: '',
       },

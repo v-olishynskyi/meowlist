@@ -57,14 +57,11 @@ export class ModalFlowRuntimeStore {
     }
 
     const updatedState = session.updateState(updater);
-    console.log('🚀 - ModalFlowRuntimeStore - updateSessionState - updatedState:', updatedState);
 
     this._sessions.update((sessions) => ({
       ...sessions,
       [flow]: updatedState,
     }));
-
-    console.log('🚀 - ModalFlowRuntimeStore - updateSessionState - sessions:', this._sessions());
   }
 
   clearSession(flowKey: ModalFlowKey) {
