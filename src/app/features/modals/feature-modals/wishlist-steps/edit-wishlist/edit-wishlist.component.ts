@@ -1,11 +1,12 @@
 import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
-import { ModalFlowKey } from '../../../../components/modal/data/modal.types';
-import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
+import { ModalFlowRuntimeStore } from '../../../../../components/modal/data/modal-flow-runtime.store';
+import { ModalFlowKey } from '../../../../../components/modal/data/modal.types';
+import { ModalActionsComponent } from '../../../../../components/modal/components/modal-actions.component';
 import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
-import { WishlistApi } from '../../../../core/wishlist.api';
+import { WishlistApi } from '../../../../../core/wishlist.api';
+import { WishlistStore } from '../../data/wishlist.store';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -21,6 +22,8 @@ export class EditWishlistModal {
   router = inject(Router);
   wishlistApi = inject(WishlistApi);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  wishlistStore = inject(WishlistStore);
+
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
   event = computed(() => (this.session()?.state.event.name ? this.session()?.state.event : null));
   gifts = computed(
@@ -56,8 +59,8 @@ export class EditWishlistModal {
     }));
   }
 
-  async createWishlist() {
-    // const res = await this.wishlistApi.createWishlist(this.);
-    // console.log('createWishlist data', res);
+  async publishWishlist() {
+    const wishlistId = this.session()!.state!.wishlist!.id;
+    await this.wishlistStore.publishWishlist(wishlistId);
   }
 }

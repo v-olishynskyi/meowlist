@@ -1,24 +1,14 @@
-import {
-  Component,
-  DOCUMENT,
-  ElementRef,
-  inject,
-  OnInit,
-  output,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, inject, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { DropdownMenuComponent } from '../../../../components/dropdown-menu/dropdown-menu.component';
 
 @Component({
   selector: 'app-profile-menu',
   templateUrl: './profile-menu.component.html',
-  imports: [RouterLink],
+  imports: [RouterLink, DropdownMenuComponent],
 })
-export class ProfileMenuComponent implements OnInit {
-  private readonly routert = inject(Router);
-  private readonly document = inject(DOCUMENT);
-  private readonly menuRef = viewChild<ElementRef<HTMLDetailsElement>>('profileMenu');
+export class ProfileMenuComponent {
+  private readonly router = inject(Router);
 
   isOpen = signal<boolean>(false);
   logout = output();
@@ -27,28 +17,8 @@ export class ProfileMenuComponent implements OnInit {
     this.isOpen.update((value) => !value);
   }
 
-  ngOnInit(): void {
-    const menuEl = this.menuRef()?.nativeElement;
-
-    if (menuEl) {
-      menuEl.addEventListener('close', () => {
-        this.isOpen.set(false);
-      });
-    }
-
-    this.document.addEventListener('click', this.onClickOutside);
-  }
-
-  private onClickOutside = (event: MouseEvent) => {
-    const menuEl = this.menuRef()?.nativeElement;
-
-    if (menuEl && !menuEl.contains(event.target as Node)) {
-      this.isOpen.set(false);
-    }
-  };
-
   goToWishlists(): void {
-    console.log('Navigating to wishlists...');
-    this.routert.navigate(['/wishlists']);
+    this.router.navigate(['/wishlists']);
+    this.isOpen.set(false);
   }
 }

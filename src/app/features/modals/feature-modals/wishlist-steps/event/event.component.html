@@ -1,6 +1,6 @@
-<form [formGroup]="newEventForm" (ngSubmit)="submitForm()" class="w-full text-base-content">
+<form [formGroup]="eventForm" (ngSubmit)="submitForm()" class="w-full text-base-content">
   <!-- Заголовок -->
-  <header class="mb-7 text-center">
+  <header class="mb-4 text-center">
     <div class="mb-2 flex items-center justify-center gap-3">
       <!-- <span class="text-primary">
         <svg
@@ -26,10 +26,29 @@
     </p>
   </header>
 
+  <div class="mb-2 p-4 gap-4 flex flex-row border border-base-100 rounded-xl bg-base-300/50">
+    <input
+      formControlName="shouldCreateEvent"
+      type="checkbox"
+      class="checkbox checkbox-secondary rounded-sm"
+    />
+    <div>
+      <p class="font-bold">Створити подію</p>
+      <p class="text-sm text-base-content/60">
+        Якшо ви не плануєте подію зараз, ви зможете додати її пізніше.
+      </p>
+    </div>
+  </div>
+
   <div class="space-y-2">
     <!-- Назва події -->
     <fieldset class="fieldset p-0">
-      <legend class="fieldset-legend">Назва події</legend>
+      <legend class="fieldset-legend">
+        Назва події
+        @if (shouldCreateEvent) {
+          <span class="text-xs text-error">*</span>
+        }
+      </legend>
 
       <input
         formControlName="name"
@@ -158,14 +177,10 @@
   <app-modal-actions>
     <button
       type="submit"
-      class="sticky bottom-0 border-t border-base-300 btn btn-secondary w-full text-base disabled:cursor-not-allowed disabled:opacity-50"
-      [disabled]="newEventForm.invalid"
+      class="btn btn-secondary w-full text-base disabled:cursor-not-allowed disabled:opacity-50"
+      [disabled]="shouldCreateEvent ? !eventForm.get('name')?.value : false"
     >
-      @if (name?.value) {
-        Створити нову подію
-      } @else {
-        Пропустити
-      }
+      Далі
     </button>
   </app-modal-actions>
 </form>

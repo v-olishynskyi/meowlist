@@ -1,12 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { GiftDraft, ModalFlowKey } from '../../../../components/modal/data/modal.types';
+import { GiftDraft } from '../../../../../components/modal/data/modal.types';
 import { Router } from '@angular/router';
-import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
-import { ModalActionsComponent } from '../../../../components/modal/components/modal-actions.component';
-import { WishlistStore } from '../data/wishlist.store';
+import { ModalActionsComponent } from '../../../../../components/modal/components/modal-actions.component';
+import { WishlistStore } from '../../data/wishlist.store';
 
-interface NewGiftForm {
+interface GiftForm {
   name: FormControl<GiftDraft['name']>;
   description: FormControl<GiftDraft['description']>;
   link: FormControl<GiftDraft['link']>;
@@ -14,17 +13,17 @@ interface NewGiftForm {
 }
 
 @Component({
-  selector: 'app-modal-add-new-gift',
-  templateUrl: './add-new-gift.component.html',
+  selector: 'app-modal-gift',
+  templateUrl: './gift.component.html',
   imports: [ReactiveFormsModule, ModalActionsComponent],
 })
-export class AddNewGiftModal {
+export class GiftModal {
   router = inject(Router);
   wishlistStore = inject(WishlistStore);
 
   previewImageUrl: string = '';
 
-  newGiftForm = new FormGroup<NewGiftForm>({
+  newGiftForm = new FormGroup<GiftForm>({
     name: new FormControl('', { nonNullable: true }),
     description: new FormControl(''),
     link: new FormControl(''),

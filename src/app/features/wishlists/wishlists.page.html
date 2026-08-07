@@ -67,27 +67,19 @@
       role="group"
       aria-label="Фільтр вішлістів"
     >
-      <button type="button" class="btn btn-primary btn-sm shrink-0 sm:btn-md">Усі</button>
+      @for (item of wishlistFilters; track item.key) {
+        @let active = item.key === filter();
 
-      <button type="button" class="btn btn-outline btn-sm shrink-0 border-base-300 sm:btn-md">
-        Опубліковані
-      </button>
-
-      <button type="button" class="btn btn-outline btn-sm shrink-0 border-base-300 sm:btn-md">
-        Чернетки
-      </button>
-
-      <button type="button" class="btn btn-outline btn-sm shrink-0 border-base-300 sm:btn-md">
-        Приховані
-      </button>
-
-      <button type="button" class="btn btn-outline btn-sm shrink-0 border-base-300 sm:btn-md">
-        З подією
-      </button>
-
-      <button type="button" class="btn btn-outline btn-sm shrink-0 border-base-300 sm:btn-md">
-        Без події
-      </button>
+        <button
+          type="button"
+          class="btn btn-sm shrink-0 sm:btn-md"
+          [class.btn-primary]="active"
+          [class.btn-outline]="!active"
+          (click)="setFilter(item.key)"
+        >
+          {{ item.label }}
+        </button>
+      }
     </div>
 
     @if (filteredWishlists().length) {
@@ -103,12 +95,9 @@
                 [routerLink]="['/wishlists', wishlist.id]"
                 class="block size-24 shrink-0 overflow-hidden rounded-xl bg-base-200"
               >
-                @if (wishlist.preview_image_url) {
-                  <img
-                    [src]="wishlist.preview_image_url"
-                    [alt]="wishlist.event?.name ?? 'Вішліст'"
-                    class="size-full object-cover"
-                  />
+                <!-- TODO -->
+                @if (false) {
+                  <img [src]="" [alt]="" class="size-full object-cover" />
                 } @else {
                   <div class="grid size-full place-items-center bg-primary/10 text-primary">
                     <svg
@@ -325,9 +314,9 @@
             <!-- Wishlist -->
             <a [routerLink]="['/wishlists', wishlist.id]" class="flex min-w-0 items-center gap-4">
               <div class="size-20 shrink-0 overflow-hidden rounded-xl bg-base-200">
-                @if (wishlist.preview_image_url) {
+                @if (false) {
                   <img
-                    [src]="wishlist.preview_image_url"
+                    [src]=""
                     [alt]="wishlist.event?.name ?? 'Вішліст'"
                     class="size-full object-cover"
                   />
@@ -456,12 +445,12 @@
                 }
               }
 
-              @if (wishlist.updated_at) {
+              <!-- @if (wishlist.updated_at) {
                 <p class="mt-2 text-xs text-base-content/45">
                   Оновлено
                   {{ wishlist.updated_at | date: 'dd.MM.yyyy' }}
                 </p>
-              }
+              } -->
             </div>
 
             <!-- Menu -->

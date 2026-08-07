@@ -140,7 +140,7 @@
 
   <!-- Додати подарунок -->
   <app-modal-actions>
-    <button type="button" class="btn btn-primary w-full text-base" (click)="createWishlist()">
+    <button type="button" class="btn btn-primary w-full text-base" (click)="publishWishlist()">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"
@@ -152,7 +152,7 @@
         <path stroke-linecap="round" d="M12 5v14M5 12h14" />
       </svg>
 
-      Створити вішліст
+      Опублікувати вішліст
     </button>
   </app-modal-actions>
 </section>
@@ -184,7 +184,7 @@
         </div>
 
         <div class="min-w-0 flex-1">
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
               <h3 class="line-clamp-2 text-sm font-bold leading-5 sm:text-base">
                 {{ gift.name }}

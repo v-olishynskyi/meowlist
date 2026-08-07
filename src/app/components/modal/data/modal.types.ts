@@ -1,10 +1,10 @@
 import { Type } from '@angular/core';
-import { AddNewGiftModal } from '../../../features/modals/feature-modals/add-new-gift/add-new-gift.component';
 import { AuthOtpModal } from '../../../features/modals/feature-modals/auth-otp/auth-otp.component';
-import { NewEventModal } from '../../../features/modals/feature-modals/new-event/new-event.component';
-import { EditWishlistModal } from '../../../features/modals/feature-modals/edit-wishlist/edit-wishlist.component';
 import { Tables } from '../../../../database.types';
 import { OmitMeta, WishlistStatus } from '../../../core/types';
+import { EventModal } from '../../../features/modals/feature-modals/wishlist-steps/event/event.component';
+import { EditWishlistModal } from '../../../features/modals/feature-modals/wishlist-steps/edit-wishlist/edit-wishlist.component';
+import { GiftModal } from '../../../features/modals/feature-modals/wishlist-steps/gift/gift.component';
 
 export type StateUpdater<T> = ((state: T) => T) | Partial<T>;
 
@@ -78,6 +78,7 @@ export type AuthOtpFlowState = {
 };
 
 export type CreateWishlistFlowState = {
+  shouldCreateEvent: boolean;
   wishlist: Wishlist | null;
   event: EventDraft;
   gifts: Gift[];
@@ -106,6 +107,11 @@ export type EditWishlistFlowState = {
   wishlist: Wishlist;
   event: Event;
   gifts: Gift[];
+};
+
+export type UserWishlist = Tables<'wishlists'> & {
+  event: Tables<'events'> | null;
+  gifts: Tables<'gifts'>[];
 };
 
 export type ModalFlowSpecMap = {
@@ -174,23 +180,24 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
   initialStep: NewWishlistStepKey.EVENT,
   steps: {
     [NewWishlistStepKey.EVENT]: {
-      component: NewEventModal,
+      component: EventModal,
     },
     [NewWishlistStepKey.EDIT_WISHLIST]: {
       component: EditWishlistModal,
     },
     [NewWishlistStepKey.ADD_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
     [NewWishlistStepKey.EDIT_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
     [NewWishlistStepKey.REMOVE_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
   },
   createInitialState: (): FlowState<CreateWishlistFlowState> => {
     return new FlowState<CreateWishlistFlowState>({
+      shouldCreateEvent: true,
       wishlist: null,
       event: {
         event_date: null,
@@ -209,19 +216,19 @@ export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
   initialStep: EditWishListStepKey.EVENT,
   steps: {
     [EditWishListStepKey.EVENT]: {
-      component: NewEventModal,
+      component: EventModal,
     },
     [EditWishListStepKey.EDIT_WISHLIST]: {
       component: EditWishlistModal,
     },
     [EditWishListStepKey.ADD_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
     [EditWishListStepKey.EDIT_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
     [EditWishListStepKey.REMOVE_GIFT]: {
-      component: AddNewGiftModal,
+      component: GiftModal,
     },
   },
   createInitialState: (state): FlowState<EditWishlistFlowState> => {

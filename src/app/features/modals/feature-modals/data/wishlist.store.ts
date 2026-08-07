@@ -1,14 +1,17 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import {
   EventDraft,
   GiftDraft,
   ModalFlowKey,
+  UserWishlist,
   Wishlist,
 } from '../../../../components/modal/data/modal.types';
 import { WishlistApi } from '../../../../core/wishlist.api';
 import { AuthStore } from '../../../../core/auth.store';
 import { WishlistStatus } from '../../../../core/types';
+import { BehaviorSubject } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
@@ -20,12 +23,15 @@ export class WishlistStore {
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
   event = computed(() => this.session()?.state.event);
 
+  private readonly _wishlistsObject$ = new BehaviorSubject<UserWishlist[]>([]);
+  readonly wishlists$ = this._wishlistsObject$.asObservable();
+  readonly wishlists = toSignal(this.wishlists$);
+
   isEditMode = computed(() => false);
 
   async handleEvent(eventData?: EventDraft) {
     try {
       const shouldCreateEvent = !!eventData?.name;
-      console.log('🚀 - WishlistStore - handleEvent - shouldCreateEvent:', shouldCreateEvent);
 
       const ownerId = this.authStore.profile()!.id;
       let newWishlist: Wishlist | null;
@@ -79,6 +85,34 @@ export class WishlistStore {
       }));
     } catch (error) {
       console.error('Error adding new gift:', error);
+    }
+  }
+
+  async loadWishlists() {
+    try {
+      const ownerId = this.authStore.profile()!.id;
+      const { data, error } = await this.wishlistApi.getWishlists(ownerId);
+
+      if (error) throw error;
+
+      this._wishlistsObject$.next(data);
+    } catch (error) {
+      console.error('Error loading wishlists:', error);
+    }
+  }
+
+  async publishWishlist(wishlistId: string) {
+    try {
+      const { error } = await this.wishlistApi.publishWishlist(wishlistId);
+
+      if (error) throw error;
+
+      const updatedWishlists = this.wishlists()!.map((wishlist) =>
+        wishlist.id === wishlistId ? { ...wishlist, status: WishlistStatus.PUBLISHED } : wishlist,
+      );
+      this._wishlistsObject$.next(updatedWishlists);
+    } catch (error) {
+      console.error('Error publishing wishlist:', error);
     }
   }
 }

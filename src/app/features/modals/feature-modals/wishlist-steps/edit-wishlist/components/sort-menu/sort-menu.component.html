@@ -1,4 +1,4 @@
-<details #dropdownMenu class="dropdown dropdown-end" [open]="isOpen()">
+<app-dropdown-menu>
   <summary
     class="btn btn-ghost btn-sm h-auto min-h-0 px-2 py-1 text-xs font-medium text-base-content/50"
     aria-label="Сортувати подарунки"
@@ -31,4 +31,4 @@
       <button type="button" (click)="onSortSelected(SortBy.PRICE_ASC)">Ціна (за зростанням)</button>
     </li>
   </ul>
-</details>
+</app-dropdown-menu>
