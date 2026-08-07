@@ -1,0 +1,48 @@
+<details #wishlistMenu class="dropdown dropdown-end" [open]="isOpen()">
+  <summary class="btn btn-circle btn-ghost btn-xs lg:btn-sm" (click)="toggleOpen()">
+    <svg
+      dropdown-trigger
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      class="size-5"
+      aria-hidden="true"
+    >
+      <circle cx="5" cy="12" r="1.7" />
+      <circle cx="12" cy="12" r="1.7" />
+      <circle cx="19" cy="12" r="1.7" />
+    </svg>
+  </summary>
+
+  <div class="menu dropdown-content bg-base-100 rounded-box z-1 w-48 p-2 shadow-sm">
+    <ul>
+      <li>
+        <a [routerLink]="['/wishlists', wishlist().id]" (click)="isOpen.set(false)">
+          Переглянути
+        </a>
+      </li>
+
+      <li>
+        <button type="button" (click)="edit.emit(wishlist().id); isOpen.set(false)">
+          Редагувати
+        </button>
+      </li>
+
+      <li>
+        <button type="button" (click)="changeStatus.emit(wishlist().id); isOpen.set(false)">
+          Змінити статус
+        </button>
+      </li>
+
+      <li>
+        <button
+          type="button"
+          class="text-error"
+          (click)="remove.emit(wishlist().id); isOpen.set(false)"
+        >
+          Видалити
+        </button>
+      </li>
+    </ul>
+  </div>
+</details>

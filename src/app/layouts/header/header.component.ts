@@ -5,11 +5,12 @@ import { RouterLink } from '@angular/router';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalStore } from '../../components/modal/data/modal.store';
 import { ProfileMenuComponent } from './components/profile-menu/profile-menu.component';
+import { BurgerMenuComponent } from './components/burger-menu/burger-menu.component';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  imports: [RouterLink, ModalComponent, ProfileMenuComponent],
+  imports: [RouterLink, ModalComponent, ProfileMenuComponent, BurgerMenuComponent],
 })
 export class HeaderComponent {
   modalStore = inject(ModalStore);

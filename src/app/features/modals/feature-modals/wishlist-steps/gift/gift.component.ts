@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { GiftDraft } from '../../../../../components/modal/data/modal.types';
 import { Router } from '@angular/router';
@@ -21,7 +21,9 @@ export class GiftModal {
   router = inject(Router);
   wishlistStore = inject(WishlistStore);
 
-  previewImageUrl: string = '';
+  previewImageUrl = signal<string>('');
+
+  isSubmitting = signal<boolean>(false);
 
   newGiftForm = new FormGroup<GiftForm>({
     name: new FormControl('', { nonNullable: true }),
@@ -38,19 +40,28 @@ export class GiftModal {
       description: this.newGiftForm.get('description')?.value || null,
       link: this.newGiftForm.get('link')?.value || null,
       price: this.newGiftForm.get('price')?.value || null,
-      imageUrl: this.previewImageUrl,
+      imageUrl: this.previewImageUrl(),
     };
 
-    this.wishlistStore.addNewGift(giftData);
-
-    this.close();
+    try {
+      this.isSubmitting.set(true);
+      await this.wishlistStore.addNewGift(giftData);
+      this.close();
+    } catch (error) {
+      console.error('Error adding new gift:', error);
+    } finally {
+      this.isSubmitting.set(false);
+    }
   }
 
-  onImageSelected(event: Event) {
+  async onImageSelected(event: Event) {
     const file: File = (event.target as HTMLInputElement).files![0];
+    try {
+      const fullPath = await this.wishlistStore.uploadGiftImage(file);
 
-    if (file) {
-      this.previewImageUrl = URL.createObjectURL(file);
+      this.previewImageUrl.set(fullPath);
+    } catch (error) {
+      console.error('Error uploading image:', error);
     }
   }
 

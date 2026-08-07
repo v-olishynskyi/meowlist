@@ -7,6 +7,7 @@ import { ModalActionsComponent } from '../../../../../components/modal/component
 import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
 import { WishlistApi } from '../../../../../core/wishlist.api';
 import { WishlistStore } from '../../data/wishlist.store';
+import { ModalStore } from '../../../../../components/modal/data/modal.store';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -23,6 +24,7 @@ export class EditWishlistModal {
   wishlistApi = inject(WishlistApi);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   wishlistStore = inject(WishlistStore);
+  modalStore = inject(ModalStore);
 
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
   event = computed(() => (this.session()?.state.event.name ? this.session()?.state.event : null));
@@ -36,6 +38,8 @@ export class EditWishlistModal {
         }
       }) || [],
   );
+
+  isPublishing = signal(false);
 
   sortsBy = signal<SortBy>(SortBy.PRICE_DESC);
 
@@ -53,14 +57,16 @@ export class EditWishlistModal {
   }
 
   removeGift(giftId: string) {
-    this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-      ...state,
-      gifts: state.gifts.filter((gift) => gift.id !== giftId),
-    }));
+    this.wishlistStore.removeGift(giftId);
   }
 
   async publishWishlist() {
+    this.isPublishing.set(true);
     const wishlistId = this.session()!.state!.wishlist!.id;
     await this.wishlistStore.publishWishlist(wishlistId);
+    this.router.navigate(['/wishlists']);
+    this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
+    this.modalStore.closeModal();
+    this.isPublishing.set(false);
   }
 }

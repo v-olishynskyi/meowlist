@@ -18,14 +18,12 @@ export class WishlistApi {
 
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
 
-  async getWishlists(ownerId: string) {
-    const response = await this.supabase
+  getWishlists(ownerId: string) {
+    return this.supabase
       .from('wishlists')
       .select('*, event:events(*), gifts(*)')
       .eq('owner_id', ownerId)
       .order('created_at', { ascending: false });
-
-    return response;
   }
 
   async createWishlist(
@@ -44,7 +42,7 @@ export class WishlistApi {
     return { data, error };
   }
 
-  async createEvent(wishlistId: string, eventData: EventDraft) {
+  createEvent(wishlistId: string, eventData: EventDraft) {
     return this.supabase
       .from('events')
       .insert({
@@ -56,6 +54,10 @@ export class WishlistApi {
       })
       .select()
       .single();
+  }
+
+  removeEvent(eventId: string) {
+    return this.supabase.from('events').delete().eq('wishlist_id', eventId);
   }
 
   createGift(wishlistId: string, giftData: GiftDraft) {
@@ -79,10 +81,40 @@ export class WishlistApi {
     return this.supabase.from('gifts').delete().eq('id', giftId);
   }
 
+  updateWishlistStatus(wishlistId: string, status: WishlistStatus) {
+    return this.supabase.from('wishlists').update({ status }).eq('id', wishlistId).select();
+  }
+
   publishWishlist(wishlistId: string) {
     return this.supabase
       .from('wishlists')
       .update({ status: WishlistStatus.PUBLISHED })
-      .eq('id', wishlistId);
+      .eq('id', wishlistId)
+      .select();
+  }
+
+  getWishlist(wishlistId: string) {
+    return this.supabase
+      .from('wishlists')
+      .select('*, event:events(*), gifts(*)')
+      .eq('id', wishlistId)
+      .single();
+  }
+
+  removeWishlist(wishlistId: string) {
+    return this.supabase.from('wishlists').delete().eq('id', wishlistId);
+  }
+
+  uploadGiftImage(image: File) {
+    const formData = new FormData();
+    formData.append('image', image);
+
+    return this.supabase.storage
+      .from('gifts')
+      .upload(`private/${image.name}-${Math.random()}`, formData);
+  }
+
+  deleteGiftImage(imagePath: string) {
+    return this.supabase.storage.from('gifts').remove([imagePath]);
   }
 }

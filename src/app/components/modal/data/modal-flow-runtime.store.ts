@@ -20,7 +20,9 @@ export class ModalFlowRuntimeStore {
   readonly sessions = this._sessions.asReadonly();
 
   constructor() {
-    effect(() => {});
+    effect(() => {
+      console.log('ModalFlowRuntimeStore sessions changed:', this._sessions());
+    });
   }
 
   getSession<K extends ModalFlowKey>(flow: K): ModalFlowSession<K> | undefined {

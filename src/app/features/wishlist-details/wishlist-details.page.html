@@ -1,0 +1,730 @@
+<main class="min-h-screen bg-base-100 text-base-content">
+  @if (isLoading()) {
+    <ng-container [ngTemplateOutlet]="pageSkeleton" />
+  } @else if (wishlistData()) {
+    @let wishlist = wishlistData()!;
+
+    <section class="border-b border-base-300/60">
+      <div class="mx-auto w-full max-w-360 px-4 pb-6 pt-4 sm:px-6 lg:px-8 lg:py-10">
+        <!-- Mobile actions -->
+        <div class="mb-3 flex items-center justify-between lg:hidden">
+          <button
+            type="button"
+            class="btn btn-circle btn-ghost btn-sm"
+            aria-label="Назад"
+            (click)="goBack()"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              class="size-5"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 18l-6-6 6-6" />
+            </svg>
+          </button>
+
+          <div class="flex items-center gap-1">
+            <button
+              type="button"
+              class="btn btn-circle btn-ghost btn-sm"
+              aria-label="Поділитися"
+              (click)="shareWishlist()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                class="size-5"
+              >
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <path d="m8.6 10.5 6.8-4M8.6 13.5l6.8 4" />
+              </svg>
+            </button>
+
+            <details class="dropdown dropdown-end">
+              <summary class="btn btn-circle btn-ghost btn-sm list-none" aria-label="Додаткові дії">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="size-5"
+                >
+                  <circle cx="5" cy="12" r="1.7" />
+                  <circle cx="12" cy="12" r="1.7" />
+                  <circle cx="19" cy="12" r="1.7" />
+                </svg>
+              </summary>
+
+              <ul
+                class="menu dropdown-content z-30 mt-2 w-48 rounded-box border border-base-300 bg-base-100 p-2 shadow-xl"
+              >
+                <li>
+                  <button type="button" (click)="shareWishlist()">Поділитися</button>
+                </li>
+
+                @if (canEditWishlist()) {
+                  <li>
+                    <button type="button" (click)="editWishlist()">Редагувати</button>
+                  </li>
+                }
+              </ul>
+            </details>
+          </div>
+        </div>
+
+        <div class="grid items-center gap-6 lg:grid-cols-[220px_minmax(0,1fr)_300px] lg:gap-8">
+          <!-- Illustration -->
+          <div class="flex justify-center">
+            @if (wishlistIllustrationUrl) {
+              <img
+                [src]="wishlistIllustrationUrl"
+                alt=""
+                class="h-32 w-auto object-contain sm:h-36 lg:h-48"
+              />
+            } @else {
+              <div
+                class="grid size-32 place-items-center rounded-3xl bg-primary/5 text-primary sm:size-36 lg:size-44"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  class="size-14"
+                >
+                  <rect x="3" y="8" width="18" height="13" rx="2" />
+                  <path d="M12 8v13M3 12h18" />
+                  <path d="M12 8H8.5a2.5 2.5 0 1 1 2.5-2.5V8Zm0 0h3.5A2.5 2.5 0 1 0 13 5.5V8Z" />
+                </svg>
+              </div>
+            }
+          </div>
+
+          <!-- Hero -->
+          <ng-container
+            [ngTemplateOutlet]="wishlistHero"
+            [ngTemplateOutletContext]="{
+              event: wishlist.event,
+            }"
+          />
+
+          <!-- Desktop share -->
+          <div class="hidden lg:block">
+            <ng-container
+              [ngTemplateOutlet]="shareCard"
+              [ngTemplateOutletContext]="{
+                wishlistId: wishlist.id,
+              }"
+            />
+          </div>
+        </div>
+
+        <!-- Mobile event meta -->
+        <div class="mt-5 lg:hidden">
+          <ng-container
+            [ngTemplateOutlet]="wishlistMeta"
+            [ngTemplateOutletContext]="{
+              event: wishlist.event,
+            }"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- =====================================================
+         GIFTS
+         ===================================================== -->
+
+    <section class="mx-auto w-full max-w-360 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div class="mb-4 flex items-center justify-between gap-4">
+        <h2 class="text-lg font-bold sm:text-xl">
+          Подарунки
+
+          <span class="text-base-content/45"> ({{ wishlist.gifts.length }}) </span>
+        </h2>
+      </div>
+
+      @if (wishlist.gifts.length) {
+        <div class="grid grid-cols-1 gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
+          @for (gift of wishlist.gifts; track gift.id) {
+            <div [class.hidden]="$index > 2 && !showAllGifts()" class="lg:block">
+              <ng-container
+                [ngTemplateOutlet]="giftCard"
+                [ngTemplateOutletContext]="{
+                  $implicit: gift,
+                }"
+              />
+            </div>
+          }
+        </div>
+
+        @if (wishlist.gifts.length > 3) {
+          <button
+            type="button"
+            class="btn btn-ghost mt-3 w-full lg:hidden"
+            (click)="showAllGifts.set(!showAllGifts())"
+          >
+            @if (showAllGifts()) {
+              Показати менше
+            } @else {
+              Переглянути всі {{ wishlist.gifts.length }} подарунків
+            }
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              class="size-4 transition-transform"
+              [class.rotate-180]="showAllGifts()"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+        }
+      } @else {
+        <ng-container [ngTemplateOutlet]="emptyGifts" />
+      }
+    </section>
+  } @else {
+    <ng-container [ngTemplateOutlet]="notFound" />
+  }
+</main>
+
+<!-- =========================================================
+     WISHLIST HERO
+     ========================================================= -->
+
+<ng-template #wishlistHero let-event="event">
+  <div class="text-center lg:text-left">
+    @if (event) {
+      <h1 class="text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl">
+        {{ event.name || 'Список бажань' }}
+        <span aria-hidden="true">🎉</span>
+      </h1>
+
+      @if (event.description) {
+        <p
+          class="mx-auto mt-2 max-w-xl text-sm leading-6 text-base-content/60 sm:text-base lg:mx-0"
+        >
+          {{ event.description }}
+        </p>
+      }
+
+      <!-- Desktop event data -->
+      @if (event.event_date || event.location) {
+        <div
+          class="mt-5 hidden flex-wrap items-center gap-x-6 gap-y-2 text-sm text-base-content/65 lg:flex"
+        >
+          @if (event.event_date) {
+            <span class="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                class="size-5 text-base-content/40"
+              >
+                <rect x="3" y="5" width="18" height="16" rx="2" />
+                <path d="M8 3v4M16 3v4M3 10h18" />
+              </svg>
+
+              {{ event.event_date | date: 'dd MMM yyyy' }}
+            </span>
+          }
+
+          @if (event.location) {
+            <span class="flex min-w-0 items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                class="size-5 shrink-0 text-base-content/40"
+              >
+                <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+
+              {{ event.location }}
+            </span>
+          }
+        </div>
+      }
+    } @else {
+      <h1 class="text-2xl font-black tracking-tight sm:text-3xl lg:text-4xl">Список бажань</h1>
+
+      <p class="mt-2 text-sm leading-6 text-base-content/55 sm:text-base">
+        Вішліст без прив’язаної події
+      </p>
+    }
+  </div>
+</ng-template>
+
+<!-- =========================================================
+     WISHLIST META — MOBILE
+     ========================================================= -->
+
+<ng-template #wishlistMeta let-event="event">
+  @if (event && (event.event_date || event.location)) {
+    <div
+      class="grid gap-3 rounded-2xl border border-base-300 bg-base-100 p-4 shadow-sm sm:grid-cols-2"
+    >
+      @if (event.event_date) {
+        <div class="flex items-center gap-2.5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            class="size-5 shrink-0 text-base-content/45"
+          >
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M8 3v4M16 3v4M3 10h18" />
+          </svg>
+
+          <span class="text-sm font-medium">
+            {{ event.event_date | date: 'dd MMM yyyy' }}
+          </span>
+        </div>
+      }
+
+      @if (event.location) {
+        <div class="flex min-w-0 items-center gap-2.5">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            class="size-5 shrink-0 text-base-content/45"
+          >
+            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </svg>
+
+          <span class="truncate text-sm font-medium">
+            {{ event.location }}
+          </span>
+        </div>
+      }
+    </div>
+  }
+</ng-template>
+
+<!-- =========================================================
+     SHARE CARD — DESKTOP
+     ========================================================= -->
+
+<ng-template #shareCard let-wishlistId="wishlistId">
+  <aside class="rounded-2xl border border-base-300 bg-base-100 p-5 shadow-sm">
+    <h2 class="font-bold">Поділитися вішлістом</h2>
+
+    <p class="mt-2 text-sm leading-5 text-base-content/55">
+      Надішліть посилання друзям, щоб вони могли переглянути та обрати подарунок.
+    </p>
+
+    <div class="mt-4 flex items-center gap-2 rounded-xl bg-base-200/70 p-2">
+      <span class="min-w-0 flex-1 truncate px-2 text-sm font-medium text-primary">
+        {{ getShareUrl(wishlistId) }}
+      </span>
+
+      <button
+        type="button"
+        class="btn btn-square btn-ghost btn-sm shrink-0 text-primary"
+        aria-label="Копіювати посилання"
+        (click)="copyWishlistLink(wishlistId)"
+      >
+        @if (isCopyingLink()) {
+          <span class="loading loading-spinner"></span>
+        } @else if (isLinkCopied()) {
+          <!-- check icon -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            class="size-5 text-success"
+          >
+            <path d="M20 6 9 17l-5-5" />
+          </svg>
+        } @else {
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            class="size-5"
+          >
+            <rect x="9" y="9" width="11" height="11" rx="2" />
+            <path d="M15 9V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h3" />
+          </svg>
+        }
+      </button>
+    </div>
+
+    <!-- <button
+      type="button"
+      class="btn btn-outline btn-primary mt-3 w-full"
+      (click)="copyWishlistLink(wishlistId)"
+      [disabled]="isCopyingLink()"
+    >
+      Копіювати посилання
+      @if (isCopyingLink()) {
+        <span class="loading loading-spinner"></span>
+      }
+    </button> -->
+  </aside>
+</ng-template>
+
+<!-- =========================================================
+     GIFT CARD
+     MOBILE  → horizontal
+     DESKTOP → vertical
+     ========================================================= -->
+
+<ng-template #giftCard let-gift>
+  <article
+    class="group relative rounded-2xl border border-base-300 bg-base-100 p-3 shadow-sm transition hover:border-primary/25 hover:shadow-md lg:flex lg:h-full lg:flex-col"
+  >
+    <!-- Favorite -->
+    <!-- <button
+      type="button"
+      class="btn btn-circle btn-ghost btn-sm absolute right-2 top-2 z-10 bg-base-100/85 text-base-content/35 backdrop-blur hover:text-secondary"
+      aria-label="Додати в обране"
+      (click)="toggleFavorite(gift)"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        class="size-5"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"
+        />
+      </svg>
+    </button> -->
+
+    <div class="flex gap-3 lg:block">
+      <!-- Gift image -->
+      <div
+        class="size-28 shrink-0 overflow-hidden rounded-xl bg-base-200 lg:aspect-square lg:size-auto lg:w-full"
+      >
+        @if (gift.image_url) {
+          <img [src]="gift.image_url" [alt]="gift.name" class="size-full object-contain p-1" />
+        } @else {
+          <div class="grid size-full place-items-center bg-primary/5 text-base-content/20">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.6"
+              class="size-9"
+            >
+              <rect x="3" y="8" width="18" height="13" rx="2" />
+              <path d="M12 8v13M3 12h18" />
+            </svg>
+          </div>
+        }
+      </div>
+
+      <!-- Gift info -->
+      <div class="flex min-w-0 flex-1 flex-col pr-8 lg:mt-3 lg:flex-1 lg:pr-0">
+        <h3 class="line-clamp-2 text-sm font-bold leading-5 sm:text-base">
+          {{ gift.name }}
+        </h3>
+
+        @if (gift.description) {
+          <p class="mt-1 line-clamp-1 text-xs leading-5 text-base-content/50 lg:line-clamp-2">
+            {{ gift.description }}
+          </p>
+        }
+
+        @if (gift.price !== null) {
+          <p class="mt-2 text-sm font-bold">{{ gift.price | number: '1.0-2' }} грн</p>
+        }
+
+        <!-- Status -->
+        <div class="mt-auto pt-3 lg:mt-3">
+          @switch (gift.reservation_status) {
+            @case ('available') {
+              <span class="badge badge-success badge-soft"> Доступний </span>
+            }
+
+            @case ('reserved_by_me') {
+              <span class="badge badge-info badge-soft"> Зарезервовано вами </span>
+            }
+
+            @case ('reserved') {
+              <span class="badge badge-warning badge-soft"> Уже обрано </span>
+            }
+
+            @case ('unavailable') {
+              <span class="badge badge-ghost"> Недоступний </span>
+            }
+
+            @default {
+              <span class="badge badge-success badge-soft"> Доступний </span>
+            }
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Gift action -->
+    <div class="mt-3">
+      @switch (gift.reservation_status) {
+        @case ('reserved_by_me') {
+          <button
+            type="button"
+            class="btn btn-outline btn-info btn-sm w-full lg:btn-md"
+            (click)="cancelGiftReservation(gift.id)"
+          >
+            Скасувати бронювання
+          </button>
+        }
+
+        @case ('reserved') {
+          <div
+            class="rounded-xl bg-warning/10 px-3 py-2 text-center text-xs leading-5 text-base-content/55"
+          >
+            Цей подарунок уже обрав хтось інший
+          </div>
+        }
+
+        @case ('unavailable') {
+          <div
+            class="rounded-xl bg-base-200 px-3 py-2 text-center text-xs leading-5 text-base-content/45"
+          >
+            Подарунок більше недоступний
+          </div>
+        }
+
+        @default {
+          <button
+            type="button"
+            class="btn btn-outline btn-primary btn-sm w-full lg:btn-md"
+            (click)="reserveGift(gift.id)"
+          >
+            Обрати цей подарунок
+          </button>
+        }
+      }
+    </div>
+  </article>
+</ng-template>
+
+<!-- =========================================================
+     EMPTY GIFTS
+     ========================================================= -->
+
+<ng-template #emptyGifts>
+  <div class="rounded-2xl border border-dashed border-base-300 px-6 py-12 text-center">
+    <div class="mx-auto grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        class="size-6"
+      >
+        <rect x="3" y="8" width="18" height="13" rx="2" />
+        <path d="M12 8v13M3 12h18" />
+      </svg>
+    </div>
+
+    <h3 class="mt-4 font-bold">Подарунків поки немає</h3>
+
+    <p class="mx-auto mt-1 max-w-sm text-sm leading-6 text-base-content/55">
+      Власник ще не додав подарунки до цього вішліста.
+    </p>
+  </div>
+</ng-template>
+
+<!-- =========================================================
+     NOT FOUND
+     ========================================================= -->
+
+<ng-template #notFound>
+  <section
+    class="mx-auto flex min-h-[70vh] w-full max-w-360 items-center justify-center px-4 py-12"
+  >
+    <div class="text-center">
+      <div
+        class="mx-auto grid size-16 place-items-center rounded-2xl bg-base-200 text-base-content/30"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          class="size-8"
+        >
+          <rect x="3" y="8" width="18" height="13" rx="2" />
+          <path d="M12 8v13M3 12h18" />
+        </svg>
+      </div>
+
+      <h1 class="mt-5 text-2xl font-bold">Вішліст не знайдено</h1>
+
+      <p class="mt-2 text-sm text-base-content/55">
+        Можливо, він був видалений або посилання більше неактивне.
+      </p>
+
+      <a routerLink="/" class="btn btn-primary mt-6"> На головну </a>
+    </div>
+  </section>
+</ng-template>
+
+<!-- =========================================================
+     FULL PAGE SKELETON
+     ========================================================= -->
+
+<ng-template #pageSkeleton>
+  <div aria-busy="true" aria-label="Завантаження вішліста">
+    <!-- Header skeleton -->
+    <section class="border-b border-base-300/60">
+      <div class="mx-auto w-full max-w-360 px-4 pb-6 pt-4 sm:px-6 lg:px-8 lg:py-10">
+        <!-- Mobile navigation -->
+        <div class="mb-4 flex items-center justify-between lg:hidden">
+          <div class="skeleton size-8 rounded-full"></div>
+
+          <div class="flex gap-2">
+            <div class="skeleton size-8 rounded-full"></div>
+            <div class="skeleton size-8 rounded-full"></div>
+          </div>
+        </div>
+
+        <ng-container [ngTemplateOutlet]="headerSkeleton" />
+      </div>
+    </section>
+
+    <!-- Gifts skeleton -->
+    <section class="mx-auto w-full max-w-360 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <div class="mb-4 flex items-center gap-2">
+        <div class="skeleton h-6 w-28 rounded-md"></div>
+        <div class="skeleton h-5 w-8 rounded-md"></div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 lg:grid-cols-4 lg:gap-4 xl:grid-cols-5">
+        @for (_ of skeletonGiftItems; track $index) {
+          <ng-container [ngTemplateOutlet]="giftCardSkeleton" />
+        }
+      </div>
+    </section>
+  </div>
+</ng-template>
+
+<!-- =========================================================
+     HEADER SKELETON
+     ========================================================= -->
+
+<ng-template #headerSkeleton>
+  <div class="grid items-center gap-6 lg:grid-cols-[220px_minmax(0,1fr)_300px] lg:gap-8">
+    <!-- Illustration -->
+    <div class="flex justify-center">
+      <div class="skeleton size-32 rounded-3xl sm:size-36 lg:h-48 lg:w-44"></div>
+    </div>
+
+    <!-- Hero -->
+    <div class="text-center lg:text-left">
+      <div class="skeleton mx-auto h-8 w-56 rounded-lg sm:w-72 lg:mx-0 lg:h-10 lg:w-80"></div>
+
+      <div class="skeleton mx-auto mt-3 h-4 w-[80%] max-w-md rounded-md lg:mx-0"></div>
+
+      <div class="skeleton mx-auto mt-2 h-4 w-[55%] max-w-xs rounded-md lg:mx-0"></div>
+
+      <div class="mt-6 hidden items-center gap-6 lg:flex">
+        <div class="flex items-center gap-2">
+          <div class="skeleton size-5 rounded-md"></div>
+          <div class="skeleton h-4 w-28 rounded-md"></div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <div class="skeleton size-5 rounded-md"></div>
+          <div class="skeleton h-4 w-32 rounded-md"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share -->
+    <div class="hidden rounded-2xl border border-base-300 bg-base-100 p-5 lg:block">
+      <div class="skeleton h-5 w-36 rounded-md"></div>
+
+      <div class="skeleton mt-3 h-3 w-full rounded-md"></div>
+      <div class="skeleton mt-2 h-3 w-4/5 rounded-md"></div>
+
+      <div class="skeleton mt-5 h-11 w-full rounded-xl"></div>
+      <div class="skeleton mt-3 h-11 w-full rounded-xl"></div>
+    </div>
+  </div>
+
+  <!-- Mobile meta -->
+  <div class="mt-5 grid gap-3 rounded-2xl border border-base-300 p-4 sm:grid-cols-2 lg:hidden">
+    <div class="flex items-center gap-3">
+      <div class="skeleton size-5 rounded-md"></div>
+      <div class="skeleton h-4 w-28 rounded-md"></div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <div class="skeleton size-5 rounded-md"></div>
+      <div class="skeleton h-4 w-36 rounded-md"></div>
+    </div>
+  </div>
+</ng-template>
+
+<!-- =========================================================
+     GIFT CARD SKELETON
+     MOBILE  → horizontal
+     DESKTOP → vertical
+     ========================================================= -->
+
+<ng-template #giftCardSkeleton>
+  <article
+    class="rounded-2xl border border-base-300 bg-base-100 p-3 shadow-sm lg:flex lg:h-full lg:flex-col"
+  >
+    <div class="flex gap-3 lg:block">
+      <!-- Image -->
+      <div
+        class="skeleton size-28 shrink-0 rounded-xl lg:aspect-square lg:size-auto lg:w-full"
+      ></div>
+
+      <!-- Content -->
+      <div class="flex min-w-0 flex-1 flex-col lg:mt-3">
+        <div class="skeleton h-4 w-3/4 rounded-md"></div>
+
+        <div class="skeleton mt-2 h-3 w-1/2 rounded-md"></div>
+
+        <div class="skeleton mt-3 h-4 w-16 rounded-md"></div>
+
+        <div class="mt-auto pt-3 lg:mt-3">
+          <div class="skeleton h-6 w-24 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skeleton mt-3 h-9 w-full rounded-lg lg:h-12"></div>
+  </article>
+</ng-template>

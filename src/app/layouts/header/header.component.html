@@ -10,7 +10,7 @@
     </div>
 
     <!-- Desktop navigation -->
-    <nav class="navbar-center hidden lg:flex" aria-label="Головна навігація">
+    <!-- <nav class="navbar-center hidden lg:flex" aria-label="Головна навігація">
       <ul class="menu menu-horizontal gap-1 px-1">
         <li>
           <a href="#how-it-works">Як це працює</a>
@@ -19,16 +19,8 @@
         <li>
           <a href="#benefits">Переваги</a>
         </li>
-
-        <li>
-          <button type="button" class="btn btn-ghost">Modal test</button>
-        </li>
-
-        <li>
-          <a [routerLink]="['/wishlists']"> Приклад вішліста (НЕ ГОТОВО) </a>
-        </li>
       </ul>
-    </nav>
+    </nav> -->
 
     <!-- Actions -->
     <div class="navbar-end gap-2">
@@ -45,10 +37,19 @@
       <a
         [routerLink]="['/']"
         [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)"
-        class="btn btn-primary hidden lg:inline-flex"
+        class="btn btn-secondary hidden lg:inline-flex"
       >
         Створити вішліст
       </a>
+      @if (!authStore.isAuthenticated()) {
+        <a
+          [routerLink]="['/']"
+          [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.AUTH_OTP)"
+          class="btn btn-primary hidden lg:inline-flex"
+        >
+          Увійти
+        </a>
+      }
 
       <!-- Profile dropdown -->
       @if (authStore.isAuthenticated()) {
@@ -56,53 +57,7 @@
       }
 
       <!-- Mobile menu -->
-      <details class="dropdown dropdown-end lg:hidden">
-        <summary class="btn btn-square btn-ghost list-none" aria-label="Відкрити меню">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="size-6"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-          >
-            <path d="M4 6h16" />
-            <path d="M4 12h16" />
-            <path d="M4 18h16" />
-          </svg>
-        </summary>
-
-        <ul
-          class="menu dropdown-content z-40 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-3 shadow-xl"
-        >
-          <li>
-            <a href="#how-it-works">Як це працює</a>
-          </li>
-
-          <li>
-            <a href="#benefits">Переваги</a>
-          </li>
-
-          <li>
-            <a [routerLink]="['/wishlists']"> Приклад вішліста </a>
-          </li>
-
-          <li class="mt-2">
-            <a
-              [routerLink]="['/']"
-              [queryParams]="
-                utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)
-              "
-              class="btn btn-primary"
-            >
-              Створити вішліст
-            </a>
-          </li>
-        </ul>
-      </details>
+      <app-burger-menu></app-burger-menu>
     </div>
   </div>
 </header>

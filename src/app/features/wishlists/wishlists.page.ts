@@ -1,10 +1,11 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
 import { UtilsService } from '../../shared/utils/utils.service';
-import { ModalFlowKey, UserWishlist, Wishlist } from '../../components/modal/data/modal.types';
+import { ModalFlowKey, UserWishlist } from '../../components/modal/data/modal.types';
 import { RouterLink } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { WishlistStatus } from '../../core/types';
+import { WishlistCardComponent } from './components/wishlist-card/wishlist-card.component';
 
 export enum WishlistFilter {
   ALL = 'all',
@@ -32,15 +33,18 @@ const WishlistFilters: Array<FilterOptions> = [
 @Component({
   selector: 'app-wishlists-page',
   templateUrl: './wishlists.page.html',
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, WishlistCardComponent],
 })
 export class WishlistsPage implements OnInit {
+  WishlistStatus = WishlistStatus;
   wishlistFilters = WishlistFilters;
   ModalFlowKey = ModalFlowKey;
   utilsService = inject(UtilsService);
   wishlistsStore = inject(WishlistStore);
 
   filter = signal<WishlistFilter>(WishlistFilter.ALL);
+
+  isDeletingWishlist = signal<boolean>(false);
 
   filteredWishlists = computed<UserWishlist[]>(() => {
     if (!this.wishlistsStore.wishlists()) return [];
@@ -71,6 +75,20 @@ export class WishlistsPage implements OnInit {
 
   setFilter(newFilter: WishlistFilter) {
     this.filter.set(newFilter);
+  }
+
+  addEvent(wishlistId: string) {}
+
+  editWishlist(wishlistId: string) {}
+
+  changeWishlistStatus(wishlistId: string) {}
+
+  removeWishlist(wishlistId: string) {}
+
+  async deleteWishlist(wishlistId: string) {
+    this.isDeletingWishlist.set(true);
+    await this.wishlistsStore.deleteWishlist(wishlistId);
+    this.isDeletingWishlist.set(false);
   }
 
   ngOnInit() {

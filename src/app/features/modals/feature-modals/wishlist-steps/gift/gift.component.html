@@ -111,10 +111,10 @@
     <!-- Зображення -->
     <fieldset class="fieldset p-0">
       <legend class="fieldset-legend">Зображення<span class="text-error">*</span></legend>
-      @if (previewImageUrl) {
+      @if (previewImageUrl()) {
         <div class="relative">
           <img
-            [src]="previewImageUrl"
+            [src]="previewImageUrl()"
             alt="Preview Image"
             class="h-32 w-full rounded-box object-cover"
           />
@@ -123,7 +123,7 @@
               type="button"
               class="btn btn-circle btn-sm btn-ghost text-error"
               aria-label="Видалити зображення"
-              (click)="previewImageUrl = ''"
+              (click)="previewImageUrl.set('')"
             >
               <!-- trash icon -->
               <svg
@@ -193,8 +193,11 @@
       <button
         type="submit"
         class="btn btn-secondary disabled:cursor-not-allowed disabled:opacity-50"
-        [disabled]="newGiftForm.invalid || !previewImageUrl"
+        [disabled]="newGiftForm.invalid || !previewImageUrl || isSubmitting()"
       >
+        @if (isSubmitting()) {
+          <span class="loading loading-spinner loading-sm"></span>
+        }
         Додати подарунок
       </button>
     </div>

@@ -1,0 +1,65 @@
+:host {
+  display: inline-flex;
+}
+
+.dropdown-popover {
+  inset: auto;
+  margin: 0;
+  padding: 0;
+
+  overflow: visible;
+
+  opacity: 0;
+  scale: 0.96;
+
+  transition:
+    opacity 120ms ease,
+    scale 120ms ease,
+    display 120ms allow-discrete,
+    overlay 120ms allow-discrete;
+}
+
+.dropdown-popover:popover-open {
+  opacity: 1;
+  scale: 1;
+}
+
+/*
+ * Trigger, який має popovertarget, автоматично
+ * є implicit anchor цього popover.
+ */
+
+.dropdown-bottom-end {
+  top: calc(anchor(bottom) + 0.5rem);
+  right: anchor(right);
+
+  transform-origin: top right;
+}
+
+.dropdown-bottom-start {
+  top: calc(anchor(bottom) + 0.5rem);
+  left: anchor(left);
+
+  transform-origin: top left;
+}
+
+.dropdown-top-end {
+  bottom: calc(anchor(top) + 0.5rem);
+  right: anchor(right);
+
+  transform-origin: bottom right;
+}
+
+.dropdown-top-start {
+  bottom: calc(anchor(top) + 0.5rem);
+  left: anchor(left);
+
+  transform-origin: bottom left;
+}
+
+@starting-style {
+  .dropdown-popover:popover-open {
+    opacity: 0;
+    scale: 0.96;
+  }
+}

@@ -8,6 +8,7 @@ import { ModalFlowKey, RouteIntent } from '../../../../components/modal/data/mod
 import { UtilsService } from '../../../../shared/utils/utils.service';
 import { ModalFlowRuntimeStore } from '../../../../components/modal/data/modal-flow-runtime.store';
 import { AuthError, AuthResponse } from '@supabase/supabase-js';
+import { ModalStore } from '../../../../components/modal/data/modal.store';
 
 export enum AuthStep {
   PHONE = 'phone',
@@ -22,6 +23,7 @@ export enum AuthStep {
 export class AuthOtpModal {
   loadUtils = () => import('intl-tel-input/utils');
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  modalStore = inject(ModalStore);
   utilsService = inject(UtilsService);
   console = console;
   authStore = inject(AuthStore);
@@ -90,9 +92,9 @@ export class AuthOtpModal {
       this.authStore.setAuthStatus(AuthStatus.Authenticated);
       this.authStore.setAuthData(data);
       this.modalFlowRuntimeStore.clearSession(ModalFlowKey.AUTH_OTP);
-
       const redirectUrl = this.activatedRoute.snapshot.queryParams['redirectFlow'];
-      const redirectFlow = JSON.parse(decodeURIComponent(redirectUrl)) as RouteIntent;
+      const redirectFlow =
+        redirectUrl && (JSON.parse(decodeURIComponent(redirectUrl)) as RouteIntent);
 
       if (redirectUrl) {
         this.router.navigate([], {
@@ -100,9 +102,14 @@ export class AuthOtpModal {
           queryParamsHandling: 'merge',
         });
       } else {
+        console.log('No redirect flow found, navigating to home');
+        this.modalStore.clearModalRouteIntent();
+        this.modalStore.closeModal();
         this.router.navigate(['/']);
       }
+      this.authStore.resetOtpRequestDebounce();
     } catch (error) {
+      console.error('Failed to verify OTP', error);
     } finally {
       this.isLoading.set(false);
     }

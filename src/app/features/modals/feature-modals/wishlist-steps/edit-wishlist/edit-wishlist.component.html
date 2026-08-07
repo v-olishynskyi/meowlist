@@ -140,17 +140,26 @@
 
   <!-- Додати подарунок -->
   <app-modal-actions>
-    <button type="button" class="btn btn-primary w-full text-base" (click)="publishWishlist()">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        class="size-5"
-      >
-        <path stroke-linecap="round" d="M12 5v14M5 12h14" />
-      </svg>
+    <button
+      type="button"
+      class="btn btn-primary w-full text-base disabled:opacity-50"
+      (click)="publishWishlist()"
+      [disabled]="isPublishing()"
+    >
+      @if (isPublishing()) {
+        <span class="loading loading-spinner loading-sm"></span>
+      } @else {
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          class="size-5"
+        >
+          <path stroke-linecap="round" d="M12 5v14M5 12h14" />
+        </svg>
+      }
 
       Опублікувати вішліст
     </button>
@@ -163,8 +172,8 @@
     <div class="card-body gap-4 p-4">
       <div class="flex gap-4">
         <div class="size-24 shrink-0 overflow-hidden rounded-box bg-base-200 sm:size-28">
-          @if (gift.imageUrl) {
-            <img [src]="gift.imageUrl" [alt]="gift.name" class="size-full object-cover" />
+          @if (gift.image_url) {
+            <img [src]="gift.image_url" [alt]="gift.name" class="size-full object-cover" />
           } @else {
             <div class="grid size-full place-items-center text-base-content/25">
               <svg

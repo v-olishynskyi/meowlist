@@ -1,0 +1,62 @@
+<details #burgerMenu class="dropdown dropdown-end lg:hidden" [open]="isOpen()">
+  <summary
+    class="btn btn-square btn-ghost list-none"
+    aria-label="Відкрити меню"
+    (click)="toggleOpen()"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="size-6"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M4 6h16" />
+      <path d="M4 12h16" />
+      <path d="M4 18h16" />
+    </svg>
+  </summary>
+
+  <ul
+    class="menu dropdown-content z-40 mt-2 w-64 rounded-box border border-base-300 bg-base-100 p-3 shadow-xl"
+  >
+    <!-- <li>
+            <a href="#how-it-works">Як це працює</a>
+          </li>
+
+          <li>
+            <a href="#benefits">Переваги</a>
+          </li>
+
+          <li>
+            <a [routerLink]="['/wishlists']"> Приклад вішліста </a>
+          </li> -->
+
+    <li class="mt-2">
+      <a
+        [routerLink]="['/']"
+        [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)"
+        (click)="isOpen.set(false)"
+        class="btn btn-secondary"
+      >
+        Створити вішліст
+      </a>
+    </li>
+    @if (!authStore.isAuthenticated()) {
+      <li class="mt-2">
+        <a
+          [routerLink]="['/']"
+          [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.AUTH_OTP)"
+          (click)="isOpen.set(false)"
+          class="btn btn-primary"
+        >
+          Увійти
+        </a>
+      </li>
+    }
+  </ul>
+</details>

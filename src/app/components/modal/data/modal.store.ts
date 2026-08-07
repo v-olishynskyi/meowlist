@@ -26,8 +26,6 @@ export class ModalStore {
   }
 
   setModalRouteIntent(intent: RouteIntent) {
-    // if (this.activeFlow()?.key === intent.flow) return;
-
     this.modalRouteIntent.update(() => intent);
   }
 

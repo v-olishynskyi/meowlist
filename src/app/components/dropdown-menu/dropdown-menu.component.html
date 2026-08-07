@@ -1,3 +1,23 @@
-<details #dropdownMenu class="dropdown dropdown-end" [open]="isOpen()">
-  <ng-content></ng-content>
-</details>
+<button
+  type="button"
+  [class]="triggerClass()"
+  [attr.popovertarget]="popoverId"
+  popovertargetaction="toggle"
+  [attr.aria-label]="ariaLabel()"
+>
+  <ng-content select="[dropdown-trigger]" />
+</button>
+
+<div
+  #popover
+  [id]="popoverId"
+  popover="auto"
+  class="dropdown-popover rounded-box border border-base-300 bg-base-100 shadow-xl"
+  [class.dropdown-bottom-start]="position() === 'bottom-start'"
+  [class.dropdown-bottom-end]="position() === 'bottom-end'"
+  [class.dropdown-top-start]="position() === 'top-start'"
+  [class.dropdown-top-end]="position() === 'top-end'"
+  (click)="onContentClick($event)"
+>
+  <ng-content select="[dropdown-content]" />
+</div>

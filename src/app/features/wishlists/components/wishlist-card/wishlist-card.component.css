@@ -1,0 +1,180 @@
+:host {
+  display: block;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+.wishlist-card {
+  display: grid;
+
+  grid-template-columns:
+    96px
+    minmax(0, 1fr)
+    auto;
+
+  grid-template-areas:
+    'preview title menu'
+    'preview event event'
+    'preview gifts status';
+
+  column-gap: 12px;
+  row-gap: 5px;
+
+  padding: 12px;
+
+  border: 1px solid var(--color-base-300);
+  border-radius: 16px;
+
+  background: var(--color-base-100);
+
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.04),
+    0 1px 2px rgb(0 0 0 / 0.03);
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+.wishlist-card__preview {
+  grid-area: preview;
+
+  width: 96px;
+  height: 96px;
+
+  overflow: hidden;
+  border-radius: 12px;
+
+  background: var(--color-base-200);
+}
+
+.wishlist-card__title {
+  grid-area: title;
+
+  min-width: 0;
+
+  align-self: start;
+}
+
+.wishlist-card__event {
+  grid-area: event;
+
+  min-width: 0;
+}
+
+.wishlist-card__gifts {
+  grid-area: gifts;
+
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+
+  gap: 6px;
+}
+
+.wishlist-card__status {
+  grid-area: status;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.wishlist-card__menu {
+  grid-area: menu;
+
+  display: flex;
+  align-self: start;
+  justify-content: flex-end;
+}
+
+/* =========================================================
+   DESKTOP
+   ========================================================= */
+
+@media (min-width: 1024px) {
+  .wishlist-card {
+    grid-template-columns:
+      minmax(300px, 2fr)
+      minmax(220px, 1.2fr)
+      130px
+      180px
+      48px;
+
+    grid-template-areas: 'wishlist event gifts status menu';
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 16px 20px;
+
+    border: 0;
+    border-bottom: 1px solid var(--color-base-300);
+
+    border-radius: 0;
+
+    box-shadow: none;
+  }
+
+  .wishlist-card:hover {
+    background: color-mix(in oklab, var(--color-base-300) 35%, transparent);
+  }
+
+  /*
+   * На desktop preview + title
+   * утворюють одну логічну колонку "Wishlist".
+   */
+
+  .wishlist-card__preview {
+    grid-area: wishlist;
+
+    width: 80px;
+    height: 80px;
+
+    align-self: center;
+  }
+
+  .wishlist-card__title {
+    grid-area: wishlist;
+
+    min-width: 0;
+
+    /*
+     * Preview займає 80px +
+     * 16px gap.
+     */
+    padding-left: 96px;
+
+    align-self: center;
+  }
+
+  .wishlist-card__event {
+    grid-area: event;
+
+    align-self: center;
+  }
+
+  .wishlist-card__gifts {
+    grid-area: gifts;
+
+    align-self: center;
+  }
+
+  .wishlist-card__status {
+    grid-area: status;
+
+    align-self: center;
+    justify-content: flex-start;
+  }
+
+  .wishlist-card__menu {
+    grid-area: menu;
+
+    align-self: center;
+  }
+}

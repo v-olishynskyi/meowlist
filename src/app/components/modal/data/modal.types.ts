@@ -70,8 +70,6 @@ export enum EditWishListStepKey {
   REMOVE_GIFT = 'remove-gift',
 }
 
-export enum ViewWishlistStepKey {}
-
 // FLOW STATE
 export type AuthOtpFlowState = {
   phoneNumber: string | null;

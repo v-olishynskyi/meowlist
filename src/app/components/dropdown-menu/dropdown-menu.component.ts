@@ -1,50 +1,49 @@
-import {
-  Component,
-  DOCUMENT,
-  ElementRef,
-  inject,
-  input,
-  model,
-  OnInit,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { Component, ElementRef, input, viewChild } from '@angular/core';
 
-// TODO
+export type DropdownMenuPosition = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
 
 @Component({
   selector: 'app-dropdown-menu',
+  standalone: true,
   templateUrl: './dropdown-menu.component.html',
+  styleUrl: './dropdown-menu.component.css',
 })
-export class DropdownMenuComponent implements OnInit {
-  document = inject(DOCUMENT);
-  isOpen = signal<boolean>(false);
+export class DropdownMenuComponent {
+  private static nextId = 0;
 
-  menuRef = viewChild<ElementRef<HTMLDetailsElement>>('dropdownMenu');
+  readonly position = input<DropdownMenuPosition>('bottom-end');
 
-  ngOnInit(): void {
-    const menuElement = this.menuRef()?.nativeElement;
+  readonly ariaLabel = input('Відкрити меню');
 
-    if (menuElement) {
-      menuElement.addEventListener('close', () => {
-        this.isOpen.set(false);
-      });
+  readonly closeOnItemClick = input(true);
 
-      menuElement.addEventListener('open', () => {
-        this.isOpen.set(true);
-      });
+  readonly triggerClass = input('btn btn-circle btn-ghost btn-sm');
+
+  readonly popoverId = `dropdown-menu-${DropdownMenuComponent.nextId++}`;
+
+  private readonly popover = viewChild.required<ElementRef<HTMLElement>>('popover');
+
+  close(): void {
+    const popover = this.popover().nativeElement;
+
+    if (popover.matches(':popover-open')) {
+      popover.hidePopover();
     }
-
-    this.document.addEventListener('click', (event: MouseEvent) => {
-      this.onClickOutside(event);
-    });
   }
 
-  onClickOutside(event: MouseEvent) {
-    const menuElement = this.menuRef()?.nativeElement;
-
-    if (menuElement && !menuElement.contains(event.target as Node)) {
-      this.isOpen.set(false);
+  onContentClick(event: MouseEvent): void {
+    if (!this.closeOnItemClick()) {
+      return;
     }
+
+    const target = event.target as HTMLElement;
+
+    const menuItem = target.closest('button, a, [role="menuitem"]');
+
+    if (!menuItem) {
+      return;
+    }
+
+    this.close();
   }
 }

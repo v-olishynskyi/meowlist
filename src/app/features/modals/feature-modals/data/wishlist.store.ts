@@ -88,6 +88,36 @@ export class WishlistStore {
     }
   }
 
+  async uploadGiftImage(image: File) {
+    try {
+      const { data, error } = await this.wishlistApi.uploadGiftImage(image);
+      if (error) throw error;
+
+      const publicUrl = this.wishlistApi.supabase.storage.from('gifts').getPublicUrl(data.path)
+        .data.publicUrl;
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading gift image:', error);
+      throw error;
+    }
+  }
+
+  async removeGift(giftId: string) {
+    try {
+      const { error } = await this.wishlistApi.removeGift(giftId);
+      if (error) throw error;
+
+      this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
+        ...state,
+        gifts: state.gifts.filter((gift) => gift.id !== giftId),
+      }));
+    } catch (error) {
+      console.error('Error removing gift:', error);
+    } finally {
+    }
+  }
+
   async loadWishlists() {
     try {
       const ownerId = this.authStore.profile()!.id;
@@ -113,6 +143,18 @@ export class WishlistStore {
       this._wishlistsObject$.next(updatedWishlists);
     } catch (error) {
       console.error('Error publishing wishlist:', error);
+    }
+  }
+
+  async deleteWishlist(wishlistId: string) {
+    try {
+      const { error } = await this.wishlistApi.removeWishlist(wishlistId);
+      if (error) throw error;
+
+      const updatedWishlists = this.wishlists()!.filter((wishlist) => wishlist.id !== wishlistId);
+      this._wishlistsObject$.next(updatedWishlists);
+    } catch (error) {
+      console.error('Error deleting wishlist:', error);
     }
   }
 }

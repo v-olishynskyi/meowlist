@@ -1,16 +1,19 @@
-import { Component, ElementRef, OnInit, output, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { UtilsService } from '../../../../shared/utils/utils.service';
+import { AuthStore } from '../../../../core/auth.store';
 
 @Component({
-  selector: 'app-profile-menu',
-  templateUrl: './profile-menu.component.html',
+  selector: 'app-burger-menu',
+  templateUrl: './burger-menu.component.html',
   imports: [RouterLink],
 })
-export class ProfileMenuComponent implements OnInit {
-  logout = output();
+export class BurgerMenuComponent {
+  utilsService = inject(UtilsService);
+  authStore = inject(AuthStore);
 
   isOpen = signal<boolean>(false);
-  menuRef = viewChild.required<ElementRef<HTMLDetailsElement>>('profileMenu');
+  menuRef = viewChild.required<ElementRef<HTMLDetailsElement>>('burgerMenu');
 
   toggleOpen(): void {
     this.isOpen.update((value) => !value);
