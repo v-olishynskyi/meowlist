@@ -8,6 +8,7 @@ import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
 import { WishlistApi } from '../../../../../core/wishlist.api';
 import { WishlistStore } from '../../data/wishlist.store';
 import { ModalStore } from '../../../../../components/modal/data/modal.store';
+import { WishlistStatus } from '../../../../../core/types';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -40,6 +41,7 @@ export class EditWishlistModal {
   );
 
   isPublishing = signal(false);
+  canPublish = computed(() => this.gifts().length > 0);
 
   sortsBy = signal<SortBy>(SortBy.PRICE_DESC);
 
@@ -63,7 +65,7 @@ export class EditWishlistModal {
   async publishWishlist() {
     this.isPublishing.set(true);
     const wishlistId = this.session()!.state!.wishlist!.id;
-    await this.wishlistStore.publishWishlist(wishlistId);
+    await this.wishlistStore.updateWishlistStatus(wishlistId, WishlistStatus.PUBLISHED);
     this.router.navigate(['/wishlists']);
     this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
     this.modalStore.closeModal();

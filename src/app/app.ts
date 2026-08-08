@@ -8,8 +8,9 @@ import { OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthStore } from './core/auth.store';
 import { ModalRouteCoordinator } from './components/modal/data/modal-route-coordinator';
-import { registerLocaleData } from '@angular/common';
+import { registerLocaleData, NgClass } from '@angular/common';
 import localeUa from '@angular/common/locales/uk';
+import { ToastService } from './core/toast.service';
 
 registerLocaleData(localeUa);
 
@@ -21,6 +22,7 @@ registerLocaleData(localeUa);
 export class App implements OnInit {
   authStore = inject(AuthStore);
   modalRouteCoordinator = inject(ModalRouteCoordinator);
+  toastService = inject(ToastService);
 
   async ngOnInit() {
     this.modalRouteCoordinator.subscribeToRouteChanges();

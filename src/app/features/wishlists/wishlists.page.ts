@@ -3,32 +3,9 @@ import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
 import { UtilsService } from '../../shared/utils/utils.service';
 import { ModalFlowKey, UserWishlist } from '../../components/modal/data/modal.types';
 import { RouterLink } from '@angular/router';
-import { DatePipe } from '@angular/common';
-import { WishlistStatus } from '../../core/types';
+import { WishlistFilter, WishlistFilters, WishlistStatus } from '../../core/types';
 import { WishlistCardComponent } from './components/wishlist-card/wishlist-card.component';
-
-export enum WishlistFilter {
-  ALL = 'all',
-  DRAFT = 'draft',
-  PUBLISHED = 'published',
-  HIDDEN = 'hidden',
-  WITH_EVENT = 'with-event',
-  WITHOUT_EVENT = 'without-event',
-}
-
-type FilterOptions = {
-  key: WishlistFilter;
-  label: string;
-};
-
-const WishlistFilters: Array<FilterOptions> = [
-  { key: WishlistFilter.ALL, label: 'Усі' },
-  { key: WishlistFilter.DRAFT, label: 'Чернетки' },
-  { key: WishlistFilter.PUBLISHED, label: 'Опубліковані' },
-  { key: WishlistFilter.HIDDEN, label: 'Приховані' },
-  { key: WishlistFilter.WITH_EVENT, label: 'З подією' },
-  { key: WishlistFilter.WITHOUT_EVENT, label: 'Без події' },
-];
+import { ToastService } from '../../core/toast.service';
 
 @Component({
   selector: 'app-wishlists-page',
@@ -43,8 +20,10 @@ export class WishlistsPage implements OnInit {
   wishlistsStore = inject(WishlistStore);
 
   filter = signal<WishlistFilter>(WishlistFilter.ALL);
+  changeStatusError = signal<string | null>(null);
 
-  isDeletingWishlist = signal<boolean>(false);
+  deletingWishlistId = signal<string | null>(null);
+  wishlistStatusChangingId = signal<string | null>(null);
 
   filteredWishlists = computed<UserWishlist[]>(() => {
     if (!this.wishlistsStore.wishlists()) return [];
@@ -81,14 +60,17 @@ export class WishlistsPage implements OnInit {
 
   editWishlist(wishlistId: string) {}
 
-  changeWishlistStatus(wishlistId: string) {}
-
-  removeWishlist(wishlistId: string) {}
+  async changeWishlistStatus({ status, id: wishlistId }: { status: WishlistStatus; id: string }) {
+    this.wishlistStatusChangingId.set(wishlistId);
+    await this.wishlistsStore.updateWishlistStatus(wishlistId, status);
+    this.wishlistStatusChangingId.set(null);
+  }
 
   async deleteWishlist(wishlistId: string) {
-    this.isDeletingWishlist.set(true);
+    this.deletingWishlistId.set(wishlistId);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.wishlistsStore.deleteWishlist(wishlistId);
-    this.isDeletingWishlist.set(false);
+    this.deletingWishlistId.set(null);
   }
 
   ngOnInit() {

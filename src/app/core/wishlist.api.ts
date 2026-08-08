@@ -85,14 +85,6 @@ export class WishlistApi {
     return this.supabase.from('wishlists').update({ status }).eq('id', wishlistId).select();
   }
 
-  publishWishlist(wishlistId: string) {
-    return this.supabase
-      .from('wishlists')
-      .update({ status: WishlistStatus.PUBLISHED })
-      .eq('id', wishlistId)
-      .select();
-  }
-
   getWishlist(wishlistId: string) {
     return this.supabase
       .from('wishlists')

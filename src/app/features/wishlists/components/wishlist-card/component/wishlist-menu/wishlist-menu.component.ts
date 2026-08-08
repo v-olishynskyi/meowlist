@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UserWishlist } from '../../../../../../components/modal/data/modal.types';
 
@@ -9,11 +9,13 @@ import { UserWishlist } from '../../../../../../components/modal/data/modal.type
 })
 export class WishlistMenuComponent {
   wishlist = input.required<UserWishlist>();
+  deletingWishlistId = input<string | null>();
 
   readonly addEvent = output<string>();
   readonly edit = output<string>();
-  readonly changeStatus = output<string>();
-  readonly remove = output<string>();
+  readonly delete = output<string>();
+
+  isDeleting = computed(() => this.deletingWishlistId() === this.wishlist().id);
 
   isOpen = signal<boolean>(false);
   menuRef = viewChild.required<ElementRef<HTMLDetailsElement>>('wishlistMenu');

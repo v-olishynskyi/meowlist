@@ -129,19 +129,11 @@
 
   <!-- Status -->
   <div class="wishlist-card__status">
-    @switch (wishlist().status) {
-      @case (WishlistStatus.PUBLISHED) {
-        <span class="badge badge-success badge-sm lg:badge-md"> Опубліковано </span>
-      }
-
-      @case (WishlistStatus.DRAFT) {
-        <span class="badge badge-warning badge-sm lg:badge-md"> Чернетка </span>
-      }
-
-      @case (WishlistStatus.HIDDEN) {
-        <span class="badge badge-ghost badge-sm lg:badge-md"> Приховано </span>
-      }
-    }
+    <app-wishlist-status-selector
+      [wishlist]="wishlist()"
+      [wishlistStatusChangingId]="wishlistStatusChangingId()"
+      (onStatusSelected)="changeStatus.emit($event)"
+    />
   </div>
 
   <!-- Menu -->
@@ -149,8 +141,8 @@
     <app-wishlist-menu
       [wishlist]="wishlist()"
       (edit)="edit.emit($event)"
-      (changeStatus)="changeStatus.emit($event)"
-      (remove)="remove.emit($event)"
+      (delete)="delete.emit($event)"
+      [deletingWishlistId]="deletingWishlistId()"
     />
   </div>
 </article>

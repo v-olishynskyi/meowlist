@@ -1,0 +1,61 @@
+@let statusLabel = WishlistStatusLabels[wishlist().status];
+
+<details #wishlistStatusMenu class="dropdown dropdown-end" [open]="isOpen()">
+  <summary
+    class="btn btn-active btn-sm min-w-40 rounded-2xl"
+    [class.btn-success]="wishlist().status === 'published'"
+    [class.btn-error]="wishlist().status === 'draft'"
+    [class.btn-warning]="wishlist().status === 'hidden'"
+    (click)="toggleOpen()"
+  >
+    {{ statusLabel }}
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      class="size-4 ml-1 inline-block"
+    >
+      @if (isOpen()) {
+        <path d="m6 15 6-6 6 6" />
+      } @else {
+        <path d="m6 9 6 6 6-6" />
+      }
+    </svg>
+  </summary>
+  <div class="menu dropdown-content bg-base-100 rounded-box z-1 mt-1 w-40 p-2 shadow-sm">
+    <ul>
+      @for (status of wishlistStatusKeys; track status) {
+        @let isSelectedStatus = wishlist().status === status;
+        @let isStatusChanging = isChangingWishlistStatus() && newStatus() === status;
+
+        <li>
+          <button
+            type="button"
+            class="flex flex-row justify-between"
+            (click)="onChangeStatusClicked(status)"
+            [disabled]="isSelectedStatus"
+          >
+            {{ WishlistStatusLabels[status] }}
+
+            @if (isSelectedStatus) {
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                class="size-4 ml-1 inline-block"
+              >
+                <path d="m5 13 4 4L19 7" />
+              </svg>
+            } @else if (isStatusChanging) {
+              <span class="loading loading-spinner loading-sm ml-1"></span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  </div>
+</details>

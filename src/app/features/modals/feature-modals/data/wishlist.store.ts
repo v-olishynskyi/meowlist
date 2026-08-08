@@ -12,6 +12,8 @@ import { AuthStore } from '../../../../core/auth.store';
 import { WishlistStatus } from '../../../../core/types';
 import { BehaviorSubject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ToastService } from '../../../../core/toast.service';
+import { PostgrestError } from '@supabase/supabase-js';
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +22,8 @@ export class WishlistStore {
   wishlistApi = inject(WishlistApi);
   authStore = inject(AuthStore);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  toastService = inject(ToastService);
+
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
   event = computed(() => this.session()?.state.event);
 
@@ -131,17 +135,26 @@ export class WishlistStore {
     }
   }
 
-  async publishWishlist(wishlistId: string) {
+  async updateWishlistStatus(wishlistId: string, status: WishlistStatus) {
     try {
-      const { error } = await this.wishlistApi.publishWishlist(wishlistId);
+      const wishlist = this.wishlists()!.find((w) => w.id === wishlistId);
+      if (wishlist && wishlist.gifts.length === 0) {
+        throw new Error('Ви не можете опублікувати список бажань без подарунків.');
+      }
+
+      const { error } = await this.wishlistApi.updateWishlistStatus(wishlistId, status);
 
       if (error) throw error;
 
       const updatedWishlists = this.wishlists()!.map((wishlist) =>
-        wishlist.id === wishlistId ? { ...wishlist, status: WishlistStatus.PUBLISHED } : wishlist,
+        wishlist.id === wishlistId ? { ...wishlist, status } : wishlist,
       );
       this._wishlistsObject$.next(updatedWishlists);
-    } catch (error) {
+    } catch (error: any) {
+      this.toastService.showToast({
+        message: error?.message || 'Помилка при зміні статусу. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
       console.error('Error publishing wishlist:', error);
     }
   }

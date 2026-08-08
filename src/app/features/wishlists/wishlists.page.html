@@ -111,7 +111,9 @@
             (addEvent)="addEvent($event)"
             (edit)="editWishlist($event)"
             (changeStatus)="changeWishlistStatus($event)"
-            (remove)="removeWishlist($event)"
+            (delete)="deleteWishlist($event)"
+            [deletingWishlistId]="deletingWishlistId()"
+            [wishlistStatusChangingId]="wishlistStatusChangingId()"
           />
         }
 
