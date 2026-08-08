@@ -17,9 +17,7 @@ daisyUI використовує семантичні токени через CS
 Головний колір бренду та найважливіших дій.
 
 ```html
-<button class="btn btn-primary">
-  Створити вішліст
-</button>
+<button class="btn btn-primary">Створити вішліст</button>
 ```
 
 Використовуйте для:
@@ -30,14 +28,12 @@ daisyUI використовує семантичні токени через CS
 - основного акценту бренду;
 - посилань, які мають привертати увагу.
 
-Для PurrList це може бути лавандовий або пастельно-фіолетовий.
+Для MeowList це може бути лавандовий або пастельно-фіолетовий.
 
 Не використовуйте `primary` для кожної кнопки на сторінці — інакше основна дія перестане виділятися.
 
 ```html
-<div class="bg-primary text-primary-content">
-  Основний брендований блок
-</div>
+<div class="bg-primary text-primary-content">Основний брендований блок</div>
 ```
 
 ### `primary-content`
@@ -45,18 +41,14 @@ daisyUI використовує семантичні токени через CS
 Колір тексту та іконок, які знаходяться **на фоні `primary`**.
 
 ```html
-<button class="bg-primary text-primary-content">
-  Створити
-</button>
+<button class="bg-primary text-primary-content">Створити</button>
 ```
 
 Не варто використовувати його як звичайний колір тексту сторінки:
 
 ```html
 <!-- Невдалий варіант -->
-<p class="text-primary-content">
-  Опис сторінки
-</p>
+<p class="text-primary-content">Опис сторінки</p>
 ```
 
 `primary-content` підібраний саме для контрасту з `primary`, а не з `base-100`. ([daisyui.com](https://daisyui.com/docs/colors/))
@@ -68,12 +60,10 @@ daisyUI використовує семантичні токени через CS
 Другий колір бренду. Він повинен підтримувати `primary`, але не конкурувати з ним.
 
 ```html
-<button class="btn btn-secondary">
-  Переглянути приклад
-</button>
+<button class="btn btn-secondary">Переглянути приклад</button>
 ```
 
-Для PurrList його можна використовувати для:
+Для MeowList його можна використовувати для:
 
 - другорядних CTA;
 - декоративних event-блоків;
@@ -88,9 +78,7 @@ daisyUI використовує семантичні токени через CS
 Текст та іконки поверх `secondary`.
 
 ```html
-<div class="bg-secondary text-secondary-content">
-  День народження вже скоро
-</div>
+<div class="bg-secondary text-secondary-content">День народження вже скоро</div>
 ```
 
 ---
@@ -102,12 +90,10 @@ daisyUI використовує семантичні токени через CS
 На відміну від `primary`, він не повинен використовуватися для головної дії всього продукту. Це колір невеликих деталей, вибраних елементів і візуальних акцентів.
 
 ```html
-<span class="badge badge-accent">
-  Новий
-</span>
+<span class="badge badge-accent"> Новий </span>
 ```
 
-Для PurrList підійде для:
+Для MeowList підійде для:
 
 - тегів подарунка;
 - декоративних chips;
@@ -123,9 +109,7 @@ daisyUI використовує семантичні токени через CS
 Контент поверх `accent`.
 
 ```html
-<span class="bg-accent text-accent-content">
-  Розмір S
-</span>
+<span class="bg-accent text-accent-content"> Розмір S </span>
 ```
 
 ---
@@ -135,9 +119,7 @@ daisyUI використовує семантичні токени через CS
 Нейтральний, зазвичай темний або малонасичений колір.
 
 ```html
-<button class="btn btn-neutral">
-  Закрити
-</button>
+<button class="btn btn-neutral">Закрити</button>
 ```
 
 Підходить для:
@@ -148,7 +130,7 @@ daisyUI використовує семантичні токени через CS
 - нейтральних активних елементів;
 - частин інтерфейсу, які не мають конкретного емоційного значення.
 
-Для світлого PurrList я б використовував `neutral` обмежено — наприклад, для текстово-контрастної кнопки або footer.
+Для світлого MeowList я б використовував `neutral` обмежено — наприклад, для текстово-контрастної кнопки або footer.
 
 Не потрібно використовувати `neutral` замість звичайного тексту. Для основного тексту існує `base-content`.
 
@@ -157,9 +139,7 @@ daisyUI використовує семантичні токени через CS
 Текст та іконки поверх `neutral`.
 
 ```html
-<footer class="bg-neutral text-neutral-content">
-  PurrList
-</footer>
+<footer class="bg-neutral text-neutral-content">MeowList</footer>
 ```
 
 Офіційно `primary`, `secondary`, `accent` є брендованими кольорами, а `neutral` призначений для ненасичених частин UI. Кожен із них має відповідний `*-content` токен для foreground-контенту. ([daisyui.com](https://daisyui.com/docs/colors/))
@@ -173,7 +153,7 @@ daisyUI використовує семантичні токени через CS
 Основна поверхня сторінки.
 
 ```html
-<body class="bg-base-100 text-base-content">
+<body class="bg-base-100 text-base-content"></body>
 ```
 
 Використовуйте для:
@@ -186,7 +166,7 @@ daisyUI використовує семантичні токени через CS
 
 У світлій темі це зазвичай найбіліший або найсвітліший колір.
 
-Для PurrList:
+Для MeowList:
 
 ```text
 base-100 → білий або дуже світлий кремовий
@@ -200,9 +180,7 @@ base-100 → білий або дуже світлий кремовий
 
 ```html
 <main class="min-h-screen bg-base-200">
-  <article class="card bg-base-100">
-    ...
-  </article>
+  <article class="card bg-base-100">...</article>
 </main>
 ```
 
@@ -218,9 +196,7 @@ base-100 → білий або дуже світлий кремовий
 
 ```html
 <body class="bg-base-200 text-base-content">
-  <main class="bg-base-100">
-    ...
-  </main>
+  <main class="bg-base-100">...</main>
 </body>
 ```
 
@@ -231,7 +207,7 @@ base-100 → білий або дуже світлий кремовий
 Ще темніший базовий відтінок.
 
 ```html
-<div class="border border-base-300">
+<div class="border border-base-300"></div>
 ```
 
 Найчастіше підходить для:
@@ -245,9 +221,7 @@ base-100 → білий або дуже світлий кремовий
 - візуального розмежування блоків.
 
 ```html
-<div class="divider before:bg-base-300 after:bg-base-300">
-  або
-</div>
+<div class="divider before:bg-base-300 after:bg-base-300">або</div>
 ```
 
 У більшості випадків `base-300` не повинен бути основним великим фоном.
@@ -259,9 +233,7 @@ base-100 → білий або дуже світлий кремовий
 Основний колір тексту та іконок на базових поверхнях.
 
 ```html
-<h1 class="text-base-content">
-  Створіть свій вішліст
-</h1>
+<h1 class="text-base-content">Створіть свій вішліст</h1>
 ```
 
 Використовуйте для:
@@ -275,13 +247,9 @@ base-100 → білий або дуже світлий кремовий
 Для другорядного тексту не потрібен окремий сірий токен. daisyUI рекомендує використовувати opacity:
 
 ```html
-<p class="text-base-content/70">
-  Короткий опис функціоналу
-</p>
+<p class="text-base-content/70">Короткий опис функціоналу</p>
 
-<span class="text-base-content/50">
-  Необов’язкове поле
-</span>
+<span class="text-base-content/50"> Необов’язкове поле </span>
 ```
 
 `base-content` автоматично стає темним у світлій темі та світлим у темній. Для muted-тексту daisyUI рекомендує модифікатори прозорості на кшталт `/70`, `/50` або `/30`. ([daisyui.com](https://daisyui.com/docs/colors/))
@@ -293,9 +261,7 @@ base-100 → білий або дуже світлий кремовий
 Інформаційний стан. Це не успіх і не помилка — просто корисне повідомлення.
 
 ```html
-<div class="alert alert-info">
-  Ваш номер телефону не буде показаний публічно.
-</div>
+<div class="alert alert-info">Ваш номер телефону не буде показаний публічно.</div>
 ```
 
 Використовуйте для:
@@ -307,16 +273,14 @@ base-100 → білий або дуже світлий кремовий
 - статусу «Ви обрали цей подарунок»;
 - повідомлень без ризику або помилки.
 
-Для PurrList `info` може бути baby blue.
+Для MeowList `info` може бути baby blue.
 
 ### `info-content`
 
 Текст на фоні `info`.
 
 ```html
-<div class="bg-info text-info-content">
-  Посилання скопійовано
-</div>
+<div class="bg-info text-info-content">Посилання скопійовано</div>
 ```
 
 Компонент `alert-info` сам підбирає потрібний foreground, тому вручну `text-info-content` зазвичай не потрібен.
@@ -328,9 +292,7 @@ base-100 → білий або дуже світлий кремовий
 Успішна, безпечна або завершена дія.
 
 ```html
-<div class="alert alert-success">
-  Подарунок успішно заброньовано.
-</div>
+<div class="alert alert-success">Подарунок успішно заброньовано.</div>
 ```
 
 Використовуйте для:
@@ -342,16 +304,14 @@ base-100 → білий або дуже світлий кремовий
 - завершеної операції;
 - стану «Available».
 
-Для PurrList `success` може бути м’яким м’ятно-зеленим.
+Для MeowList `success` може бути м’яким м’ятно-зеленим.
 
 ### `success-content`
 
 Текст та іконки поверх `success`.
 
 ```html
-<span class="bg-success text-success-content">
-  Доступний
-</span>
+<span class="bg-success text-success-content"> Доступний </span>
 ```
 
 ---
@@ -361,9 +321,7 @@ base-100 → білий або дуже світлий кремовий
 Стан, що потребує уваги, але не обов’язково є помилкою.
 
 ```html
-<div class="alert alert-warning">
-  Подію заплановано вже на завтра.
-</div>
+<div class="alert alert-warning">Подію заплановано вже на завтра.</div>
 ```
 
 Використовуйте для:
@@ -375,7 +333,7 @@ base-100 → білий або дуже світлий кремовий
 - наближення дедлайну;
 - потенційно ризикованої, але не руйнівної дії.
 
-Для PurrList це може бути пастельно-жовтий.
+Для MeowList це може бути пастельно-жовтий.
 
 Не використовуйте `warning` для звичайних декоративних жовтих елементів. Семантичний колір повинен зберігати своє значення.
 
@@ -384,9 +342,7 @@ base-100 → білий або дуже світлий кремовий
 Контент на фоні `warning`.
 
 ```html
-<span class="bg-warning text-warning-content">
-  Уже обрано
-</span>
+<span class="bg-warning text-warning-content"> Уже обрано </span>
 ```
 
 ---
@@ -396,9 +352,7 @@ base-100 → білий або дуже світлий кремовий
 Помилка, небезпека або destructive action.
 
 ```html
-<div class="alert alert-error">
-  Не вдалося забронювати подарунок.
-</div>
+<div class="alert alert-error">Не вдалося забронювати подарунок.</div>
 ```
 
 Використовуйте для:
@@ -411,21 +365,15 @@ base-100 → білий або дуже світлий кремовий
 - критичного повідомлення.
 
 ```html
-<button class="btn btn-error">
-  Видалити вішліст
-</button>
+<button class="btn btn-error">Видалити вішліст</button>
 ```
 
 Не використовуйте `error` для кнопки «Скасувати». Cancel — це нейтральна дія:
 
 ```html
-<button class="btn btn-ghost">
-  Скасувати
-</button>
+<button class="btn btn-ghost">Скасувати</button>
 
-<button class="btn btn-error">
-  Видалити
-</button>
+<button class="btn btn-error">Видалити</button>
 ```
 
 ### `error-content`
@@ -433,37 +381,35 @@ base-100 → білий або дуже світлий кремовий
 Контент поверх `error`.
 
 ```html
-<p class="bg-error text-error-content">
-  Сталася помилка
-</p>
+<p class="bg-error text-error-content">Сталася помилка</p>
 ```
 
 `info`, `success`, `warning` та `error` є семантичними кольорами станів, і кожен має відповідний `*-content` токен для контенту на кольоровому фоні. ([daisyui.com](https://daisyui.com/docs/colors/))
 
 # 4. Повна шпаргалка токенів
 
-| Токен | Основне призначення |
-|---|---|
-| `primary` | Головна дія і головний колір бренду |
-| `primary-content` | Контент поверх `primary` |
-| `secondary` | Другий колір бренду, другорядні CTA |
-| `secondary-content` | Контент поверх `secondary` |
-| `accent` | Невеликі акценти, tags, selected state |
-| `accent-content` | Контент поверх `accent` |
-| `neutral` | Нейтральна темна або ненасичена поверхня |
-| `neutral-content` | Контент поверх `neutral` |
-| `base-100` | Основна поверхня, card, modal |
-| `base-200` | Фон сторінки або секції |
-| `base-300` | Border, divider, disabled surface |
-| `base-content` | Основний текст та іконки |
-| `info` | Інформаційне повідомлення |
-| `info-content` | Контент поверх `info` |
-| `success` | Успіх, безпечний або доступний стан |
-| `success-content` | Контент поверх `success` |
-| `warning` | Попередження або стан, що потребує уваги |
-| `warning-content` | Контент поверх `warning` |
-| `error` | Помилка, небезпека, видалення |
-| `error-content` | Контент поверх `error` |
+| Токен               | Основне призначення                      |
+| ------------------- | ---------------------------------------- |
+| `primary`           | Головна дія і головний колір бренду      |
+| `primary-content`   | Контент поверх `primary`                 |
+| `secondary`         | Другий колір бренду, другорядні CTA      |
+| `secondary-content` | Контент поверх `secondary`               |
+| `accent`            | Невеликі акценти, tags, selected state   |
+| `accent-content`    | Контент поверх `accent`                  |
+| `neutral`           | Нейтральна темна або ненасичена поверхня |
+| `neutral-content`   | Контент поверх `neutral`                 |
+| `base-100`          | Основна поверхня, card, modal            |
+| `base-200`          | Фон сторінки або секції                  |
+| `base-300`          | Border, divider, disabled surface        |
+| `base-content`      | Основний текст та іконки                 |
+| `info`              | Інформаційне повідомлення                |
+| `info-content`      | Контент поверх `info`                    |
+| `success`           | Успіх, безпечний або доступний стан      |
+| `success-content`   | Контент поверх `success`                 |
+| `warning`           | Попередження або стан, що потребує уваги |
+| `warning-content`   | Контент поверх `warning`                 |
+| `error`             | Помилка, небезпека, видалення            |
+| `error-content`     | Контент поверх `error`                   |
 
 Це повний набір офіційних семантичних кольорових назв daisyUI. ([daisyui.com](https://daisyui.com/docs/colors/))
 
@@ -474,51 +420,32 @@ base-100 → білий або дуже світлий кремовий
 ## Фон
 
 ```html
-bg-primary
-bg-secondary
-bg-accent
-bg-neutral
-bg-base-100
-bg-base-200
-bg-base-300
-bg-info
-bg-success
-bg-warning
-bg-error
+bg-primary bg-secondary bg-accent bg-neutral bg-base-100 bg-base-200 bg-base-300 bg-info bg-success
+bg-warning bg-error
 ```
 
 ## Текст
 
 ```html
-text-primary
-text-primary-content
-text-base-content
-text-success
-text-error
+text-primary text-primary-content text-base-content text-success text-error
 ```
 
 ## Рамка
 
 ```html
-border-primary
-border-base-300
-border-error
+border-primary border-base-300 border-error
 ```
 
 ## Focus ring
 
 ```html
-ring-primary
-ring-error
-ring-offset-base-100
+ring-primary ring-error ring-offset-base-100
 ```
 
 ## Gradient
 
 ```html
-from-primary
-via-secondary
-to-accent
+from-primary via-secondary to-accent
 ```
 
 Для вашого дизайну я б не зловживав gradient-класами, оскільки ви орієнтуєтеся на чисті пастельні заливки.
@@ -526,15 +453,13 @@ to-accent
 ## SVG
 
 ```html
-fill-primary
-stroke-primary
+fill-primary stroke-primary
 ```
 
 ## Тіні
 
 ```html
-shadow-primary
-shadow-error
+shadow-primary shadow-error
 ```
 
 Зазвичай краще використовувати кольорові тіні дуже обмежено.
@@ -542,13 +467,8 @@ shadow-error
 ## Інші доступні utility-класи
 
 ```html
-outline-primary
-divide-base-300
-accent-primary
-caret-primary
-decoration-primary
-placeholder-base-content
-ring-offset-base-100
+outline-primary divide-base-300 accent-primary caret-primary decoration-primary
+placeholder-base-content ring-offset-base-100
 ```
 
 Повний офіційний список шаблонів:
@@ -580,11 +500,7 @@ ring-offset-{COLOR}
 Будь-який токен можна використовувати з opacity modifier:
 
 ```html
-bg-primary/10
-bg-primary/20
-text-base-content/70
-border-primary/30
-text-error/80
+bg-primary/10 bg-primary/20 text-base-content/70 border-primary/30 text-error/80
 ```
 
 Практичні значення:
@@ -601,9 +517,7 @@ text-error/80
 Приклад м’якого badge:
 
 ```html
-<span class="rounded-full bg-success/15 px-3 py-1 text-success">
-  Доступний
-</span>
+<span class="rounded-full bg-success/15 px-3 py-1 text-success"> Доступний </span>
 ```
 
 Приклад інформаційного callout:
@@ -627,9 +541,7 @@ text-error/80
 замість:
 
 ```html
-<button class="btn bg-primary text-primary-content border-primary">
-  Створити
-</button>
+<button class="btn bg-primary text-primary-content border-primary">Створити</button>
 ```
 
 `btn-primary` сам задає background, border і правильний `primary-content` для тексту. Підтримка конкретних modifier-класів залежить від компонента. ([daisyui.com](https://daisyui.com/docs/colors/))
@@ -637,67 +549,35 @@ text-error/80
 Найпоширеніші патерни:
 
 ```html
-btn-primary
-btn-secondary
-btn-accent
-btn-neutral
-btn-info
-btn-success
-btn-warning
-btn-error
+btn-primary btn-secondary btn-accent btn-neutral btn-info btn-success btn-warning btn-error
 ```
 
 ```html
-badge-primary
-badge-secondary
-badge-accent
-badge-neutral
-badge-info
-badge-success
-badge-warning
+badge-primary badge-secondary badge-accent badge-neutral badge-info badge-success badge-warning
 badge-error
 ```
 
 ```html
-alert-info
-alert-success
-alert-warning
-alert-error
+alert-info alert-success alert-warning alert-error
 ```
 
 ```html
-input-primary
-input-secondary
-input-accent
-input-info
-input-success
-input-warning
-input-error
+input-primary input-secondary input-accent input-info input-success input-warning input-error
 ```
 
 ```html
-checkbox-primary
-radio-primary
-toggle-primary
-range-primary
-progress-primary
+checkbox-primary radio-primary toggle-primary range-primary progress-primary
 ```
 
 Наприклад:
 
 ```html
-<input
-  class="input input-error"
-  type="text"
-  aria-invalid="true"
-/>
+<input class="input input-error" type="text" aria-invalid="true" />
 
-<p class="mt-1 text-sm text-error">
-  Вкажіть назву подарунка
-</p>
+<p class="mt-1 text-sm text-error">Вкажіть назву подарунка</p>
 ```
 
-# 8. Рекомендована схема для PurrList
+# 8. Рекомендована схема для MeowList
 
 Я б закріпив ролі так:
 
@@ -719,65 +599,48 @@ error         → soft coral-red
 
 Практичне використання:
 
-| Елемент PurrList | Колір |
-|---|---|
-| «Створити вішліст» | `primary` |
-| «Поділитися» | `secondary` або `btn-outline` |
-| Теги подарунка | `accent` |
-| Загальний фон | `base-200` |
-| Картки та modal | `base-100` |
-| Рамки | `base-300` |
-| Основний текст | `base-content` |
-| Muted текст | `base-content/60` |
-| «Ви обрали цей подарунок» | `info` |
-| «Доступний» | `success` |
-| «Уже обрано» | `warning` |
-| Видалення і validation error | `error` |
+| Елемент MeowList             | Колір                         |
+| ---------------------------- | ----------------------------- |
+| «Створити вішліст»           | `primary`                     |
+| «Поділитися»                 | `secondary` або `btn-outline` |
+| Теги подарунка               | `accent`                      |
+| Загальний фон                | `base-200`                    |
+| Картки та modal              | `base-100`                    |
+| Рамки                        | `base-300`                    |
+| Основний текст               | `base-content`                |
+| Muted текст                  | `base-content/60`             |
+| «Ви обрали цей подарунок»    | `info`                        |
+| «Доступний»                  | `success`                     |
+| «Уже обрано»                 | `warning`                     |
+| Видалення і validation error | `error`                       |
 
 # 9. Приклад правильної картки подарунка
 
 ```html
 <article class="card border border-base-300 bg-base-100 shadow-sm">
   <figure class="bg-base-200">
-    <img
-      src="/images/headphones.jpg"
-      alt="Навушники Sony"
-    />
+    <img src="/images/headphones.jpg" alt="Навушники Sony" />
   </figure>
 
   <div class="card-body">
     <div class="flex items-start justify-between gap-3">
-      <h2 class="card-title text-base-content">
-        Sony WH-1000XM5
-      </h2>
+      <h2 class="card-title text-base-content">Sony WH-1000XM5</h2>
 
-      <span class="badge badge-success">
-        Доступний
-      </span>
+      <span class="badge badge-success"> Доступний </span>
     </div>
 
-    <p class="text-base-content/65">
-      Бажано у чорному кольорі
-    </p>
+    <p class="text-base-content/65">Бажано у чорному кольорі</p>
 
     <div class="flex flex-wrap gap-2">
-      <span class="badge badge-accent badge-soft">
-        Black
-      </span>
+      <span class="badge badge-accent badge-soft"> Black </span>
 
-      <span class="badge badge-secondary badge-soft">
-        Over-ear
-      </span>
+      <span class="badge badge-secondary badge-soft"> Over-ear </span>
     </div>
 
     <div class="card-actions mt-3">
-      <a class="btn btn-ghost">
-        Переглянути
-      </a>
+      <a class="btn btn-ghost"> Переглянути </a>
 
-      <button class="btn btn-primary">
-        Обрати подарунок
-      </button>
+      <button class="btn btn-primary">Обрати подарунок</button>
     </div>
   </div>
 </article>

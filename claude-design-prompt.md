@@ -1,4 +1,4 @@
-Design a complete mobile-first UI prototype for a playful, light, single-page-style birthday wishlist website called “PurrList”.
+Design a complete mobile-first UI prototype for a playful, light, single-page-style birthday wishlist website called “MeowList”.
 
 The website uses:
 
@@ -131,7 +131,7 @@ This ensures full theming flexibility while keeping the UI implementation clean 
 
 # Product concept
 
-PurrList is a simple birthday and event wishlist service.
+MeowList is a simple birthday and event wishlist service.
 
 A user can:
 
