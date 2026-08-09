@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WishlistApi } from '../../core/wishlist.api';
 import { UserWishlist } from '../../components/modal/data/modal.types';
 import { AuthStore } from '../../core/auth.store';
+import { ConfirmationModalStore } from '../../components/confirmation-modal/confirmation-modal.store';
+import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -16,6 +18,8 @@ export class WishlistDetailsPage implements OnInit {
   activatedRoute = inject(ActivatedRoute);
   wishlistApi = inject(WishlistApi);
   authStore = inject(AuthStore);
+  confirmationModalStore = inject(ConfirmationModalStore);
+  wishlistStore = inject(WishlistStore);
 
   readonly isLoading = signal<boolean>(false);
   readonly wishlistData = signal<UserWishlist | null>(null);
@@ -25,8 +29,6 @@ export class WishlistDetailsPage implements OnInit {
 
   constructor() {
     effect(() => {
-      console.log('is copying link:', this.isCopyingLink());
-
       if (this.isLinkCopied()) {
         setTimeout(() => {
           this.isLinkCopied.set(false);
@@ -80,6 +82,21 @@ export class WishlistDetailsPage implements OnInit {
     return `${window.location.origin}/wishlists/${id}`;
   }
 
+  showConfirmModal() {
+    this.confirmationModalStore.open({
+      title: 'Підтвердження видалення',
+      message: 'Ви впевнені, що хочете видалити цей список бажань?',
+      cancelButtonText: 'Скасувати',
+      confirmButtonText: 'Видалити',
+      onConfirm: () => this.deleteWishlist(),
+    });
+  }
+
+  async deleteWishlist() {
+    await this.wishlistStore.deleteWishlist(this.wishlistData()?.id || '');
+    this.router.navigate(['/wishlists']);
+  }
+
   async copyWishlistLink(id: string) {
     this.isCopyingLink.set(true);
     try {
@@ -92,8 +109,6 @@ export class WishlistDetailsPage implements OnInit {
       this.isCopyingLink.set(false);
     }
   }
-
-  toggleFavorite(gift: any) {}
 
   cancelGiftReservation(giftId: any) {}
 

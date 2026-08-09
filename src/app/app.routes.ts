@@ -1,4 +1,17 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
+import { AuthStore } from './core/auth.store';
+
+const authGuard = async () => {
+  const router = inject(Router);
+  const authStore = inject(AuthStore);
+  const isAuthenticated = authStore.isAuthenticated();
+
+  if (!isAuthenticated) {
+    return router.createUrlTree(['/']);
+  }
+  return true;
+};
 
 export const routes: Routes = [
   {
@@ -20,6 +33,7 @@ export const routes: Routes = [
             loadComponent: async () =>
               (await import('./features/wishlists/wishlists.page')).WishlistsPage,
             pathMatch: 'full',
+            canActivate: [authGuard],
           },
           {
             path: ':id',

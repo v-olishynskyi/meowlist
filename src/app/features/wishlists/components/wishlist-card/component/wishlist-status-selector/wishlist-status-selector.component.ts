@@ -48,7 +48,6 @@ export class WishlistStatusSelectorComponent implements OnInit {
 
     const handleClickOutside = (event: MouseEvent) => {
       if (!menuEl.contains(event.target as Node)) {
-        console.log('Clicked outside the menu');
         this.isOpen.set(false);
       }
     };

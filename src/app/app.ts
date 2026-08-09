@@ -11,13 +11,14 @@ import { ModalRouteCoordinator } from './components/modal/data/modal-route-coord
 import { registerLocaleData, NgClass } from '@angular/common';
 import localeUa from '@angular/common/locales/uk';
 import { ToastService } from './core/toast.service';
+import { ConfirmationModalComponent } from './components/confirmation-modal/confirmation-modal.component';
 
 registerLocaleData(localeUa);
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.html',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ConfirmationModalComponent],
 })
 export class App implements OnInit {
   authStore = inject(AuthStore);

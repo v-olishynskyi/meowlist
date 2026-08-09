@@ -4,6 +4,7 @@ import { ModalStore } from './data/modal.store';
 import { NgComponentOutlet } from '@angular/common';
 import { ModalContentStore } from './data/modal-content.store';
 import { Router } from '@angular/router';
+import { ConfirmationModalStore } from '../confirmation-modal/confirmation-modal.store';
 
 @Component({
   selector: 'app-modal',
@@ -16,6 +17,7 @@ export class ModalComponent implements OnInit {
   modalStore = inject(ModalStore);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   modalContentStore = inject(ModalContentStore);
+  confirmationModalStore = inject(ConfirmationModalStore);
 
   private document = inject(DOCUMENT);
 
@@ -43,11 +45,29 @@ export class ModalComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.modalDialog()?.nativeElement.addEventListener('close', () => {
+    const modalEl = this.modalDialog()?.nativeElement;
+
+    if (!modalEl) return;
+
+    modalEl.addEventListener('close', () => {
       // TODO:
       this.router.navigateByUrl(this.router.url.split('?')[0]);
       this.modalStore.clearModalRouteIntent();
       this.modalFlowRuntimeStore.clearAllSessions();
+    });
+
+    modalEl.addEventListener('cancel', (event) => {
+      this.confirmationModalStore.open({
+        title: 'Підтвердження',
+        message:
+          'Ви впевнені, що хочете закрити модальне вікно? Всі незбережені дані будуть втрачені.',
+        cancelButtonText: 'Скасувати',
+        confirmButtonText: 'Закрити',
+        onConfirm: async () => {
+          this.modalStore.closeModal();
+        },
+      });
+      event.preventDefault();
     });
   }
 

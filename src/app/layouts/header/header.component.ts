@@ -30,7 +30,6 @@ export class HeaderComponent {
 
       this.router.navigate(['/']);
     } catch (error) {
-      console.log('Logout error', error);
     } finally {
       this.isLogouting.set(false);
     }

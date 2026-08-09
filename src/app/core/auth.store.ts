@@ -5,6 +5,7 @@ import { ModalFlowRuntimeStore } from '../components/modal/data/modal-flow-runti
 import { AuthApi } from './auth.api';
 import { AuthResponse } from '@supabase/supabase-js';
 import { Profile } from './types';
+import { WishlistStore } from '../features/modals/feature-modals/data/wishlist.store';
 
 export enum AuthStatus {
   Authenticated = 'authenticated',
@@ -75,12 +76,10 @@ export class AuthStore {
   checkAuth() {
     this.authApi.authChanges(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        console.log('Auth event SIGNED_IN', session);
+        this.loadProfile();
         this.setAuthStatus(AuthStatus.Authenticated);
         this.setAuthData({ session, user: session.user });
-        this.getProfile();
       } else if (event === 'SIGNED_OUT') {
-        console.log('Auth event SIGNED_OUT', session);
         this.setAuthStatus(AuthStatus.Unauthenticated);
         this.setAuthData(null);
         this._profileSubject.next(null);
@@ -88,11 +87,11 @@ export class AuthStore {
     });
   }
 
-  getProfile() {
+  loadProfile() {
     const profileId = this.currentUser()?.id ?? null;
     if (!profileId) return null;
 
-    return this.authApi.getProfile(profileId).then(
+    return this.authApi.loadProfile(profileId).then(
       (data) => {
         this._profileSubject.next(data.data);
       },

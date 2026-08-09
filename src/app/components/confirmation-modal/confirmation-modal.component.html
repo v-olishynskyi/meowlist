@@ -1,0 +1,29 @@
+<dialog
+  #confirmationModal
+  class="modal"
+  [open]="isOpen()"
+  (click)="onBackdropClick($event)"
+  class="border border-base-300 rounded-3xl shadow-xl p-0 m-auto w-[calc(100vw-24px)] max-w-105 max-h-[calc(100dvh-16px)]"
+>
+  <div class="text-base-content rounded-3xl p-4">
+    <h1 class="text-lg font-bold text-center">{{ modalOptions()?.title }}</h1>
+    <p class="text-sm text-base-content/55 text-center">{{ modalOptions()?.message }}</p>
+  </div>
+
+  <div class="flex flex-row mt-2 border-t border-base-300 bg-base-100/95 p-4 backdrop-blur gap-4">
+    <button class="btn btn-outline flex-1" (click)="confirmationModalStore.close()">
+      {{ modalOptions()?.cancelButtonText || 'Відміна' }}
+    </button>
+
+    <button
+      class="btn btn-error flex-1 text-error-content"
+      (click)="confirmationModalStore.confirm()"
+      [disabled]="isConfirming()"
+    >
+      {{ modalOptions()?.confirmButtonText || 'Підтвердити' }}
+      @if (isConfirming()) {
+        <span class="loading loading-spinner"></span>
+      }
+    </button>
+  </div>
+</dialog>

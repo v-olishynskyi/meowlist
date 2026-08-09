@@ -8,7 +8,7 @@ import { AuthChangeEvent, Session } from '@supabase/supabase-js';
 export class AuthApi {
   supabase = inject(SupabaseService).supabase;
 
-  getProfile(profileId: string) {
+  loadProfile(profileId: string) {
     return this.supabase.from('profiles').select('*').eq('id', profileId).single();
   }
 

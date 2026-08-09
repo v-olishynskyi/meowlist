@@ -104,7 +104,6 @@ export class AuthOtpModal {
           queryParamsHandling: 'merge',
         });
       } else {
-        console.log('No redirect flow found, navigating to home');
         this.modalStore.clearModalRouteIntent();
         this.modalStore.closeModal();
         this.router.navigate(['/']);

@@ -118,13 +118,20 @@ export class WishlistStore {
       }));
     } catch (error) {
       console.error('Error removing gift:', error);
-    } finally {
+      this.toastService.showToast({
+        message: 'Помилка при видаленні подарунка. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
     }
   }
 
   async loadWishlists() {
     try {
+      await this.authStore.loadProfile();
+
       const ownerId = this.authStore.profile()!.id;
+      if (!ownerId) return;
+
       const { data, error } = await this.wishlistApi.getWishlists(ownerId);
 
       if (error) throw error;
@@ -132,6 +139,10 @@ export class WishlistStore {
       this._wishlistsObject$.next(data);
     } catch (error) {
       console.error('Error loading wishlists:', error);
+      this.toastService.showToast({
+        message: 'Помилка при завантаженні списків бажань. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
     }
   }
 

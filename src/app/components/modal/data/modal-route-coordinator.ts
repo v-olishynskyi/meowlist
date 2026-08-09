@@ -63,7 +63,6 @@ export class ModalRouteCoordinator {
     return this.activatedRoute.queryParamMap
       .pipe(
         tap((queryParam) => {
-          console.log('here', this.router.url);
           const flowParam = queryParam.get('flow') as ModalFlowKey;
           const stepParam = queryParam.get('step') as StepOf<ModalFlowKey>;
 
