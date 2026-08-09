@@ -1,7 +1,7 @@
 import { Component, inject, isDevMode, signal } from '@angular/core';
 import { UtilsService } from '../../shared/utils/utils.service';
 import { AuthStore } from '../../core/auth.store';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ModalComponent } from '../../components/modal/modal.component';
 import { ModalStore } from '../../components/modal/data/modal.store';
 import { ProfileMenuComponent } from './components/profile-menu/profile-menu.component';
@@ -13,6 +13,7 @@ import { BurgerMenuComponent } from './components/burger-menu/burger-menu.compon
   imports: [RouterLink, ModalComponent, ProfileMenuComponent, BurgerMenuComponent],
 })
 export class HeaderComponent {
+  router = inject(Router);
   modalStore = inject(ModalStore);
   authStore = inject(AuthStore);
   utilsService = inject(UtilsService);
@@ -26,6 +27,8 @@ export class HeaderComponent {
       const { error } = await this.authStore.logout();
 
       if (error) throw error;
+
+      this.router.navigate(['/']);
     } catch (error) {
       console.log('Logout error', error);
     } finally {

@@ -42,10 +42,10 @@
           (click)="delete.emit(wishlist().id)"
           [disabled]="isDeleting()"
         >
+          Видалити
           @if (isDeleting()) {
             <span class="loading loading-spinner loading-sm"></span>
           }
-          Видалити
         </button>
       </li>
     </ul>

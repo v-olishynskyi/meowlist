@@ -63,15 +63,20 @@ export class ModalRouteCoordinator {
     return this.activatedRoute.queryParamMap
       .pipe(
         tap((queryParam) => {
+          console.log('here', this.router.url);
           const flowParam = queryParam.get('flow') as ModalFlowKey;
           const stepParam = queryParam.get('step') as StepOf<ModalFlowKey>;
+
+          if (!flowParam) {
+            this.modalStore.clearModalRouteIntent();
+            return;
+          }
 
           const isFlowValid = this.utilsService.isKeyOf(flowParam, MODAL_FLOWS);
           const routeIntent = this.resolveRouteIntent(flowParam, stepParam);
 
-          if (!flowParam || !isFlowValid || !routeIntent) {
-            const [path] = this.router.url.split('?');
-            this.router.navigate([path], { queryParams: {} });
+          if (!isFlowValid || !routeIntent) {
+            this.clearModalQueryParams();
 
             return;
           }
@@ -106,5 +111,17 @@ export class ModalRouteCoordinator {
         }),
       )
       .subscribe();
+  }
+
+  private clearModalQueryParams(): void {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: {
+        flow: null,
+        step: null,
+      },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 }

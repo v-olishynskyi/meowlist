@@ -29,7 +29,13 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "polyfills": ["@angular/localize/init"]
+            "polyfills": ["@angular/localize/init"],
+            "loader": {
+              ".woff2": "file",
+              ".woff": "file",
+              ".ttf": "file",
+              ".webp": "file"
+            }
           },
           "configurations": {
             "production": {

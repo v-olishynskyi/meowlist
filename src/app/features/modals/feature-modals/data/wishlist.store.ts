@@ -166,8 +166,16 @@ export class WishlistStore {
 
       const updatedWishlists = this.wishlists()!.filter((wishlist) => wishlist.id !== wishlistId);
       this._wishlistsObject$.next(updatedWishlists);
+      this.toastService.showToast({
+        message: 'Вішлист успішно видалено',
+        type: 'success',
+      });
     } catch (error) {
       console.error('Error deleting wishlist:', error);
+      this.toastService.showToast({
+        message: 'Помилка при видаленні вішлисту',
+        type: 'error',
+      });
     }
   }
 }

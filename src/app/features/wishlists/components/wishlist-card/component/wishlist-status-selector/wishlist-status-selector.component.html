@@ -2,7 +2,7 @@
 
 <details #wishlistStatusMenu class="dropdown dropdown-end" [open]="isOpen()">
   <summary
-    class="btn btn-active btn-sm min-w-40 rounded-2xl"
+    class="btn btn-active btn-sm min-w-40 rounded-2xl text-white"
     [class.btn-success]="wishlist().status === 'published'"
     [class.btn-error]="wishlist().status === 'draft'"
     [class.btn-warning]="wishlist().status === 'hidden'"

@@ -96,6 +96,8 @@ export class AuthOtpModal {
       const redirectFlow =
         redirectUrl && (JSON.parse(decodeURIComponent(redirectUrl)) as RouteIntent);
 
+      this.authStore.resetOtpRequestDebounce();
+
       if (redirectUrl) {
         this.router.navigate([], {
           queryParams: this.utilsService.buildFlowQueryParams(redirectFlow.flow, redirectFlow.step),
@@ -107,7 +109,6 @@ export class AuthOtpModal {
         this.modalStore.closeModal();
         this.router.navigate(['/']);
       }
-      this.authStore.resetOtpRequestDebounce();
     } catch (error) {
       console.error('Failed to verify OTP', error);
     } finally {

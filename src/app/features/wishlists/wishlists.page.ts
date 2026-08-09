@@ -19,8 +19,11 @@ export class WishlistsPage implements OnInit {
   utilsService = inject(UtilsService);
   wishlistsStore = inject(WishlistStore);
 
+  isLoading = signal(false);
   filter = signal<WishlistFilter>(WishlistFilter.ALL);
   changeStatusError = signal<string | null>(null);
+
+  skeletonArray = Array.from({ length: 6 }, (_, i) => i);
 
   deletingWishlistId = signal<string | null>(null);
   wishlistStatusChangingId = signal<string | null>(null);
@@ -73,7 +76,9 @@ export class WishlistsPage implements OnInit {
     this.deletingWishlistId.set(null);
   }
 
-  ngOnInit() {
-    this.wishlistsStore.loadWishlists();
+  async ngOnInit() {
+    this.isLoading.set(true);
+    await this.wishlistsStore.loadWishlists();
+    this.isLoading.set(false);
   }
 }

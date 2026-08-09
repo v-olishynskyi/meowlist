@@ -77,7 +77,7 @@ export class WishlistDetailsPage implements OnInit {
   editWishlist() {}
 
   getShareUrl(id: string) {
-    return `${window.location.origin}/wishlist/${id}`;
+    return `${window.location.origin}/wishlists/${id}`;
   }
 
   async copyWishlistLink(id: string) {
