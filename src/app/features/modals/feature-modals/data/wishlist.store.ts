@@ -9,7 +9,7 @@ import {
 } from '../../../../components/modal/data/modal.types';
 import { WishlistApi } from '../../../../core/wishlist.api';
 import { AuthStore } from '../../../../core/auth.store';
-import { WishlistStatus } from '../../../../core/types';
+import { GiftReservationStatus, WishlistStatus } from '../../../../core/types';
 import { BehaviorSubject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ToastService } from '../../../../core/toast.service';
@@ -56,6 +56,11 @@ export class WishlistStore {
           ...state,
           wishlist: newWishlist,
         }));
+
+        this.toastService.showToast({
+          message: 'Вішлист успішно створено. Тепер ви можете додати подарунки',
+          type: 'success',
+        });
       }
 
       if (!shouldCreateEvent) return;
@@ -161,6 +166,14 @@ export class WishlistStore {
         wishlist.id === wishlistId ? { ...wishlist, status } : wishlist,
       );
       this._wishlistsObject$.next(updatedWishlists);
+
+      this.toastService.showToast({
+        message:
+          status === WishlistStatus.PUBLISHED
+            ? 'Вішліст успішно опубліковано'
+            : 'Статус списку бажань змінено',
+        type: 'success',
+      });
     } catch (error: any) {
       this.toastService.showToast({
         message: error?.message || 'Помилка при зміні статусу. Будь ласка, спробуйте ще раз.',
@@ -185,6 +198,74 @@ export class WishlistStore {
       console.error('Error deleting wishlist:', error);
       this.toastService.showToast({
         message: 'Помилка при видаленні вішлисту',
+        type: 'error',
+      });
+    }
+  }
+
+  async reserveGift(giftId: string) {
+    try {
+      const ownerId = this.authStore.profile()?.id;
+
+      const { data: reservationData, error } = await this.wishlistApi.reserveGift(giftId, ownerId!);
+
+      if (error) throw error;
+
+      this.authStore.addReservation(reservationData!);
+
+      const updatedWishlists = this.wishlists()!.map((wishlist) => {
+        const updatedGifts = wishlist.gifts.map((gift) =>
+          gift.id === giftId
+            ? { ...gift, reservation_status: GiftReservationStatus.RESERVED }
+            : gift,
+        );
+        return { ...wishlist, gifts: updatedGifts };
+      });
+
+      this._wishlistsObject$.next(updatedWishlists);
+
+      this.toastService.showToast({
+        message: 'Подарунок успішно зарезервовано Вами',
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Error reserving gift:', error);
+      this.toastService.showToast({
+        message: 'Помилка при резервуванні подарунка',
+        type: 'error',
+      });
+    }
+  }
+
+  async cancelGiftReservation(giftId: string) {
+    try {
+      const ownerId = this.authStore.profile()?.id;
+
+      const { error } = await this.wishlistApi.cancelGiftReservation(giftId, ownerId!);
+
+      if (error) throw error;
+
+      this.authStore.removeReservation(giftId);
+
+      const updatedWishlists = this.wishlists()!.map((wishlist) => {
+        const updatedGifts = wishlist.gifts.map((gift) =>
+          gift.id === giftId
+            ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
+            : gift,
+        );
+        return { ...wishlist, gifts: updatedGifts };
+      });
+
+      this._wishlistsObject$.next(updatedWishlists);
+
+      this.toastService.showToast({
+        message: 'Резервування подарунка скасовано',
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Error canceling gift reservation:', error);
+      this.toastService.showToast({
+        message: 'Помилка при скасуванні резервування подарунка',
         type: 'error',
       });
     }

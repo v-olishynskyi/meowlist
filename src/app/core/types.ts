@@ -6,7 +6,15 @@ export enum WishlistStatus {
   HIDDEN = 'hidden',
 }
 
-export type Profile = Tables<'profiles'>;
+export type Profile = Tables<'profiles'> & {
+  reservations: Tables<'gifts_reservation'>[];
+};
+
+export type GiftReservation = Tables<'gifts_reservation'>;
+export enum GiftReservationStatus {
+  RESERVED = 'reserved',
+  AVAILABLE = 'available',
+}
 
 export type OmitMeta<T> = Omit<T, 'created_at' | 'updated_at'>;
 

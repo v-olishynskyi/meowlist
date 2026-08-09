@@ -2,10 +2,12 @@ import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WishlistApi } from '../../core/wishlist.api';
-import { UserWishlist } from '../../components/modal/data/modal.types';
+import { Gift, ModalFlowKey, UserWishlist } from '../../components/modal/data/modal.types';
 import { AuthStore } from '../../core/auth.store';
 import { ConfirmationModalStore } from '../../components/confirmation-modal/confirmation-modal.store';
 import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
+import { UtilsService } from '../../shared/utils/utils.service';
+import { GiftReservationStatus } from '../../core/types';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -16,16 +18,21 @@ export class WishlistDetailsPage implements OnInit {
   log = console.log;
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
+  utilsService = inject(UtilsService);
   wishlistApi = inject(WishlistApi);
   authStore = inject(AuthStore);
   confirmationModalStore = inject(ConfirmationModalStore);
   wishlistStore = inject(WishlistStore);
+
+  protected readonly GiftReservationStatus = GiftReservationStatus;
 
   readonly isLoading = signal<boolean>(false);
   readonly wishlistData = signal<UserWishlist | null>(null);
 
   readonly isCopyingLink = signal<boolean>(false);
   readonly isLinkCopied = signal<boolean>(false);
+
+  readonly giftHandleReservationId = signal<string | null>(null);
 
   constructor() {
     effect(() => {
@@ -110,9 +117,28 @@ export class WishlistDetailsPage implements OnInit {
     }
   }
 
-  cancelGiftReservation(giftId: any) {}
+  async cancelGiftReservation(giftId: string) {
+    this.giftHandleReservationId.set(giftId);
+    // TODO: add guard to prevent reserving already reserved gifts
+    await this.wishlistStore.cancelGiftReservation(giftId);
+    this.giftHandleReservationId.set(null);
+  }
 
-  reserveGift(giftId: any) {}
+  async reserveGift(giftId: string) {
+    // check if the user is authenticated
+    if (!this.authStore.isAuthenticated()) {
+      this.router.navigate([this.router.url], {
+        queryParams: {
+          ...this.utilsService.buildFlowQueryParams(ModalFlowKey.AUTH_OTP),
+        },
+      });
+      return;
+    }
+    this.giftHandleReservationId.set(giftId);
+    // TODO: add guard to prevent reserving already reserved gifts
+    await this.wishlistStore.reserveGift(giftId);
+    this.giftHandleReservationId.set(null);
+  }
 
   async copyToClipboard(textToCopy: string) {
     // Navigator clipboard api needs a secure context (https)
@@ -138,5 +164,15 @@ export class WishlistDetailsPage implements OnInit {
         textArea.remove();
       }
     }
+  }
+
+  isGiftReservedByMe(giftId: string): boolean {
+    // TODO
+    const profile = this.authStore.profile();
+    if (!profile) return false;
+
+    console.log('IS GIFT RESERVED BY ME:', giftId, profile.reservations);
+
+    return profile.reservations.some((reservation) => reservation.gift_id === giftId);
   }
 }

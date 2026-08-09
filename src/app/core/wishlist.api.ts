@@ -109,4 +109,20 @@ export class WishlistApi {
   deleteGiftImage(imagePath: string) {
     return this.supabase.storage.from('gifts').remove([imagePath]);
   }
+
+  reserveGift(giftId: string, ownerId: string) {
+    return this.supabase
+      .from('gifts_reservation')
+      .insert({ gift_id: giftId, owner_id: ownerId })
+      .select()
+      .single();
+  }
+
+  cancelGiftReservation(giftId: string, ownerId: string) {
+    return this.supabase
+      .from('gifts_reservation')
+      .delete()
+      .eq('gift_id', giftId)
+      .eq('owner_id', ownerId);
+  }
 }

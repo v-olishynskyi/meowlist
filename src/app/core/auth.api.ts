@@ -9,7 +9,11 @@ export class AuthApi {
   supabase = inject(SupabaseService).supabase;
 
   loadProfile(profileId: string) {
-    return this.supabase.from('profiles').select('*').eq('id', profileId).single();
+    return this.supabase
+      .from('profiles')
+      .select('*, reservations:gifts_reservation(*)')
+      .eq('id', profileId)
+      .single();
   }
 
   signInWithOtp(phoneNumber: string) {

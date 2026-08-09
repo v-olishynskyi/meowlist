@@ -4,7 +4,7 @@ import { BehaviorSubject, catchError, interval, of, take, tap, timer } from 'rxj
 import { ModalFlowRuntimeStore } from '../components/modal/data/modal-flow-runtime.store';
 import { AuthApi } from './auth.api';
 import { AuthResponse } from '@supabase/supabase-js';
-import { Profile } from './types';
+import { GiftReservation, Profile } from './types';
 import { WishlistStore } from '../features/modals/feature-modals/data/wishlist.store';
 
 export enum AuthStatus {
@@ -75,20 +75,26 @@ export class AuthStore {
 
   checkAuth() {
     this.authApi.authChanges(async (event, session) => {
-      if (event === 'SIGNED_IN' && session) {
-        this.loadProfile();
-        this.setAuthStatus(AuthStatus.Authenticated);
-        this.setAuthData({ session, user: session.user });
-      } else if (event === 'SIGNED_OUT') {
-        this.setAuthStatus(AuthStatus.Unauthenticated);
-        this.setAuthData(null);
-        this._profileSubject.next(null);
+      try {
+        if (event === 'SIGNED_IN' && session) {
+          const userId = session.user.id;
+          this.loadProfile(userId);
+
+          this.setAuthStatus(AuthStatus.Authenticated);
+          this.setAuthData({ session, user: session.user });
+        } else if (event === 'SIGNED_OUT') {
+          this.setAuthStatus(AuthStatus.Unauthenticated);
+          this.setAuthData(null);
+          this._profileSubject.next(null);
+        }
+      } catch (error) {
+        console.error('Failed to handle auth change', error);
       }
     });
   }
 
-  loadProfile() {
-    const profileId = this.currentUser()?.id ?? null;
+  loadProfile(userId?: string) {
+    const profileId = userId ?? this.currentUser()?.id ?? null;
     if (!profileId) return null;
 
     return this.authApi.loadProfile(profileId).then(
@@ -121,5 +127,25 @@ export class AuthStore {
     this.setAuthData(null);
 
     return response;
+  }
+
+  addReservation(reservation: GiftReservation) {
+    // TODO
+    const updatedProfile: Profile = {
+      ...this.profile()!,
+      reservations: [...(this.profile()?.reservations || []), reservation],
+    };
+    this._profileSubject.next(updatedProfile);
+  }
+
+  removeReservation(giftId: string) {
+    // TODO
+    const updatedProfile: Profile = {
+      ...this.profile()!,
+      reservations: (this.profile()?.reservations || []).filter(
+        (reservation) => reservation.gift_id !== giftId,
+      ),
+    };
+    this._profileSubject.next(updatedProfile);
   }
 }
