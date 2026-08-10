@@ -35,6 +35,7 @@ jobs:
         env:
           NG_APP_SUPABASE_API_URL: ${{secrets.SUPABASE_API_URL}}
           NG_APP_SUPABASE_PUBLISHABLE_KEY: ${{secrets.SUPABASE_PUBLISHABLE_KEY}}
+          NG_APP_SITE_URL: ${{secrets.SITE_URL}}
         run: pnpm run build --configuration=production
         
       - uses: FirebaseExtended/action-hosting-deploy@v0
