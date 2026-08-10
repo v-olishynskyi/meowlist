@@ -128,11 +128,14 @@ export class WishlistApi {
       .single();
   }
 
-  cancelGiftReservation(giftId: string, ownerId: string) {
+  cancelGiftReservation(giftId: string) {
+    return this.supabase.from('gifts_reservation').delete().eq('gift_id', giftId);
+  }
+
+  getUserReservations(ownerId: string) {
     return this.supabase
       .from('gifts_reservation')
-      .delete()
-      .eq('gift_id', giftId)
+      .select('*, gift:gifts(*, wishlist:wishlists(id, slug))')
       .eq('owner_id', ownerId);
   }
 }

@@ -2,21 +2,21 @@ import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WishlistApi } from '../../core/wishlist.api';
-import { Gift, ModalFlowKey, UserWishlist } from '../../components/modal/data/modal.types';
+import { ModalFlowKey, UserWishlist } from '../../components/modal/data/modal.types';
 import { AuthStore } from '../../core/auth.store';
 import { ConfirmationModalStore } from '../../components/confirmation-modal/confirmation-modal.store';
 import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
 import { UtilsService } from '../../shared/utils/utils.service';
 import { GiftReservationStatus } from '../../core/types';
-import { tap } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { environment } from '../../../environments/environment';
 import { Meta, Title } from '@angular/platform-browser';
+import { GiftCardComponent } from './components/gift-card/gift-card.component';
 
 @Component({
   selector: 'app-wishlist-details-page',
   templateUrl: './wishlist-details.page.html',
-  imports: [NgTemplateOutlet, DatePipe, DecimalPipe, RouterLink],
+  imports: [NgTemplateOutlet, DatePipe, GiftCardComponent, RouterLink],
 })
 export class WishlistDetailsPage implements OnInit {
   private readonly title = inject(Title);
@@ -151,6 +151,14 @@ export class WishlistDetailsPage implements OnInit {
     this.giftHandleReservationId.set(giftId);
     // TODO: add guard to prevent reserving already reserved gifts
     await this.wishlistStore.cancelGiftReservation(giftId);
+    this.wishlist.update((wishlist) => ({
+      ...wishlist!,
+      gifts: wishlist!.gifts.map((gift) =>
+        gift.id === giftId
+          ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
+          : gift,
+      ),
+    }));
     this.giftHandleReservationId.set(null);
   }
 

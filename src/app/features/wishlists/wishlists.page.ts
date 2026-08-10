@@ -71,7 +71,6 @@ export class WishlistsPage implements OnInit {
 
   async deleteWishlist(wishlistId: string) {
     this.deletingWishlistId.set(wishlistId);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
     await this.wishlistsStore.deleteWishlist(wishlistId);
     this.deletingWishlistId.set(null);
   }

@@ -16,6 +16,12 @@ export enum GiftReservationStatus {
   AVAILABLE = 'available',
 }
 
+export type ReservationWithGift = GiftReservation & {
+  gift: Tables<'gifts'> & {
+    wishlist: Pick<Tables<'wishlists'>, 'id' | 'slug'>;
+  };
+};
+
 export type OmitMeta<T> = Omit<T, 'created_at' | 'updated_at'>;
 
 export enum WishlistFilter {

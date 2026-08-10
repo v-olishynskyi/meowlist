@@ -158,21 +158,21 @@ export type Database = {
           created_at: string
           id: string
           owner_id: string
-          slug: string | null
+          slug: string
           status: Database["public"]["Enums"]["wishlist_status"]
         }
         Insert: {
           created_at?: string
           id?: string
           owner_id: string
-          slug?: string | null
+          slug: string
           status: Database["public"]["Enums"]["wishlist_status"]
         }
         Update: {
           created_at?: string
           id?: string
           owner_id?: string
-          slug?: string | null
+          slug?: string
           status?: Database["public"]["Enums"]["wishlist_status"]
         }
         Relationships: [

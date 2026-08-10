@@ -48,6 +48,11 @@ export const routes: Routes = [
         ],
       },
       {
+        path: 'reserved-gifts',
+        loadComponent: async () =>
+          (await import('./features/reserved-gifts/reserved-gifts.page')).ReservedGiftsPage,
+      },
+      {
         path: '**',
         redirectTo: '',
       },

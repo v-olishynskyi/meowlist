@@ -250,24 +250,24 @@ export class WishlistStore {
 
   async cancelGiftReservation(giftId: string) {
     try {
-      const ownerId = this.authStore.profile()?.id;
-
-      const { error } = await this.wishlistApi.cancelGiftReservation(giftId, ownerId!);
+      const { error } = await this.wishlistApi.cancelGiftReservation(giftId);
 
       if (error) throw error;
 
       this.authStore.removeReservation(giftId);
 
-      const updatedWishlists = this.wishlists()!.map((wishlist) => {
-        const updatedGifts = wishlist.gifts.map((gift) =>
-          gift.id === giftId
-            ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
-            : gift,
-        );
-        return { ...wishlist, gifts: updatedGifts };
-      });
+      if (this.wishlists()) {
+        const updatedWishlists = this.wishlists()!.map((wishlist) => {
+          const updatedGifts = wishlist.gifts.map((gift) =>
+            gift.id === giftId
+              ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
+              : gift,
+          );
+          return { ...wishlist, gifts: updatedGifts };
+        });
 
-      this._wishlistsObject$.next(updatedWishlists);
+        this._wishlistsObject$.next(updatedWishlists);
+      }
 
       this.toastService.showToast({
         message: 'Резервування подарунка скасовано',
