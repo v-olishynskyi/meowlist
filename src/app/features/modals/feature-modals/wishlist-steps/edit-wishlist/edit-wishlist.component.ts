@@ -58,8 +58,8 @@ export class EditWishlistModal {
     });
   }
 
-  removeGift(giftId: string) {
-    this.wishlistStore.removeGift(giftId);
+  deleteGift(giftId: string) {
+    this.wishlistStore.deleteGift(giftId);
   }
 
   async publishWishlist() {

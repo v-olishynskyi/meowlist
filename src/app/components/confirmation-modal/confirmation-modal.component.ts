@@ -27,12 +27,12 @@ export class ConfirmationModalComponent implements OnInit {
   constructor() {
     effect(() => {
       const modalEl = this.modalRef()?.nativeElement;
-      if (modalEl) {
-        if (this.isOpen() && !modalEl.open) {
-          modalEl.showModal();
-        } else {
-          modalEl.close();
-        }
+      if (!modalEl) return;
+
+      if (this.isOpen()) {
+        if (!modalEl.open) modalEl.showModal();
+      } else {
+        if (modalEl.open) modalEl.close();
       }
     });
   }
@@ -46,7 +46,6 @@ export class ConfirmationModalComponent implements OnInit {
     });
 
     modalEl.addEventListener('cancel', (event) => {
-      console.log('Confirmation modal canceled');
       this.confirmationModalStore.close();
     });
   }

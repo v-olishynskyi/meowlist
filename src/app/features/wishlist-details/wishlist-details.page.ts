@@ -34,9 +34,10 @@ export class WishlistDetailsPage implements OnInit {
   protected readonly GiftReservationStatus = GiftReservationStatus;
 
   readonly isLoading = signal<boolean>(false);
-  // @ts-ignore
-  readonly wishlistData$ = toSignal<{ wishlist: UserWishlist | null }>(this.activatedRoute.data);
-  readonly wishlistData = computed(() => this.wishlistData$()?.wishlist);
+
+  private readonly routeData = this.activatedRoute.data;
+  readonly wishlistData = toSignal(this.routeData);
+  wishlist = signal<UserWishlist | null>(null);
 
   readonly isCopyingLink = signal<boolean>(false);
   readonly isLinkCopied = signal<boolean>(false);
@@ -52,16 +53,19 @@ export class WishlistDetailsPage implements OnInit {
       }
     });
 
-    if (!this.wishlistData()) return;
+    const data = this.wishlistData()?.['wishlist'] as UserWishlist;
 
-    this.setMeta(this.wishlistData()!);
+    if (data) {
+      this.wishlist.set(data);
+      this.setMeta(data);
+    }
   }
 
   readonly skeletonGiftItems = [1, 2, 3, 4, 5];
   readonly showAllGifts = signal(false);
 
   readonly canEditWishlist = computed(
-    () => this.authStore.profile()?.id === this.wishlistData()?.owner_id,
+    () => this.authStore.profile()?.id === this.wishlist()?.owner_id,
   );
 
   wishlistIllustrationUrl = '';
@@ -87,9 +91,9 @@ export class WishlistDetailsPage implements OnInit {
 
   async shareWishlist() {
     await navigator.share({
-      title: this.wishlistData()?.event?.name || 'Список бажань',
+      title: this.wishlist()?.event?.name || 'Список бажань',
       text: 'Перегляньте мій список бажань!',
-      url: this.getShareUrl(this.wishlistData()?.id || ''),
+      url: this.getShareUrl(this.wishlist()?.id || ''),
     });
   }
 
@@ -110,8 +114,24 @@ export class WishlistDetailsPage implements OnInit {
   }
 
   async deleteWishlist() {
-    await this.wishlistStore.deleteWishlist(this.wishlistData()?.id || '');
+    await this.wishlistStore.deleteWishlist(this.wishlist()?.id || '');
     this.router.navigate(['/wishlists']);
+  }
+
+  async deleteGift(giftId: string) {
+    this.confirmationModalStore.open({
+      title: 'Підтвердження видалення',
+      message: 'Ви впевнені, що хочете видалити цей подарунок?',
+      cancelButtonText: 'Скасувати',
+      confirmButtonText: 'Видалити',
+      onConfirm: async () => {
+        await this.wishlistStore.deleteGift(giftId);
+        this.wishlist.update((wishlist) => ({
+          ...wishlist!,
+          gifts: wishlist!.gifts.filter((gift) => gift.id !== giftId),
+        }));
+      },
+    });
   }
 
   async copyWishlistLink(id: string) {
@@ -237,7 +257,5 @@ export class WishlistDetailsPage implements OnInit {
       property: 'og:image:alt',
       content: title,
     });
-
-    console.log('meta', this.meta);
   }
 }

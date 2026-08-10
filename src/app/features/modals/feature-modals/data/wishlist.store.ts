@@ -112,15 +112,17 @@ export class WishlistStore {
     }
   }
 
-  async removeGift(giftId: string) {
+  async deleteGift(giftId: string) {
     try {
-      const { error } = await this.wishlistApi.removeGift(giftId);
+      const { error } = await this.wishlistApi.deleteGift(giftId);
       if (error) throw error;
 
-      this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-        ...state,
-        gifts: state.gifts.filter((gift) => gift.id !== giftId),
-      }));
+      if (this.isEditMode()) {
+        this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
+          ...state,
+          gifts: state.gifts.filter((gift) => gift.id !== giftId),
+        }));
+      }
     } catch (error) {
       console.error('Error removing gift:', error);
       this.toastService.showToast({

@@ -77,7 +77,7 @@ export class WishlistApi {
       .single();
   }
 
-  removeGift(giftId: string) {
+  deleteGift(giftId: string) {
     return this.supabase.from('gifts').delete().eq('id', giftId);
   }
 
