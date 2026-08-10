@@ -233,6 +233,7 @@ export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
     return new FlowState<EditWishlistFlowState>({
       wishlist: state?.wishlist || {
         id: '',
+        slug: '',
         owner_id: '',
         status: WishlistStatus.DRAFT,
       },

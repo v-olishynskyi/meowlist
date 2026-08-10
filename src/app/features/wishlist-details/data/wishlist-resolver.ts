@@ -15,7 +15,7 @@ export const wishlistResolver: ResolveFn<UserWishlist | null> = async (
     return null;
   }
 
-  const { data } = await wishlistApi.getWishlist(wishlistSlug);
+  const { data } = await wishlistApi.getWishlistBySlug(wishlistSlug);
 
   return data || null;
 };

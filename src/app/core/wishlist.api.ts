@@ -29,12 +29,14 @@ export class WishlistApi {
   async createWishlist(
     ownerId: string,
     status: WishlistStatus,
+    slug: string,
   ): Promise<{ data: Wishlist | null; error: PostgrestError | null }> {
     const { data, error } = await this.supabase
       .from('wishlists')
       .insert({
         owner_id: ownerId,
         status,
+        slug,
       })
       .select()
       .single();
@@ -90,6 +92,14 @@ export class WishlistApi {
       .from('wishlists')
       .select('*, event:events(*), gifts(*)')
       .eq('id', wishlistId)
+      .single();
+  }
+
+  getWishlistBySlug(slug: string) {
+    return this.supabase
+      .from('wishlists')
+      .select('*, event:events(*), gifts(*)')
+      .eq('slug', slug)
       .single();
   }
 

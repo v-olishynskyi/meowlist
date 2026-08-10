@@ -1,6 +1,8 @@
 <article class="wishlist-card">
+  @let wishlistLink = ['/wishlists', wishlist().slug];
+
   <!-- Preview -->
-  <a [routerLink]="['/wishlists', wishlist().id]" class="wishlist-card__preview">
+  <a [routerLink]="wishlistLink" class="wishlist-card__preview">
     <div class="grid size-full place-items-center bg-primary/10 text-primary">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +24,7 @@
 
   <!-- Title -->
   <div class="wishlist-card__title">
-    <a [routerLink]="['/wishlists', wishlist().id]" class="block min-w-0">
+    <a [routerLink]="wishlistLink" class="block min-w-0">
       <h2 class="text-sm font-bold transition-colors hover:text-primary lg:text-base">
         {{ wishlist().event?.name ?? 'Вішліст без події' }}
       </h2>

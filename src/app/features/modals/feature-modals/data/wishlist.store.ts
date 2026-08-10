@@ -13,7 +13,7 @@ import { GiftReservationStatus, WishlistStatus } from '../../../../core/types';
 import { BehaviorSubject } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ToastService } from '../../../../core/toast.service';
-import { PostgrestError } from '@supabase/supabase-js';
+import slugify from 'slugify';
 
 @Injectable({
   providedIn: 'root',
@@ -41,9 +41,18 @@ export class WishlistStore {
       let newWishlist: Wishlist | null;
 
       if (!this.isEditMode()) {
+        const slug = eventData?.name
+          ? slugify(`${eventData.name} ${Math.random().toString(36).substring(2, 8)}`, {
+              locale: 'uk',
+              lower: true,
+              replacement: '_',
+            })
+          : Math.random().toString(36).substring(2, 13);
+
         const { data, error } = await this.wishlistApi.createWishlist(
           ownerId,
           WishlistStatus.DRAFT,
+          slug,
         );
 
         if (error) {

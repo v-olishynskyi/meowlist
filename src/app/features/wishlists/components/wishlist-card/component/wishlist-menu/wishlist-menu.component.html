@@ -17,7 +17,7 @@
     <ul>
       <li>
         <a
-          [routerLink]="['/wishlists', wishlist().id]"
+          [routerLink]="['/wishlists', wishlist().slug]"
           (click)="isOpen.set(false)"
           [attr.disabled]="isDeleting() ? true : null"
         >
