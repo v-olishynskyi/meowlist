@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, viewChild } from '@angular/core';
+import { Component, DOCUMENT, ElementRef, inject, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { UtilsService } from '../../../../shared/utils/utils.service';
 import { AuthStore } from '../../../../core/auth.store';
@@ -15,6 +15,8 @@ export class BurgerMenuComponent {
   isOpen = signal<boolean>(false);
   menuRef = viewChild.required<ElementRef<HTMLDetailsElement>>('burgerMenu');
 
+  document = inject(DOCUMENT);
+
   toggleOpen(): void {
     this.isOpen.update((value) => !value);
   }
@@ -30,6 +32,6 @@ export class BurgerMenuComponent {
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
+    this.document.addEventListener('click', handleClickOutside);
   }
 }

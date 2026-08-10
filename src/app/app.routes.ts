@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
 import { AuthStore } from './core/auth.store';
+import { wishlistResolver } from './features/wishlist-details/data/wishlist-resolver';
 
 const authGuard = async () => {
   const router = inject(Router);
@@ -37,6 +38,9 @@ export const routes: Routes = [
           },
           {
             path: ':id',
+            resolve: {
+              wishlist: wishlistResolver,
+            },
             loadComponent: async () =>
               (await import('./features/wishlist-details/wishlist-details.page'))
                 .WishlistDetailsPage,

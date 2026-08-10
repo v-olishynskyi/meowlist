@@ -8,6 +8,10 @@ import { ConfirmationModalStore } from '../../components/confirmation-modal/conf
 import { WishlistStore } from '../modals/feature-modals/data/wishlist.store';
 import { UtilsService } from '../../shared/utils/utils.service';
 import { GiftReservationStatus } from '../../core/types';
+import { tap } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { environment } from '../../../environments/environment';
+import { Meta, Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -15,6 +19,9 @@ import { GiftReservationStatus } from '../../core/types';
   imports: [NgTemplateOutlet, DatePipe, DecimalPipe, RouterLink],
 })
 export class WishlistDetailsPage implements OnInit {
+  private readonly title = inject(Title);
+  private readonly meta = inject(Meta);
+
   log = console.log;
   router = inject(Router);
   activatedRoute = inject(ActivatedRoute);
@@ -27,7 +34,9 @@ export class WishlistDetailsPage implements OnInit {
   protected readonly GiftReservationStatus = GiftReservationStatus;
 
   readonly isLoading = signal<boolean>(false);
-  readonly wishlistData = signal<UserWishlist | null>(null);
+  // @ts-ignore
+  readonly wishlistData$ = toSignal<{ wishlist: UserWishlist | null }>(this.activatedRoute.data);
+  readonly wishlistData = computed(() => this.wishlistData$()?.wishlist);
 
   readonly isCopyingLink = signal<boolean>(false);
   readonly isLinkCopied = signal<boolean>(false);
@@ -42,6 +51,10 @@ export class WishlistDetailsPage implements OnInit {
         }, 1500);
       }
     });
+
+    if (!this.wishlistData()) return;
+
+    this.setMeta(this.wishlistData()!);
   }
 
   readonly skeletonGiftItems = [1, 2, 3, 4, 5];
@@ -54,20 +67,17 @@ export class WishlistDetailsPage implements OnInit {
   wishlistIllustrationUrl = '';
 
   async ngOnInit() {
-    const wishlistSlug = this.activatedRoute.snapshot.paramMap.get('id');
-
-    try {
-      this.isLoading.set(true);
-
-      const { data, error } = await this.wishlistApi.getWishlist(wishlistSlug!);
-      if (error) throw error;
-
-      this.wishlistData.set(data);
-    } catch (error) {
-      console.error('Error loading wishlist details:', error);
-    } finally {
-      this.isLoading.set(false);
-    }
+    // const wishlistSlug = this.activatedRoute.snapshot.paramMap.get('id');
+    // try {
+    //   this.isLoading.set(true);
+    //   const { data, error } = await this.wishlistApi.getWishlist(wishlistSlug!);
+    //   if (error) throw error;
+    //   this.wishlistData.set(data);
+    // } catch (error) {
+    //   console.error('Error loading wishlist details:', error);
+    // } finally {
+    //   this.isLoading.set(false);
+    // }
   }
 
   goBack() {
@@ -86,7 +96,7 @@ export class WishlistDetailsPage implements OnInit {
   editWishlist() {}
 
   getShareUrl(id: string) {
-    return `${window.location.origin}/wishlists/${id}`;
+    return `${environment.siteUrl}/wishlists/${id}`;
   }
 
   showConfirmModal() {
@@ -142,7 +152,7 @@ export class WishlistDetailsPage implements OnInit {
 
   async copyToClipboard(textToCopy: string) {
     // Navigator clipboard api needs a secure context (https)
-    if (navigator.clipboard && window.isSecureContext) {
+    if (navigator?.clipboard && window?.isSecureContext) {
       await navigator.clipboard.writeText(textToCopy);
     } else {
       // Use the 'out of viewport hidden text area' trick
@@ -171,8 +181,63 @@ export class WishlistDetailsPage implements OnInit {
     const profile = this.authStore.profile();
     if (!profile) return false;
 
-    console.log('IS GIFT RESERVED BY ME:', giftId, profile.reservations);
-
     return profile.reservations.some((reservation) => reservation.gift_id === giftId);
+  }
+
+  private setMeta(wishlist: UserWishlist): void {
+    const event = wishlist.event;
+
+    const title = event?.name ?? 'Мій вішліст 🎁';
+
+    const description =
+      event?.description ?? `У цьому вішлісті ${wishlist.gifts.length} подарунків 🎁`;
+
+    const url = `${environment.siteUrl}` + `/wishlists/${wishlist.id}`;
+
+    const image = `${environment.siteUrl}` + `/assets/social/gift-create.png`;
+
+    this.title.setTitle(`${title} — MeowList`);
+
+    this.meta.updateTag({
+      name: 'description',
+      content: description,
+    });
+
+    this.meta.updateTag({
+      property: 'og:type',
+      content: 'website',
+    });
+
+    this.meta.updateTag({
+      property: 'og:site_name',
+      content: 'MeowList',
+    });
+
+    this.meta.updateTag({
+      property: 'og:title',
+      content: title,
+    });
+
+    this.meta.updateTag({
+      property: 'og:description',
+      content: description,
+    });
+
+    this.meta.updateTag({
+      property: 'og:url',
+      content: url,
+    });
+
+    this.meta.updateTag({
+      property: 'og:image',
+      content: image,
+    });
+
+    this.meta.updateTag({
+      property: 'og:image:alt',
+      content: title,
+    });
+
+    console.log('meta', this.meta);
   }
 }

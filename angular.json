@@ -35,6 +35,12 @@
               ".woff": "file",
               ".ttf": "file",
               ".webp": "file"
+            },
+            "server": "src/main.server.ts",
+            "outputMode": "server",
+            "security": {},
+            "ssr": {
+              "entry": "src/server.ts"
             }
           },
           "configurations": {
