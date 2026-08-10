@@ -6,12 +6,12 @@ import '@fontsource/poppins/700.css';
 import { Component, inject } from '@angular/core';
 import { OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AuthStore } from './core/auth.store';
-import { ModalRouteCoordinator } from './components/modal/data/modal-route-coordinator';
+import { AuthStore } from './core/auth/auth.store';
+import { ModalRouteCoordinator } from './core/modal/modal-route-coordinator';
 import { registerLocaleData } from '@angular/common';
 import localeUa from '@angular/common/locales/uk';
-import { ToastService } from './core/toast.service';
-import { ConfirmationModalComponent } from './components/confirmation-modal/confirmation-modal.component';
+import { ToastService } from './core/toast/toast.service';
+import { ConfirmationModalComponent } from './shared/ui/confirmation-modal/confirmation-modal.component';
 
 registerLocaleData(localeUa);
 

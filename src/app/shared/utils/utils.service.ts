@@ -6,7 +6,7 @@ import {
   NewWishlistStepKey,
   RouteIntent,
   StepOf,
-} from '../../components/modal/data/modal.types';
+} from '../../core/modal/modal.types';
 
 @Injectable({
   providedIn: 'root',

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
-import { UserWishlist } from '../../../../components/modal/data/modal.types';
+import { UserWishlist } from '../../../../core/modal/modal.types';
 import { WishlistStatus, WishlistStatusLabels } from '../../../../core/types';
 import { WishlistMenuComponent } from './component/wishlist-menu/wishlist-menu.component';
 import { WishlistStatusSelectorComponent } from './component/wishlist-status-selector/wishlist-status-selector.component';

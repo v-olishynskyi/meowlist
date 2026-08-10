@@ -1,6 +1,6 @@
 import { Component, computed, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { UserWishlist } from '../../../../../../components/modal/data/modal.types';
+import { UserWishlist } from '../../../../../../core/modal/modal.types';
 
 @Component({
   selector: 'app-wishlist-menu',

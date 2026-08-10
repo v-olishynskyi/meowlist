@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { Router, Routes } from '@angular/router';
-import { AuthStore } from './core/auth.store';
-import { wishlistResolver } from './features/wishlist-details/data/wishlist-resolver';
+import { AuthStore } from './core/auth/auth.store';
+import { wishlistResolver } from './features/wishlists/data/wishlist-resolver';
 
 const authGuard = async () => {
   const router = inject(Router);
@@ -18,7 +18,7 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: async () =>
-      (await import('./layouts/app-layout/app-layout.component')).AppLayoutComponent,
+      (await import('./shell/app-layout/app-layout.component')).AppLayoutComponent,
 
     children: [
       {
@@ -32,7 +32,7 @@ export const routes: Routes = [
           {
             path: '',
             loadComponent: async () =>
-              (await import('./features/wishlists/wishlists.page')).WishlistsPage,
+              (await import('./features/wishlists/pages/wishlists/wishlists.page')).WishlistsPage,
             pathMatch: 'full',
             canActivate: [authGuard],
           },
@@ -42,7 +42,7 @@ export const routes: Routes = [
               wishlist: wishlistResolver,
             },
             loadComponent: async () =>
-              (await import('./features/wishlist-details/wishlist-details.page'))
+              (await import('./features/wishlists/pages/wishlist-details/wishlist-details.page'))
                 .WishlistDetailsPage,
           },
         ],
@@ -50,7 +50,7 @@ export const routes: Routes = [
       {
         path: 'reserved-gifts',
         loadComponent: async () =>
-          (await import('./features/reserved-gifts/reserved-gifts.page')).ReservedGiftsPage,
+          (await import('./features/reservations/reserved-gifts.page')).ReservedGiftsPage,
       },
       {
         path: '**',

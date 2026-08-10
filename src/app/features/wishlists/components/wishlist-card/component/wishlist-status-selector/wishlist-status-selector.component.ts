@@ -9,7 +9,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { UserWishlist } from '../../../../../../components/modal/data/modal.types';
+import { UserWishlist } from '../../../../../../core/modal/modal.types';
 import { WishlistStatus, WishlistStatusLabels } from '../../../../../../core/types';
 
 @Component({
