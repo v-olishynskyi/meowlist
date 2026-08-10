@@ -1,11 +1,11 @@
-import { computed, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { BehaviorSubject, catchError, interval, of, take, tap, timer } from 'rxjs';
 import { ModalFlowRuntimeStore } from '../components/modal/data/modal-flow-runtime.store';
 import { AuthApi } from './auth.api';
-import { AuthResponse } from '@supabase/supabase-js';
+import { AuthChangeEvent, AuthResponse, Session, Subscription } from '@supabase/supabase-js';
 import { GiftReservation, Profile } from './types';
-import { WishlistStore } from '../features/modals/feature-modals/data/wishlist.store';
+import { isPlatformBrowser } from '@angular/common';
 
 export enum AuthStatus {
   Authenticated = 'authenticated',
@@ -21,8 +21,12 @@ const OTP_REQUEST_DEBOUNCE_TIME = 60; // seconds
   providedIn: 'root',
 })
 export class AuthStore {
+  private readonly platformId = inject(PLATFORM_ID);
+
   private authApi = inject(AuthApi);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+
+  private authSubscription: Subscription | null = null;
 
   private readonly _authDataSubject = new BehaviorSubject<AuthData | null>(null);
   readonly _authData$ = this._authDataSubject.asObservable();
@@ -73,24 +77,79 @@ export class AuthStore {
     this._authDataSubject.next(data);
   }
 
-  checkAuth() {
-    this.authApi.authChanges(async (event, session) => {
-      try {
-        if (event === 'SIGNED_IN' && session) {
-          const userId = session.user.id;
-          this.loadProfile(userId);
+  private authEventQueue = Promise.resolve();
 
-          this.setAuthStatus(AuthStatus.Authenticated);
-          this.setAuthData({ session, user: session.user });
-        } else if (event === 'SIGNED_OUT') {
-          this.setAuthStatus(AuthStatus.Unauthenticated);
-          this.setAuthData(null);
-          this._profileSubject.next(null);
-        }
-      } catch (error) {
-        console.error('Failed to handle auth change', error);
-      }
+  checkAuth() {
+    // If the platform is not a browser, we don't want to set up the auth changes listener
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    const { data } = this.authApi.authChanges(async (event, session) => {
+      this.authEventQueue = this.authEventQueue
+        .then(() => this.handleAuthChange(event, session))
+        .catch((error) => {
+          console.error('Error handling auth change:', error);
+        });
     });
+
+    this.authSubscription = data.subscription;
+  }
+
+  private async handleAuthChange(event: AuthChangeEvent, session: Session | null) {
+    switch (event) {
+      case 'INITIAL_SESSION': {
+        try {
+          if (session) {
+            await this.setAuthenticatedSession(session);
+          } else {
+            this.clearAuthState();
+          }
+        } catch (error) {
+          console.error('Error handling INITIAL_SESSION event:', error);
+        }
+        break;
+      }
+      case 'SIGNED_IN': {
+        if (!session) {
+          break;
+        }
+
+        await this.setAuthenticatedSession(session);
+        break;
+      }
+      case 'SIGNED_OUT': {
+        this.clearAuthState();
+        break;
+      }
+      case 'TOKEN_REFRESHED': {
+        if (!session) {
+          break;
+        }
+
+        this.setAuthData({ session, user: session.user });
+
+        break;
+      }
+    }
+  }
+
+  private async setAuthenticatedSession(session: Session) {
+    const user = session.user;
+
+    this.setAuthData({ session, user });
+
+    if (this.profile()?.id !== user.id) {
+      await this.loadProfile(user.id);
+    }
+
+    this.setAuthStatus(AuthStatus.Authenticated);
+  }
+
+  private clearAuthState() {
+    this.setAuthData(null);
+    this.setAuthStatus(AuthStatus.Unauthenticated);
+    this._profileSubject.next(null);
   }
 
   loadProfile(userId?: string) {

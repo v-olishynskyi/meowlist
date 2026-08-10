@@ -8,7 +8,7 @@ import { OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthStore } from './core/auth.store';
 import { ModalRouteCoordinator } from './components/modal/data/modal-route-coordinator';
-import { registerLocaleData, NgClass } from '@angular/common';
+import { registerLocaleData } from '@angular/common';
 import localeUa from '@angular/common/locales/uk';
 import { ToastService } from './core/toast.service';
 import { ConfirmationModalComponent } from './components/confirmation-modal/confirmation-modal.component';

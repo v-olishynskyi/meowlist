@@ -1,4 +1,14 @@
-<router-outlet></router-outlet>
+@if (authStore.isLoading()) {
+  <div class="fixed inset-0 flex items-center justify-center bg-background text-foreground">
+    <div class="flex flex-col items-center gap-4">
+      <div class="size-10 animate-spin rounded-full border-2 border-border border-t-primary"></div>
+
+      <p class="text-sm text-muted-foreground">Перевіряємо сесію...</p>
+    </div>
+  </div>
+} @else {
+  <router-outlet></router-outlet>
+}
 
 @if (toastService.currentToast(); as toast) {
   <div class="toast toast-top toast-end z-50">
