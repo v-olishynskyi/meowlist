@@ -28,21 +28,14 @@ export class AuthStore {
 
   private authSubscription: Subscription | null = null;
 
-  private readonly _authDataSubject = new BehaviorSubject<AuthData | null>(null);
-  readonly _authData$ = this._authDataSubject.asObservable();
-  readonly authData = toSignal(this._authData$, { initialValue: null });
-
-  private readonly _authStatusSubject = new BehaviorSubject<AuthStatus>(AuthStatus.Loading);
-  readonly _authStatus$ = this._authStatusSubject.asObservable();
-  readonly authStatus = toSignal(this._authStatus$, { initialValue: AuthStatus.Loading });
+  readonly authData = signal<AuthData | null>(null);
+  readonly authStatus = signal<AuthStatus>(AuthStatus.Loading);
 
   readonly isAuthenticated = computed(() => this.authStatus() === AuthStatus.Authenticated);
   readonly isLoading = computed(() => this.authStatus() === AuthStatus.Loading);
   readonly isUnauthenticated = computed(() => this.authStatus() === AuthStatus.Unauthenticated);
 
-  private readonly _profileSubject = new BehaviorSubject<Profile | null>(null);
-  readonly _profile$ = this._profileSubject.asObservable();
-  readonly profile = toSignal(this._profile$, { initialValue: null });
+  readonly profile = signal<Profile | null>(null);
 
   readonly otpRequestDebounce = signal<number>(OTP_REQUEST_DEBOUNCE_TIME);
   readonly isOtpRequestAvailable = computed(
@@ -70,11 +63,11 @@ export class AuthStore {
   }
 
   setAuthStatus(status: AuthStatus) {
-    this._authStatusSubject.next(status);
+    this.authStatus.set(status);
   }
 
   setAuthData(data: AuthData | null) {
-    this._authDataSubject.next(data);
+    this.authData.set(data);
   }
 
   private authEventQueue = Promise.resolve();
@@ -149,7 +142,7 @@ export class AuthStore {
   private clearAuthState() {
     this.setAuthData(null);
     this.setAuthStatus(AuthStatus.Unauthenticated);
-    this._profileSubject.next(null);
+    this.profile.set(null);
   }
 
   loadProfile(userId?: string) {
@@ -158,7 +151,7 @@ export class AuthStore {
 
     return this.authApi.loadProfile(profileId).then(
       (data) => {
-        this._profileSubject.next(data.data);
+        this.profile.set(data.data);
       },
       (error) => {
         console.error('Failed to fetch profile', error);
@@ -186,25 +179,5 @@ export class AuthStore {
     this.setAuthData(null);
 
     return response;
-  }
-
-  addReservation(reservation: GiftReservation) {
-    // TODO
-    const updatedProfile: Profile = {
-      ...this.profile()!,
-      reservations: [...(this.profile()?.reservations || []), reservation],
-    };
-    this._profileSubject.next(updatedProfile);
-  }
-
-  removeReservation(giftId: string) {
-    // TODO
-    const updatedProfile: Profile = {
-      ...this.profile()!,
-      reservations: (this.profile()?.reservations || []).filter(
-        (reservation) => reservation.gift_id !== giftId,
-      ),
-    };
-    this._profileSubject.next(updatedProfile);
   }
 }

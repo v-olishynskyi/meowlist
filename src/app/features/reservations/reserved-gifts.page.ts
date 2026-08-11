@@ -7,12 +7,12 @@ import {
   signal,
 } from '@angular/core';
 import { ReservationWithGift } from '../../core/types';
-import { WishlistApi } from '../wishlists/data/wishlist.api';
 import { AuthStore } from '../../core/auth/auth.store';
 import { ToastService } from '../../core/toast/toast.service';
 import { GiftCardComponent } from '../../shared/ui/gift-card/gift-card.component';
-import { WishlistStore } from '../wishlists/data/wishlist.store';
 import { Router } from '@angular/router';
+import { ReservationsStore } from './data/reservations.store';
+import { ReservationsApi } from './data/reservations.api';
 
 @Component({
   selector: 'app-reserved-gifts',
@@ -22,10 +22,10 @@ import { Router } from '@angular/router';
 })
 export class ReservedGiftsPage implements OnInit {
   readonly router = inject(Router);
-  wishlistApi = inject(WishlistApi);
   authStore = inject(AuthStore);
   toastService = inject(ToastService);
-  wishlistStore = inject(WishlistStore);
+  private reservationsStore = inject(ReservationsStore);
+  private reservationsApi = inject(ReservationsApi);
 
   isLoading = signal(false);
   reservations = signal<Array<ReservationWithGift>>([]);
@@ -43,13 +43,25 @@ export class ReservedGiftsPage implements OnInit {
   }
 
   async cancelGiftReservation(giftId: string) {
-    this.handlingReservationId.set(giftId);
-    // TODO: add guard to prevent reserving already reserved gifts
-    await this.wishlistStore.cancelGiftReservation(giftId);
-    this.reservations.set(
-      this.reservations().filter((reservation) => reservation.gift.id !== giftId),
-    );
-    this.handlingReservationId.set(null);
+    try {
+      this.handlingReservationId.set(giftId);
+      // TODO: add guard to prevent reserving already reserved gifts
+      await this.reservationsStore.cancelGiftReservation(giftId);
+      this.reservations.set(
+        this.reservations().filter((reservation) => reservation.gift.id !== giftId),
+      );
+      this.handlingReservationId.set(null);
+
+      this.toastService.showToast({
+        message: 'Резервування подарунка скасовано',
+        type: 'success',
+      });
+    } catch (error) {
+      this.toastService.showToast({
+        message: 'Помилка при скасуванні резервування подарунка',
+        type: 'error',
+      });
+    }
   }
 
   async fetchReservedGifts(): Promise<void> {
@@ -57,7 +69,7 @@ export class ReservedGiftsPage implements OnInit {
       this.isLoading.set(true);
       const userId = this.authStore.profile()!.id;
 
-      const { data, error } = await this.wishlistApi.getUserReservations(userId);
+      const { data, error } = await this.reservationsApi.getUserReservations(userId);
 
       if (error) throw error;
 

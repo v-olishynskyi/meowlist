@@ -1,4 +1,4 @@
-import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
+import { DatePipe, DecimalPipe, NgTemplateOutlet, ViewportScroller } from '@angular/common';
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WishlistApi } from '../../data/wishlist.api';
@@ -12,6 +12,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { environment } from '../../../../../environments/environment';
 import { Meta, Title } from '@angular/platform-browser';
 import { GiftCardComponent } from '../../../../shared/ui/gift-card/gift-card.component';
+import { ToastService } from '../../../../core/toast/toast.service';
+import { ReservationsStore } from '../../../reservations/data/reservations.store';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -21,6 +23,7 @@ import { GiftCardComponent } from '../../../../shared/ui/gift-card/gift-card.com
 export class WishlistDetailsPage implements OnInit {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private scroller = inject(ViewportScroller);
 
   log = console.log;
   router = inject(Router);
@@ -30,6 +33,8 @@ export class WishlistDetailsPage implements OnInit {
   authStore = inject(AuthStore);
   confirmationModalStore = inject(ConfirmationModalStore);
   wishlistStore = inject(WishlistStore);
+  private toastService = inject(ToastService);
+  private reservationsStore = inject(ReservationsStore);
 
   protected readonly GiftReservationStatus = GiftReservationStatus;
 
@@ -71,6 +76,7 @@ export class WishlistDetailsPage implements OnInit {
   wishlistIllustrationUrl = '';
 
   async ngOnInit() {
+    this.scroller.scrollToPosition([0, 0]);
     // const wishlistSlug = this.activatedRoute.snapshot.paramMap.get('id');
     // try {
     //   this.isLoading.set(true);
@@ -148,34 +154,60 @@ export class WishlistDetailsPage implements OnInit {
   }
 
   async cancelGiftReservation(giftId: string) {
-    this.giftHandleReservationId.set(giftId);
-    // TODO: add guard to prevent reserving already reserved gifts
-    await this.wishlistStore.cancelGiftReservation(giftId);
-    this.wishlist.update((wishlist) => ({
-      ...wishlist!,
-      gifts: wishlist!.gifts.map((gift) =>
-        gift.id === giftId
-          ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
-          : gift,
-      ),
-    }));
-    this.giftHandleReservationId.set(null);
+    try {
+      this.giftHandleReservationId.set(giftId);
+      // TODO: add guard to prevent reserving already reserved gifts
+      await this.reservationsStore.cancelGiftReservation(giftId);
+
+      this.wishlist.update((wishlist) => ({
+        ...wishlist!,
+        gifts: wishlist!.gifts.map((gift) =>
+          gift.id === giftId
+            ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
+            : gift,
+        ),
+      }));
+
+      this.giftHandleReservationId.set(null);
+
+      this.toastService.showToast({
+        message: 'Резервування подарунка скасовано',
+        type: 'success',
+      });
+    } catch (error) {
+      this.toastService.showToast({
+        message: 'Помилка при скасуванні резервування подарунка',
+        type: 'error',
+      });
+    }
   }
 
   async reserveGift(giftId: string) {
-    // check if the user is authenticated
-    if (!this.authStore.isAuthenticated()) {
-      this.router.navigate([this.router.url], {
-        queryParams: {
-          ...this.utilsService.buildFlowQueryParams(ModalFlowKey.AUTH_OTP),
-        },
+    try {
+      if (!this.authStore.isAuthenticated()) {
+        this.router.navigate([this.router.url], {
+          queryParams: {
+            ...this.utilsService.buildFlowQueryParams(ModalFlowKey.AUTH_OTP),
+          },
+        });
+        return;
+      }
+      this.giftHandleReservationId.set(giftId);
+      // TODO: add guard to prevent reserving already reserved gifts
+      await this.reservationsStore.reserveGift(giftId);
+      this.giftHandleReservationId.set(null);
+
+      this.toastService.showToast({
+        message: 'Подарунок успішно зарезервовано Вами',
+        type: 'success',
       });
-      return;
+    } catch (error) {
+      console.error('Error reserving gift:', error);
+      this.toastService.showToast({
+        message: 'Помилка при резервуванні подарунка',
+        type: 'error',
+      });
     }
-    this.giftHandleReservationId.set(giftId);
-    // TODO: add guard to prevent reserving already reserved gifts
-    await this.wishlistStore.reserveGift(giftId);
-    this.giftHandleReservationId.set(null);
   }
 
   async copyToClipboard(textToCopy: string) {

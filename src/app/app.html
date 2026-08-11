@@ -11,7 +11,7 @@
 }
 
 @if (toastService.currentToast(); as toast) {
-  <div class="toast toast-top toast-end z-50">
+  <div class="toast toast-top z-50 xs:toast-center toast-end">
     <div
       class="alert"
       [class.alert-success]="toast?.type === 'success'"

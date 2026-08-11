@@ -38,7 +38,7 @@
           @let isHandlingReservation = handlingReservationId() === gift.id;
 
           <div
-            (click)="openWishlistDetails(gift.wishlist.slug)"
+            (click)="$event.preventDefault(); (gift.wishlist.slug)"
             class="cursor-pointer"
             [title]="'Перейти до вішліста ' + gift.wishlist.slug"
           >

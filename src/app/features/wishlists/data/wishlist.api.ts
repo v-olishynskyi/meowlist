@@ -1,12 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 import { ModalFlowRuntimeStore } from '../../../core/modal/modal-flow-runtime.store';
-import {
-  EventDraft,
-  GiftDraft,
-  UserWishlist,
-  Wishlist,
-} from '../../../core/modal/modal.types';
+import { EventDraft, GiftDraft, UserWishlist, Wishlist } from '../../../core/modal/modal.types';
 import { WishlistStatus } from '../../../core/types';
 import { PostgrestError } from '@supabase/supabase-js';
 
@@ -118,24 +113,5 @@ export class WishlistApi {
 
   deleteGiftImage(imagePath: string) {
     return this.supabase.storage.from('gifts').remove([imagePath]);
-  }
-
-  reserveGift(giftId: string, ownerId: string) {
-    return this.supabase
-      .from('gifts_reservation')
-      .insert({ gift_id: giftId, owner_id: ownerId })
-      .select()
-      .single();
-  }
-
-  cancelGiftReservation(giftId: string) {
-    return this.supabase.from('gifts_reservation').delete().eq('gift_id', giftId);
-  }
-
-  getUserReservations(ownerId: string) {
-    return this.supabase
-      .from('gifts_reservation')
-      .select('*, gift:gifts(*, wishlist:wishlists(id, slug))')
-      .eq('owner_id', ownerId);
   }
 }
