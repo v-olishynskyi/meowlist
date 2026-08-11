@@ -7,10 +7,10 @@
   <div class="relative text-base-content rounded-3xl">
     <!-- header + close button -->
     <div
-      class="sticky top-0 w-full flex flex-row justify-between px-4 py-3 border-b bg-base-100 z-10 border-base-300"
+      class="sticky top-0 w-full flex flex-row justify-end px-4 py-3 border-b bg-base-100 z-10 border-base-300"
     >
       <!-- arrow back button show only when history have prev route -->
-      @if (true) {
+      <!-- @if (true) {
         <button class="btn btn-ghost btn-square btn-sm">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -27,7 +27,7 @@
             />
           </svg>
         </button>
-      }
+      } -->
 
       <!-- cross button for closing modal -->
       <button class="btn btn-ghost btn-square btn-sm" (click)="modalStore.closeModal()">

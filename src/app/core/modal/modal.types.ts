@@ -59,7 +59,6 @@ export enum NewWishlistStepKey {
   EDIT_WISHLIST = 'edit-wishlist',
   ADD_GIFT = 'add-gift',
   EDIT_GIFT = 'edit-gift',
-  REMOVE_GIFT = 'remove-gift',
 }
 
 export enum EditWishListStepKey {
@@ -67,7 +66,6 @@ export enum EditWishListStepKey {
   EDIT_WISHLIST = 'edit-wishlist',
   ADD_GIFT = 'add-gift',
   EDIT_GIFT = 'edit-gift',
-  REMOVE_GIFT = 'remove-gift',
 }
 
 // FLOW STATE
@@ -103,7 +101,7 @@ export type Wishlist = OmitMeta<Tables<'wishlists'>>;
 
 export type EditWishlistFlowState = {
   wishlist: Wishlist;
-  event: Event;
+  event: Event | null;
   gifts: Gift[];
 };
 
@@ -189,9 +187,6 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
     [NewWishlistStepKey.EDIT_GIFT]: {
       component: GiftModal,
     },
-    [NewWishlistStepKey.REMOVE_GIFT]: {
-      component: GiftModal,
-    },
   },
   createInitialState: (): FlowState<CreateWishlistFlowState> => {
     return new FlowState<CreateWishlistFlowState>({
@@ -211,7 +206,7 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
 export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
   key: ModalFlowKey.EDIT_WISHLIST,
   isProtected: true,
-  initialStep: EditWishListStepKey.EVENT,
+  initialStep: EditWishListStepKey.EDIT_WISHLIST,
   steps: {
     [EditWishListStepKey.EVENT]: {
       component: EventModal,
@@ -225,24 +220,21 @@ export const EDIT_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.EDIT_WISHLIST>({
     [EditWishListStepKey.EDIT_GIFT]: {
       component: GiftModal,
     },
-    [EditWishListStepKey.REMOVE_GIFT]: {
-      component: GiftModal,
-    },
   },
   createInitialState: (state): FlowState<EditWishlistFlowState> => {
     return new FlowState<EditWishlistFlowState>({
       wishlist: state?.wishlist || {
         id: '',
+        status: WishlistStatus.DRAFT,
         slug: '',
         owner_id: '',
-        status: WishlistStatus.DRAFT,
       },
       event: state?.event || {
-        wishlist_id: '',
-        name: '',
         description: null,
         event_date: null,
         location: null,
+        name: '',
+        wishlist_id: '',
       },
       gifts: state?.gifts || [],
     });

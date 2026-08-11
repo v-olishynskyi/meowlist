@@ -90,20 +90,16 @@ export class WishlistStore {
   }
 
   async addNewGift(giftData: GiftDraft) {
-    try {
-      const wishlistId = this.session()!.state.wishlist!.id;
+    const wishlistId = this.session()!.state.wishlist!.id;
 
-      const { data, error } = await this.wishlistApi.createGift(wishlistId, giftData);
+    const { data, error } = await this.wishlistApi.createGift(wishlistId, giftData);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-        ...state,
-        gifts: [data, ...state.gifts],
-      }));
-    } catch (error) {
-      console.error('Error adding new gift:', error);
-    }
+    this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
+      ...state,
+      gifts: [data, ...state.gifts],
+    }));
   }
 
   async uploadGiftImage(image: File) {
@@ -122,95 +118,53 @@ export class WishlistStore {
   }
 
   async deleteGift(giftId: string) {
-    try {
-      const { error } = await this.wishlistApi.deleteGift(giftId);
-      if (error) throw error;
+    const { error } = await this.wishlistApi.deleteGift(giftId);
 
-      if (this.isEditMode()) {
-        this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
-          ...state,
-          gifts: state.gifts.filter((gift) => gift.id !== giftId),
-        }));
-      }
-    } catch (error) {
-      console.error('Error removing gift:', error);
-      this.toastService.showToast({
-        message: 'Помилка при видаленні подарунка. Будь ласка, спробуйте ще раз.',
-        type: 'error',
-      });
+    if (error) throw error;
+
+    if (this.isEditMode()) {
+      this.modalFlowRuntimeStore.updateSessionState(ModalFlowKey.NEW_WISHLIST, (state) => ({
+        ...state,
+        gifts: state.gifts.filter((gift) => gift.id !== giftId),
+      }));
     }
   }
 
   async loadWishlists() {
-    try {
-      await this.authStore.loadProfile();
+    await this.authStore.loadProfile();
 
-      const ownerId = this.authStore.profile()!.id;
-      if (!ownerId) return;
+    const ownerId = this.authStore.profile()!.id;
+    if (!ownerId) return;
 
-      const { data, error } = await this.wishlistApi.getWishlists(ownerId);
+    const { data, error } = await this.wishlistApi.getWishlists(ownerId);
 
-      if (error) throw error;
+    if (error) throw error;
 
-      this._wishlistsObject$.next(data);
-    } catch (error) {
-      console.error('Error loading wishlists:', error);
-      this.toastService.showToast({
-        message: 'Помилка при завантаженні списків бажань. Будь ласка, спробуйте ще раз.',
-        type: 'error',
-      });
-    }
+    this._wishlistsObject$.next(data);
   }
 
   async updateWishlistStatus(wishlistId: string, status: WishlistStatus) {
-    try {
-      const wishlist = this.wishlists()!.find((w) => w.id === wishlistId);
-      if (wishlist && wishlist.gifts.length === 0) {
-        throw new Error('Ви не можете опублікувати список бажань без подарунків.');
-      }
-
-      const { error } = await this.wishlistApi.updateWishlistStatus(wishlistId, status);
-
-      if (error) throw error;
-
-      const updatedWishlists = this.wishlists()!.map((wishlist) =>
-        wishlist.id === wishlistId ? { ...wishlist, status } : wishlist,
-      );
-      this._wishlistsObject$.next(updatedWishlists);
-
-      this.toastService.showToast({
-        message:
-          status === WishlistStatus.PUBLISHED
-            ? 'Вішліст успішно опубліковано'
-            : 'Статус списку бажань змінено',
-        type: 'success',
-      });
-    } catch (error: any) {
-      this.toastService.showToast({
-        message: error?.message || 'Помилка при зміні статусу. Будь ласка, спробуйте ще раз.',
-        type: 'error',
-      });
-      console.error('Error publishing wishlist:', error);
+    const wishlist = this.wishlists()!.find((w) => w.id === wishlistId);
+    if (wishlist && wishlist.gifts.length === 0) {
+      throw new Error('Ви не можете опублікувати список бажань без подарунків.');
     }
+
+    const { error } = await this.wishlistApi.updateWishlistStatus(wishlistId, status);
+
+    if (error) throw error;
+
+    const updatedWishlists = this.wishlists()!.map((wishlist) =>
+      wishlist.id === wishlistId ? { ...wishlist, status } : wishlist,
+    );
+    this._wishlistsObject$.next(updatedWishlists);
   }
 
   async deleteWishlist(wishlistId: string) {
-    try {
-      const { error } = await this.wishlistApi.removeWishlist(wishlistId);
-      if (error) throw error;
+    const { error } = await this.wishlistApi.removeWishlist(wishlistId);
 
-      const updatedWishlists = this.wishlists()!.filter((wishlist) => wishlist.id !== wishlistId);
-      this._wishlistsObject$.next(updatedWishlists);
-      this.toastService.showToast({
-        message: 'Вішлист успішно видалено',
-        type: 'success',
-      });
-    } catch (error) {
-      console.error('Error deleting wishlist:', error);
-      this.toastService.showToast({
-        message: 'Помилка при видаленні вішлисту',
-        type: 'error',
-      });
-    }
+    if (error) throw error;
+
+    const updatedWishlists = this.wishlists()!.filter((wishlist) => wishlist.id !== wishlistId);
+    this._wishlistsObject$.next(updatedWishlists);
   }
 }

@@ -34,11 +34,7 @@
       ></div>
 
       <!-- Create wishlist -->
-      <a
-        [routerLink]="['/']"
-        [queryParams]="utilsService.buildFlowQueryParams(utilsService.ModalFlowKey.NEW_WISHLIST)"
-        class="btn btn-secondary hidden lg:inline-flex"
-      >
+      <a (click)="openNewWishlistModal()" class="btn btn-secondary hidden lg:inline-flex">
         Створити вішліст
       </a>
       @if (!authStore.isAuthenticated()) {

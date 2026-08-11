@@ -9,6 +9,7 @@ import { WishlistApi } from '../../data/wishlist.api';
 import { WishlistStore } from '../../data/wishlist.store';
 import { ModalStore } from '../../../../core/modal/modal.store';
 import { WishlistStatus } from '../../../../core/types';
+import { ToastService } from '../../../../core/toast/toast.service';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -26,6 +27,7 @@ export class EditWishlistModal {
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   wishlistStore = inject(WishlistStore);
   modalStore = inject(ModalStore);
+  private toastService = inject(ToastService);
 
   session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
   event = computed(() => (this.session()?.state.event.name ? this.session()?.state.event : null));
@@ -59,16 +61,38 @@ export class EditWishlistModal {
   }
 
   deleteGift(giftId: string) {
-    this.wishlistStore.deleteGift(giftId);
+    try {
+      this.wishlistStore.deleteGift(giftId);
+
+      this.toastService.showToast({
+        message: 'Подарунок успішно видалено',
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Error removing gift:', error);
+      this.toastService.showToast({
+        message: 'Помилка при видаленні подарунка. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
+    }
   }
 
   async publishWishlist() {
-    this.isPublishing.set(true);
-    const wishlistId = this.session()!.state!.wishlist!.id;
-    await this.wishlistStore.updateWishlistStatus(wishlistId, WishlistStatus.PUBLISHED);
-    this.router.navigate(['/wishlists']);
-    this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
-    this.modalStore.closeModal();
-    this.isPublishing.set(false);
+    try {
+      this.isPublishing.set(true);
+      const wishlistId = this.session()!.state!.wishlist!.id;
+      await this.wishlistStore.updateWishlistStatus(wishlistId, WishlistStatus.PUBLISHED);
+      this.router.navigate(['/wishlists']);
+      this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
+      this.modalStore.closeModal();
+    } catch (error) {
+      console.error('Error publishing wishlist:', error);
+      this.toastService.showToast({
+        message: 'Помилка при публікації вішлисту. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
+    } finally {
+      this.isPublishing.set(false);
+    }
   }
 }

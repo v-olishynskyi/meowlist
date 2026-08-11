@@ -4,6 +4,7 @@ import { GiftDraft } from '../../../../core/modal/modal.types';
 import { Router } from '@angular/router';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
 import { WishlistStore } from '../../data/wishlist.store';
+import { ToastService } from '../../../../core/toast/toast.service';
 
 interface GiftForm {
   name: FormControl<GiftDraft['name']>;
@@ -20,6 +21,7 @@ interface GiftForm {
 export class GiftModal {
   router = inject(Router);
   wishlistStore = inject(WishlistStore);
+  private toastService = inject(ToastService);
 
   previewImageUrl = signal<string>('');
 
@@ -46,9 +48,19 @@ export class GiftModal {
     try {
       this.isSubmitting.set(true);
       await this.wishlistStore.addNewGift(giftData);
+
       this.close();
+
+      this.toastService.showToast({
+        message: 'Подарунок успішно додано',
+        type: 'success',
+      });
     } catch (error) {
       console.error('Error adding new gift:', error);
+      this.toastService.showToast({
+        message: 'Помилка при додаванні подарунка. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
     } finally {
       this.isSubmitting.set(false);
     }
@@ -57,9 +69,9 @@ export class GiftModal {
   async onImageSelected(event: Event) {
     const file: File = (event.target as HTMLInputElement).files![0];
     try {
-      const fullPath = await this.wishlistStore.uploadGiftImage(file);
+      const publicUrl = await this.wishlistStore.uploadGiftImage(file);
 
-      this.previewImageUrl.set(fullPath);
+      this.previewImageUrl.set(publicUrl);
     } catch (error) {
       console.error('Error uploading image:', error);
     }

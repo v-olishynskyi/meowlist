@@ -54,6 +54,18 @@ export class ModalRouteCoordinator {
           step,
         };
       }
+      case ModalFlowKey.EDIT_WISHLIST: {
+        const flow = getFlowDefinition(ModalFlowKey.EDIT_WISHLIST);
+
+        const step = this.utilsService.isKeyOf(stepParam, flow.steps)
+          ? stepParam
+          : flow.initialStep;
+
+        return {
+          flow: ModalFlowKey.EDIT_WISHLIST,
+          step,
+        };
+      }
       default:
         return null;
     }

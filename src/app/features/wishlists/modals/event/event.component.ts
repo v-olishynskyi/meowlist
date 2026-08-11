@@ -51,10 +51,11 @@ export class EventModal {
       event_date: this.eventForm.get('date')?.value || null,
       location: this.eventForm.get('location')?.value || null,
     };
+    console.log('this.router.url', this.router.url);
 
     await this.wishlistStore.handleEvent(eventData);
 
-    this.router.navigate([], {
+    this.router.navigate([this.router.url], {
       // TODO
       queryParams: {
         flow: 'new-wishlist',

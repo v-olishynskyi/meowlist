@@ -14,6 +14,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { GiftCardComponent } from '../../../../shared/ui/gift-card/gift-card.component';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { ReservationsStore } from '../../../reservations/data/reservations.store';
+import { ModalFlowRuntimeStore } from '../../../../core/modal/modal-flow-runtime.store';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -35,6 +36,7 @@ export class WishlistDetailsPage implements OnInit {
   wishlistStore = inject(WishlistStore);
   private toastService = inject(ToastService);
   private reservationsStore = inject(ReservationsStore);
+  private modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
 
   protected readonly GiftReservationStatus = GiftReservationStatus;
 
@@ -131,13 +133,30 @@ export class WishlistDetailsPage implements OnInit {
       cancelButtonText: 'Скасувати',
       confirmButtonText: 'Видалити',
       onConfirm: async () => {
-        await this.wishlistStore.deleteGift(giftId);
-        this.wishlist.update((wishlist) => ({
-          ...wishlist!,
-          gifts: wishlist!.gifts.filter((gift) => gift.id !== giftId),
-        }));
+        await this.handleDeleteGift(giftId);
       },
     });
+  }
+
+  async handleDeleteGift(giftId: string) {
+    try {
+      await this.wishlistStore.deleteGift(giftId);
+      this.wishlist.update((wishlist) => ({
+        ...wishlist!,
+        gifts: wishlist!.gifts.filter((gift) => gift.id !== giftId),
+      }));
+
+      this.toastService.showToast({
+        message: 'Подарунок успішно видалено',
+        type: 'success',
+      });
+    } catch (error) {
+      console.error('Error removing gift:', error);
+      this.toastService.showToast({
+        message: 'Помилка при видаленні подарунка. Будь ласка, спробуйте ще раз.',
+        type: 'error',
+      });
+    }
   }
 
   async copyWishlistLink(id: string) {

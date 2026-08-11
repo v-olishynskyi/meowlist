@@ -20,6 +20,14 @@ export class HeaderComponent {
 
   isLogouting = signal<boolean>(false);
 
+  openNewWishlistModal() {
+    const queryParams = this.utilsService.buildFlowQueryParams(
+      this.utilsService.ModalFlowKey.NEW_WISHLIST,
+    );
+
+    this.router.navigate([this.router.url], { queryParams });
+  }
+
   async logout() {
     this.isLogouting.set(true);
 
