@@ -1,7 +1,9 @@
 <dialog
   #modalElement
   (close)="modalStore.closeModal()"
-  (click)="onBackdropClick($event)"
+  /* disable backdrop click */
+  /* todo: think about correct handling of backdrop click */
+  /* (click)="onBackdropClick($event)" */
   class="border border-base-300 rounded-3xl shadow-xl p-0 m-auto w-[calc(100vw-24px)] max-w-105 max-h-[calc(100dvh-16px)]"
 >
   <div class="relative text-base-content rounded-3xl">

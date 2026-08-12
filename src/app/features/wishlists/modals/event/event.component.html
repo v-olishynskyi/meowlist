@@ -18,7 +18,9 @@
         </svg>
       </span> -->
 
-      <h2 class="text-xl font-bold tracking-tight sm:text-2xl">Новий список бажань</h2>
+      <h2 class="text-xl font-bold tracking-tight sm:text-2xl">
+        {{ wishlistEditorStore.isEditMode() ? 'Редагувати подію' : 'Нова подія' }}
+      </h2>
     </div>
 
     <p class="text-sm text-base-content/60 sm:text-base">

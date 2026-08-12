@@ -273,6 +273,28 @@ export type RouteIntent = {
   };
 }[ModalFlowKey];
 
+type RouteIntentMap = {
+  [Key in ModalFlowKey]: {
+    flow: Key;
+    step: StepOf<Key>;
+  };
+};
+
+export const ROUTE_INTENTS: RouteIntentMap = {
+  [ModalFlowKey.AUTH_OTP]: {
+    flow: ModalFlowKey.AUTH_OTP,
+    step: AuthOtpStepKey.PHONE,
+  },
+  [ModalFlowKey.NEW_WISHLIST]: {
+    flow: ModalFlowKey.NEW_WISHLIST,
+    step: NewWishlistStepKey.EVENT,
+  },
+  [ModalFlowKey.EDIT_WISHLIST]: {
+    flow: ModalFlowKey.EDIT_WISHLIST,
+    step: EditWishListStepKey.EDIT_WISHLIST,
+  },
+};
+
 export function getFlowDefinition<K extends ModalFlowKey>(key: K): ModalFlowDefinitions[K] {
   return MODAL_FLOWS[key];
 }

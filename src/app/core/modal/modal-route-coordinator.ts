@@ -95,7 +95,9 @@ export class ModalRouteCoordinator {
           const flow = getFlowDefinition(routeIntent.flow);
           const step = getStepDefinition(routeIntent.flow, routeIntent.step);
 
-          if (flow.isProtected && !this.authStore.isAuthenticated()) {
+          const isLoadingAuthStatus = this.authStore.isLoading();
+
+          if (flow.isProtected && !this.authStore.isAuthenticated() && !isLoadingAuthStatus) {
             // First we set the route intent, so that when the user logs in, we can redirect them to the correct step
             this.modalStore.setModalRouteIntent(routeIntent);
             this.modalFlowRuntimeStore.applyRouteIntent(routeIntent);

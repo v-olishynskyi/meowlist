@@ -6,10 +6,10 @@ import { ModalFlowKey } from '../../../../core/modal/modal.types';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
 import { SortMenuComponent } from './components/sort-menu/sort-menu.component';
 import { WishlistApi } from '../../data/wishlist.api';
-import { WishlistStore } from '../../data/wishlist.store';
 import { ModalStore } from '../../../../core/modal/modal.store';
-import { WishlistStatus } from '../../../../core/types';
+import { GiftReservationStatus } from '../../../../core/types';
 import { ToastService } from '../../../../core/toast/toast.service';
+import { WishlistEditorStore } from '../../data/wishlist-editor.store';
 
 export enum SortBy {
   PRICE_ASC = 'price-asc',
@@ -21,26 +21,19 @@ export enum SortBy {
   imports: [DecimalPipe, DatePipe, ModalActionsComponent, NgTemplateOutlet, SortMenuComponent],
 })
 export class EditWishlistModal {
+  protected readonly GiftReservationStatus = GiftReservationStatus;
   SortBy = SortBy;
   router = inject(Router);
   wishlistApi = inject(WishlistApi);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
-  wishlistStore = inject(WishlistStore);
+  readonly wishlistEditorStore = inject(WishlistEditorStore);
   modalStore = inject(ModalStore);
   private toastService = inject(ToastService);
 
-  session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
-  event = computed(() => (this.session()?.state.event.name ? this.session()?.state.event : null));
-  gifts = computed(
-    () =>
-      this.session()?.state.gifts.sort((a, b) => {
-        if (this.sortsBy() === SortBy.PRICE_ASC) {
-          return (a.price ?? 0) - (b.price ?? 0);
-        } else {
-          return (b.price ?? 0) - (a.price ?? 0);
-        }
-      }) || [],
-  );
+  readonly event = this.wishlistEditorStore.event;
+  readonly wishlist = this.wishlistEditorStore.wishlist;
+  readonly gifts = this.wishlistEditorStore.gifts;
+  readonly isEditMode = this.wishlistEditorStore.isEditMode;
 
   isPublishing = signal(false);
   canPublish = computed(() => this.gifts().length > 0);
@@ -60,9 +53,9 @@ export class EditWishlistModal {
     });
   }
 
-  deleteGift(giftId: string) {
+  async deleteGift(giftId: string) {
     try {
-      this.wishlistStore.deleteGift(giftId);
+      await this.wishlistApi.deleteGift(giftId);
 
       this.toastService.showToast({
         message: 'Подарунок успішно видалено',
@@ -77,22 +70,25 @@ export class EditWishlistModal {
     }
   }
 
+  editEvent() {}
+
   async publishWishlist() {
-    try {
-      this.isPublishing.set(true);
-      const wishlistId = this.session()!.state!.wishlist!.id;
-      await this.wishlistStore.updateWishlistStatus(wishlistId, WishlistStatus.PUBLISHED);
-      this.router.navigate(['/wishlists']);
-      this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
-      this.modalStore.closeModal();
-    } catch (error) {
-      console.error('Error publishing wishlist:', error);
-      this.toastService.showToast({
-        message: 'Помилка при публікації вішлисту. Будь ласка, спробуйте ще раз.',
-        type: 'error',
-      });
-    } finally {
-      this.isPublishing.set(false);
-    }
+    console.log('isEditMode()', this.wishlistEditorStore.isEditMode());
+    // try {
+    //   this.isPublishing.set(true);
+    //   const wishlistId = this.wishlist()?.id;
+    //   // await this.wishlistEditorStore.updateWishlistStatus(wishlistId, WishlistStatus.PUBLISHED);
+    //   this.router.navigate(['/wishlists']);
+    //   this.modalFlowRuntimeStore.clearSession(ModalFlowKey.NEW_WISHLIST);
+    //   this.modalStore.closeModal();
+    // } catch (error) {
+    //   console.error('Error publishing wishlist:', error);
+    //   this.toastService.showToast({
+    //     message: 'Помилка при публікації вішлисту. Будь ласка, спробуйте ще раз.',
+    //     type: 'error',
+    //   });
+    // } finally {
+    //   this.isPublishing.set(false);
+    // }
   }
 }

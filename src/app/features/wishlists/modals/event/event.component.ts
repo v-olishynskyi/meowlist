@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../core/modal/modal-flow-runtime.store';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
 import { WishlistStore } from '../../data/wishlist.store';
+import { WishlistEditorStore } from '../../data/wishlist-editor.store';
 
 type EventForm = {
   name: FormControl<EventDraft['name']>;
@@ -23,7 +24,7 @@ export class EventModal {
   log = console.log;
   router = inject(Router);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
-  wishlistStore = inject(WishlistStore);
+  wishlistEditorStore = inject(WishlistEditorStore);
 
   minDate = new Date().toISOString().split('T')[0];
 
@@ -53,7 +54,7 @@ export class EventModal {
     };
     console.log('this.router.url', this.router.url);
 
-    await this.wishlistStore.handleEvent(eventData);
+    await this.wishlistEditorStore.handleEvent(eventData);
 
     this.router.navigate([this.router.url], {
       // TODO

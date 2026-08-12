@@ -29,7 +29,7 @@ export class ModalFlowRuntimeStore {
     return this._sessions()[flow];
   }
 
-  startSession<K extends ModalFlowKey>(flow: K): ModalFlowSession<K> {
+  startSession<K extends ModalFlowKey>(flow: K, state?: StateOf<K>): ModalFlowSession<K> {
     const existingSession = this.getSession(flow);
 
     if (existingSession) {
@@ -38,7 +38,9 @@ export class ModalFlowRuntimeStore {
 
     const flowDefinition = getFlowDefinition(flow);
 
-    const newSession = new ModalFlowSession<K>(flow, flowDefinition.createInitialState());
+    const stateToUse = state ? new FlowState(state) : flowDefinition.createInitialState();
+
+    const newSession = new ModalFlowSession<K>(flow, stateToUse);
 
     this._sessions.update((sessions) => ({
       ...sessions,

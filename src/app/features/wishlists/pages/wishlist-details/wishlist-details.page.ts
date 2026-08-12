@@ -2,7 +2,11 @@ import { DatePipe, DecimalPipe, NgTemplateOutlet, ViewportScroller } from '@angu
 import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { WishlistApi } from '../../data/wishlist.api';
-import { ModalFlowKey, UserWishlist } from '../../../../core/modal/modal.types';
+import {
+  EditWishlistFlowState,
+  ModalFlowKey,
+  UserWishlist,
+} from '../../../../core/modal/modal.types';
 import { AuthStore } from '../../../../core/auth/auth.store';
 import { ConfirmationModalStore } from '../../../../shared/ui/confirmation-modal/confirmation-modal.store';
 import { WishlistStore } from '../../data/wishlist.store';
@@ -14,7 +18,8 @@ import { Meta, Title } from '@angular/platform-browser';
 import { GiftCardComponent } from '../../../../shared/ui/gift-card/gift-card.component';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { ReservationsStore } from '../../../reservations/data/reservations.store';
-import { ModalFlowRuntimeStore } from '../../../../core/modal/modal-flow-runtime.store';
+import { ModalFlowLauncher } from '../../../../core/modal/modal-flow-launcher';
+import { WishlistEditorStore } from '../../data/wishlist-editor.store';
 
 @Component({
   selector: 'app-wishlist-details-page',
@@ -34,9 +39,10 @@ export class WishlistDetailsPage implements OnInit {
   authStore = inject(AuthStore);
   confirmationModalStore = inject(ConfirmationModalStore);
   wishlistStore = inject(WishlistStore);
+  private wishlistEditorStore = inject(WishlistEditorStore);
   private toastService = inject(ToastService);
   private reservationsStore = inject(ReservationsStore);
-  private modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
+  private modalFlowLauncher = inject(ModalFlowLauncher);
 
   protected readonly GiftReservationStatus = GiftReservationStatus;
 
@@ -105,7 +111,24 @@ export class WishlistDetailsPage implements OnInit {
     });
   }
 
-  editWishlist() {}
+  async editWishlist() {
+    const { id, slug, owner_id, status, event, gifts } = this.wishlist()!;
+
+    const editWishlistFlowState: EditWishlistFlowState = {
+      wishlist: {
+        id,
+        slug,
+        owner_id,
+        status,
+      },
+
+      event: event,
+      gifts: gifts,
+    };
+
+    this.wishlistEditorStore.setEditMode(true);
+    await this.modalFlowLauncher.openFlow(ModalFlowKey.EDIT_WISHLIST, editWishlistFlowState);
+  }
 
   getShareUrl(slug: string) {
     return `${environment.siteUrl}/wishlists/${slug}`;

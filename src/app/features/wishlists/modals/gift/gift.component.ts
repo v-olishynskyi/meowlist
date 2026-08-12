@@ -1,10 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { GiftDraft } from '../../../../core/modal/modal.types';
+import { GiftDraft, ModalFlowKey, ROUTE_INTENTS } from '../../../../core/modal/modal.types';
 import { Router } from '@angular/router';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
-import { WishlistStore } from '../../data/wishlist.store';
 import { ToastService } from '../../../../core/toast/toast.service';
+import { WishlistEditorStore } from '../../data/wishlist-editor.store';
+import { UtilsService } from '../../../../shared/utils/utils.service';
 
 interface GiftForm {
   name: FormControl<GiftDraft['name']>;
@@ -20,7 +21,7 @@ interface GiftForm {
 })
 export class GiftModal {
   router = inject(Router);
-  wishlistStore = inject(WishlistStore);
+  wishlistEditorStore = inject(WishlistEditorStore);
   private toastService = inject(ToastService);
 
   previewImageUrl = signal<string>('');
@@ -47,7 +48,7 @@ export class GiftModal {
 
     try {
       this.isSubmitting.set(true);
-      await this.wishlistStore.addNewGift(giftData);
+      await this.wishlistEditorStore.addNewGift(giftData);
 
       this.close();
 
@@ -69,7 +70,7 @@ export class GiftModal {
   async onImageSelected(event: Event) {
     const file: File = (event.target as HTMLInputElement).files![0];
     try {
-      const publicUrl = await this.wishlistStore.uploadGiftImage(file);
+      const publicUrl = await this.wishlistEditorStore.uploadGiftImage(file);
 
       this.previewImageUrl.set(publicUrl);
     } catch (error) {
@@ -78,9 +79,14 @@ export class GiftModal {
   }
 
   close() {
+    const flow = this.wishlistEditorStore.isEditMode()
+      ? ModalFlowKey.EDIT_WISHLIST
+      : ModalFlowKey.NEW_WISHLIST;
+
     this.router.navigate([], {
       queryParams: {
-        flow: 'new-wishlist',
+        flow,
+        // TODO
         step: 'edit-wishlist',
       },
     });
