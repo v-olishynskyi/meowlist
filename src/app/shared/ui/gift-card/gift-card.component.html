@@ -75,6 +75,14 @@
           </p>
         }
 
+        @if (gift().link) {
+          <p class="mt-1 line-clamp-1 text-xs leading-5 text-base-content/50 lg:line-clamp-2">
+            <a [href]="gift().link" target="_blank" class="text-primary hover:underline">{{
+              gift().link
+            }}</a>
+          </p>
+        }
+
         @if (gift().price !== null) {
           <p class="mt-2 text-sm font-bold">{{ gift().price | number: '1.0-2' }} грн</p>
         }
