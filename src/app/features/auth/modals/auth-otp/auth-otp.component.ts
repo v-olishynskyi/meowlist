@@ -39,9 +39,16 @@ export class AuthOtpModal {
     phone: new FormControl('', [Validators.required]),
   });
 
-  otpForm = new FormGroup({
-    code: new FormControl('', [Validators.required]),
-  });
+  otpForm = new FormGroup(
+    {
+      code: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(6),
+      ]),
+    },
+    { updateOn: 'change' },
+  );
 
   get phoneNumber() {
     return this.phoneNumberForm.get('phone')?.value;
@@ -110,6 +117,9 @@ export class AuthOtpModal {
       }
     } catch (error) {
       console.error('Failed to verify OTP', error);
+      if ((error as AuthError).code === 'otp_expired') {
+        this.otpForm.setErrors({ invalidOtp: true });
+      }
     } finally {
       this.isLoading.set(false);
     }

@@ -23,7 +23,12 @@
       <!-- OTP form -->
       <form [formGroup]="otpForm" (ngSubmit)="submitOtp()" class="mt-7">
         <div class="flex flex-col items-center">
-          <label class="otp otp-lg otp-primary" aria-label="Six-digit verification code">
+          <label
+            class="otp otp-lg"
+            aria-label="Six-digit verification code"
+            [class.otp-error]="otpForm.errors"
+            [class.otp-primary]="!otpForm.errors"
+          >
             <span></span>
             <span></span>
             <span></span>
@@ -44,6 +49,10 @@
 
           @if (otpForm.controls.code.invalid && otpForm.controls.code.touched) {
             <p class="mt-2 text-center text-xs text-error">Введіть повний 6-значний код</p>
+          } @else if (otpForm.errors?.['invalidOtp']) {
+            <p class="mt-2 text-center text-xs text-error">
+              Код невірний або прострочений. Будь ласка, спробуйте ще раз.
+            </p>
           }
 
           <div class="mt-5 flex flex-col items-center gap-2">
