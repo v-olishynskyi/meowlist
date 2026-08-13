@@ -38,7 +38,7 @@ export class WishlistDetailsPage implements OnInit {
   wishlistApi = inject(WishlistApi);
   authStore = inject(AuthStore);
   confirmationModalStore = inject(ConfirmationModalStore);
-  wishlistStore = inject(WishlistStore);
+  private wishlistStore = inject(WishlistStore);
   private wishlistEditorStore = inject(WishlistEditorStore);
   private toastService = inject(ToastService);
   private reservationsStore = inject(ReservationsStore);
@@ -50,7 +50,7 @@ export class WishlistDetailsPage implements OnInit {
 
   private readonly routeData = this.activatedRoute.data;
   readonly wishlistData = toSignal(this.routeData);
-  wishlist = signal<UserWishlist | null>(null);
+  wishlist = this.wishlistStore.wishlist;
 
   readonly isCopyingLink = signal<boolean>(false);
   readonly isLinkCopied = signal<boolean>(false);
@@ -69,7 +69,7 @@ export class WishlistDetailsPage implements OnInit {
     const data = this.wishlistData()?.['wishlist'] as UserWishlist;
 
     if (data) {
-      this.wishlist.set(data);
+      this.wishlistStore.setCurrentWishlist(data);
       this.setMeta(data);
     }
   }
@@ -164,10 +164,10 @@ export class WishlistDetailsPage implements OnInit {
   async handleDeleteGift(giftId: string) {
     try {
       await this.wishlistStore.deleteGift(giftId);
-      this.wishlist.update((wishlist) => ({
-        ...wishlist!,
-        gifts: wishlist!.gifts.filter((gift) => gift.id !== giftId),
-      }));
+      this.wishlistStore.setCurrentWishlist({
+        ...this.wishlist()!,
+        gifts: this.wishlist()!.gifts.filter((gift) => gift.id !== giftId),
+      });
 
       this.toastService.showToast({
         message: 'Подарунок успішно видалено',
@@ -201,14 +201,14 @@ export class WishlistDetailsPage implements OnInit {
       // TODO: add guard to prevent reserving already reserved gifts
       await this.reservationsStore.cancelGiftReservation(giftId);
 
-      this.wishlist.update((wishlist) => ({
-        ...wishlist!,
-        gifts: wishlist!.gifts.map((gift) =>
+      this.wishlistStore.setCurrentWishlist({
+        ...this.wishlist()!,
+        gifts: this.wishlist()!.gifts.map((gift) =>
           gift.id === giftId
             ? { ...gift, reservation_status: GiftReservationStatus.AVAILABLE }
             : gift,
         ),
-      }));
+      });
 
       this.giftHandleReservationId.set(null);
 

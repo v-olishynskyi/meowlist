@@ -1,6 +1,12 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { ModalFlowRuntimeStore } from '../../../core/modal/modal-flow-runtime.store';
-import { EventDraft, GiftDraft, ModalFlowKey, Wishlist } from '../../../core/modal/modal.types';
+import {
+  Event,
+  EventDraft,
+  GiftDraft,
+  ModalFlowKey,
+  Wishlist,
+} from '../../../core/modal/modal.types';
 import { AuthStore } from '../../../core/auth/auth.store';
 import slugify from 'slugify';
 import { WishlistApi } from './wishlist.api';
@@ -30,10 +36,46 @@ export class WishlistEditorStore {
     this.isEditMode.set(isEditMode);
   }
 
-  async handleEvent(eventData?: EventDraft) {
+  // TODO: REFACTOR THIS SHIT
+  async handleEvent(eventData?: EventDraft | null) {
     if (this.isEditMode()) {
+      const wishlistId = this.wishlist()!.id;
+
+      // if eventData is null - do nothing, just return
+      // maybe in the future we will implement event deletion, but for now we just ignore it
+      if (!eventData) return;
+
+      // if eventData is not null - update or create the event
+      // first we need to check if the wishlist already has an event
+      // if it does - update it, if not - create a new one
+      if (this.event()) {
+        const updatedEventData: Partial<Event> = {
+          name: eventData.name,
+          description: eventData.description || null,
+          event_date: eventData.event_date || null,
+          location: eventData.location || null,
+        };
+
+        const { error } = await this.wishlistApi.updateEvent(wishlistId, updatedEventData);
+
+        if (error) throw error;
+
+        this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+          ...state,
+          event: { ...this.event()!, ...updatedEventData },
+        }));
+      } else {
+        const { data, error } = await this.wishlistApi.createEvent(wishlistId, eventData);
+
+        if (error) throw error;
+
+        this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+          ...state,
+          event: data,
+        }));
+      }
     } else {
-      const shouldCreateEvent = !!eventData?.name;
+      const shouldCreateEvent = !!eventData;
 
       const ownerId = this.authStore.profile()!.id;
       let newWishlist: Wishlist | null;
@@ -45,10 +87,7 @@ export class WishlistEditorStore {
         WishlistStatus.DRAFT,
         slug,
       );
-
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       newWishlist = data;
 
@@ -79,13 +118,11 @@ export class WishlistEditorStore {
 
     if (error) throw error;
 
-    if (this.isEditMode()) {
-      // add gift to the existing wishlist's gifts array
-      this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-        ...state,
-        gifts: [data, ...state.gifts],
-      }));
-    }
+    // add gift to the existing wishlist's gifts array
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      gifts: [data, ...state.gifts],
+    }));
   }
 
   async uploadGiftImage(image: File) {
@@ -108,12 +145,10 @@ export class WishlistEditorStore {
 
     if (error) throw error;
 
-    if (this.isEditMode()) {
-      this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-        ...state,
-        gifts: state.gifts.filter((gift) => gift.id !== giftId),
-      }));
-    }
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      gifts: state.gifts.filter((gift) => gift.id !== giftId),
+    }));
   }
 
   async publishWishlist(wishlistId: string) {
@@ -130,12 +165,14 @@ export class WishlistEditorStore {
   }
 
   private generateSlug(name?: string | null): string {
-    return name
-      ? slugify(`${name} ${Math.random().toString(36).substring(2, 8)}`, {
-          locale: 'uk',
-          lower: true,
-          replacement: '_',
-        })
-      : Math.random().toString(36).substring(2, 13);
+    const suffix = Math.random().toString(36).substring(2, 13);
+
+    if (!name) return suffix;
+
+    return `${slugify(name, {
+      locale: 'uk',
+      lower: true,
+      replacement: '_',
+    })}_${suffix}`;
   }
 }

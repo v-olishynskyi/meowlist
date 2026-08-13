@@ -1,4 +1,4 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { ModalFlowRuntimeStore } from '../../../core/modal/modal-flow-runtime.store';
 import { ModalFlowKey, UserWishlist } from '../../../core/modal/modal.types';
 import { WishlistApi } from './wishlist.api';
@@ -15,11 +15,23 @@ export class WishlistStore {
   authStore = inject(AuthStore);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
 
-  session = computed(() => this.modalFlowRuntimeStore.getSession(ModalFlowKey.NEW_WISHLIST));
-
   private readonly _wishlistsObject$ = new BehaviorSubject<UserWishlist[]>([]);
   readonly wishlists$ = this._wishlistsObject$.asObservable();
   readonly wishlists = toSignal(this.wishlists$);
+
+  wishlist = signal<UserWishlist | null>(null);
+
+  setCurrentWishlist(wishlist: UserWishlist | null) {
+    this.wishlist.set(wishlist);
+  }
+
+  async reloadWishlist(id: string) {
+    const { data, error } = await this.wishlistApi.getWishlist(id);
+
+    if (error) throw error;
+
+    this.wishlist.set(data);
+  }
 
   async loadWishlists() {
     const ownerId = this.authStore.profile()!.id;

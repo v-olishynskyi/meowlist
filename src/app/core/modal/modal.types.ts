@@ -76,7 +76,7 @@ export type AuthOtpFlowState = {
 export type CreateWishlistFlowState = {
   shouldCreateEvent: boolean;
   wishlist: Wishlist | null;
-  event: EventDraft;
+  event: Event | null;
   gifts: Gift[];
 };
 
@@ -192,12 +192,7 @@ export const NEW_WISHLIST_FLOW = defineModalFlow<ModalFlowKey.NEW_WISHLIST>({
     return new FlowState<CreateWishlistFlowState>({
       shouldCreateEvent: true,
       wishlist: null,
-      event: {
-        event_date: null,
-        description: null,
-        location: null,
-        name: '',
-      },
+      event: null,
       gifts: [],
     });
   },

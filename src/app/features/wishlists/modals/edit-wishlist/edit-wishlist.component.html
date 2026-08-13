@@ -248,7 +248,7 @@
     <button
       type="button"
       class="btn btn-primary w-full text-base"
-      (click)="publishWishlist()"
+      (click)="isEditMode() ? updateWishlist() : publishWishlist()"
       [disabled]="isPublishing() || !canPublish()"
     >
       @if (isPublishing()) {

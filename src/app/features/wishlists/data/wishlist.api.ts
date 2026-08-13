@@ -1,7 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { SupabaseService } from '../../../core/supabase/supabase.service';
 import { ModalFlowRuntimeStore } from '../../../core/modal/modal-flow-runtime.store';
-import { EventDraft, GiftDraft, UserWishlist, Wishlist } from '../../../core/modal/modal.types';
+import {
+  Event,
+  EventDraft,
+  GiftDraft,
+  UserWishlist,
+  Wishlist,
+} from '../../../core/modal/modal.types';
 import { WishlistStatus } from '../../../core/types';
 import { PostgrestError } from '@supabase/supabase-js';
 
@@ -55,6 +61,10 @@ export class WishlistApi {
 
   removeEvent(eventId: string) {
     return this.supabase.from('events').delete().eq('wishlist_id', eventId);
+  }
+
+  updateEvent(wishlistId: string, eventData: Partial<Event>) {
+    return this.supabase.from('events').update(eventData).eq('wishlist_id', wishlistId);
   }
 
   createGift(wishlistId: string, giftData: GiftDraft) {
