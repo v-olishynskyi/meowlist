@@ -1,12 +1,20 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { WishlistStore } from '../../data/wishlist.store';
 import { UtilsService } from '../../../../shared/utils/utils.service';
-import { ModalFlowKey, UserWishlist } from '../../../../core/modal/modal.types';
+import {
+  EditWishlistFlowState,
+  EditWishListStepKey,
+  ModalFlowKey,
+  StepOf,
+  UserWishlist,
+} from '../../../../core/modal/modal.types';
 import { RouterLink } from '@angular/router';
 import { WishlistStatus } from '../../../../core/types';
 import { WishlistCardComponent } from '../../components/wishlist-card/wishlist-card.component';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { WishlistFilter, WishlistFilters } from '../../data/types';
+import { WishlistEditorStore } from '../../data/wishlist-editor.store';
+import { ModalFlowLauncher } from '../../../../core/modal/modal-flow-launcher';
 
 @Component({
   selector: 'app-wishlists-page',
@@ -19,6 +27,8 @@ export class WishlistsPage implements OnInit {
   ModalFlowKey = ModalFlowKey;
   utilsService = inject(UtilsService);
   wishlistsStore = inject(WishlistStore);
+  wishlistEditorStore = inject(WishlistEditorStore);
+  modalFlowLauncher = inject(ModalFlowLauncher);
   toastService = inject(ToastService);
 
   isLoading = signal(false);
@@ -61,9 +71,30 @@ export class WishlistsPage implements OnInit {
     this.filter.set(newFilter);
   }
 
-  addEvent(wishlistId: string) {}
+  addEvent(wishlistId: string) {
+    this.openEditWishlistModal(wishlistId, EditWishListStepKey.EVENT);
+  }
 
-  editWishlist(wishlistId: string) {}
+  async openEditWishlistModal(wishlistId: string, step?: StepOf<ModalFlowKey.EDIT_WISHLIST>) {
+    const wishlist = this.wishlistsStore.wishlists()!.find((w) => w.id === wishlistId);
+
+    const { id, slug, owner_id, status, event, gifts } = wishlist!;
+
+    const editWishlistFlowState: EditWishlistFlowState = {
+      wishlist: {
+        id,
+        slug,
+        owner_id,
+        status,
+      },
+
+      event: event,
+      gifts: gifts,
+    };
+
+    this.wishlistEditorStore.setEditMode(true);
+    await this.modalFlowLauncher.openFlow(ModalFlowKey.EDIT_WISHLIST, editWishlistFlowState, step);
+  }
 
   async changeWishlistStatus({ status, id: wishlistId }: { status: WishlistStatus; id: string }) {
     try {

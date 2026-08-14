@@ -16,6 +16,7 @@ import { WishlistStatusSelectorComponent } from './component/wishlist-status-sel
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WishlistCardComponent {
+  log = console.log;
   readonly wishlist = input.required<UserWishlist>();
   readonly deletingWishlistId = input<string | null>();
   readonly wishlistStatusChangingId = input<string | null>();

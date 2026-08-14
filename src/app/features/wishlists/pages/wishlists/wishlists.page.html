@@ -122,7 +122,7 @@
           <app-wishlist-card
             [wishlist]="wishlist"
             (addEvent)="addEvent($event)"
-            (edit)="editWishlist($event)"
+            (edit)="openEditWishlistModal($event)"
             (changeStatus)="changeWishlistStatus($event)"
             (delete)="deleteWishlist($event)"
             [deletingWishlistId]="deletingWishlistId()"

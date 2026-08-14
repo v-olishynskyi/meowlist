@@ -88,8 +88,6 @@ export class EditWishlistModal {
   }
 
   async updateWishlist() {
-    console.log('Reloading wishlist with ID:', this.wishlist()!.id);
-
     try {
       this.isPublishing.set(true);
       const wishlistId = this.wishlist()!.id;
@@ -105,6 +103,7 @@ export class EditWishlistModal {
       });
 
       await this.wishlistsStore.reloadWishlist(wishlistId);
+      await this.wishlistsStore.loadWishlists();
     } catch (error) {
       this.toastService.showToast({
         message: 'Помилка при оновленні вішлисту. Будь ласка, спробуйте ще раз.',

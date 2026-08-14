@@ -63,15 +63,18 @@
     <div class="grid gap-5" animate.enter="event-form-enter" animate.leave="event-form-leave">
       <!-- Назва -->
       <fieldset class="fieldset p-0">
-        <legend class="fieldset-legend">Назва події</legend>
+        <legend class="fieldset-legend">
+          Назва події<span class="font-normal text-base-content/50"> (обов’язково) </span>
+        </legend>
 
         <input
           formControlName="name"
           type="text"
           autocomplete="off"
           placeholder="Введіть назву події"
-          class="input input-bordered w-full"
+          class="input input-bordered w-full validator"
           maxlength="100"
+          required
         />
 
         @if (eventForm.controls.name.touched && eventForm.controls.name.invalid) {
@@ -110,7 +113,7 @@
         <input
           formControlName="date"
           type="date"
-          class="input input-bordered validator w-full text-base"
+          class="input input-bordered w-full text-base"
           [min]="minDate"
         />
 
@@ -159,14 +162,17 @@
     <button
       type="submit"
       class="btn btn-primary rounded-2xl w-full"
-      [disabled]="
+      /* [disabled]="
         ((isEditMode() && event()) || eventForm.controls.createEvent.value) && eventForm.invalid
-      "
+      " */
     >
       @if (isEditMode() && event()) {
         Зберегти зміни
       } @else if (eventForm.controls.createEvent.value) {
         {{ isEditMode() ? 'Додати подію' : 'Створити подію' }}
+      } @else if (isLoading()) {
+        <span class="loading loading-spinner loading-sm"></span>
+        Зачекайте...
       } @else {
         Продовжити без події
       }

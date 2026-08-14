@@ -36,79 +36,83 @@ export class WishlistEditorStore {
     this.isEditMode.set(isEditMode);
   }
 
-  // TODO: REFACTOR THIS SHIT
-  async handleEvent(eventData?: EventDraft | null) {
-    if (this.isEditMode()) {
-      const wishlistId = this.wishlist()!.id;
+  reset() {
+    this.isEditMode.set(false);
+  }
 
-      // if eventData is null - do nothing, just return
-      // maybe in the future we will implement event deletion, but for now we just ignore it
-      if (!eventData) return;
+  async handleEvent(eventData: EventDraft) {
+    const shouldCreateEvent = !this.event();
 
-      // if eventData is not null - update or create the event
-      // first we need to check if the wishlist already has an event
-      // if it does - update it, if not - create a new one
-      if (this.event()) {
-        const updatedEventData: Partial<Event> = {
-          name: eventData.name,
-          description: eventData.description || null,
-          event_date: eventData.event_date || null,
-          location: eventData.location || null,
-        };
-
-        const { error } = await this.wishlistApi.updateEvent(wishlistId, updatedEventData);
-
-        if (error) throw error;
-
-        this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-          ...state,
-          event: { ...this.event()!, ...updatedEventData },
-        }));
-      } else {
-        const { data, error } = await this.wishlistApi.createEvent(wishlistId, eventData);
-
-        if (error) throw error;
-
-        this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-          ...state,
-          event: data,
-        }));
-      }
+    if (shouldCreateEvent) {
+      await this.createEvent(this.wishlist()!.id, eventData);
     } else {
-      const shouldCreateEvent = !!eventData;
+      const updatedEventData: Partial<Event> = {
+        name: eventData.name,
+        description: eventData.description || null,
+        event_date: eventData.event_date || null,
+        location: eventData.location || null,
+      };
 
-      const ownerId = this.authStore.profile()!.id;
-      let newWishlist: Wishlist | null;
-
-      const slug = this.generateSlug(eventData?.name);
-
-      const { data, error } = await this.wishlistApi.createWishlist(
-        ownerId,
-        WishlistStatus.DRAFT,
-        slug,
-      );
-      if (error) throw error;
-
-      newWishlist = data;
-
-      this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-        ...state,
-        wishlist: newWishlist!,
-      }));
-
-      if (!shouldCreateEvent) return;
-
-      const { data: newEvent, error: eventError } = await this.wishlistApi.createEvent(
-        newWishlist!.id,
-        eventData!,
-      );
-      if (eventError) throw eventError;
-
-      this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
-        ...state,
-        event: newEvent,
-      }));
+      await this.updateEvent(this.wishlist()!.id, updatedEventData);
     }
+  }
+
+  async createWishlist(eventName?: string | null) {
+    const slug = this.generateSlug(eventName);
+    const ownerId = this.authStore.profile()!.id;
+
+    const { data, error } = await this.wishlistApi.createWishlist(
+      ownerId,
+      WishlistStatus.DRAFT,
+      slug,
+    );
+
+    if (error) throw error;
+
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      wishlist: data!,
+    }));
+
+    return data!;
+  }
+
+  async createEvent(wishlistId: string, eventData: EventDraft) {
+    const { data, error } = await this.wishlistApi.createEvent(wishlistId, eventData);
+    if (error) throw error;
+
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      event: data!,
+    }));
+
+    return data!;
+  }
+
+  async updateEvent(id: string, eventData: Partial<Event>) {
+    const { data, error } = await this.wishlistApi.updateEvent(id, eventData);
+
+    if (error) throw error;
+
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      event: data!,
+    }));
+
+    return data!;
+  }
+
+  async deleteEvent() {
+    const eventId = this.event()!.wishlist_id;
+
+    const { error } = await this.wishlistApi.deleteEvent(eventId);
+
+    if (error) throw error;
+
+    this.modalFlowRuntimeStore.updateSessionState(this.modalFlowKey(), (state) => ({
+      ...state,
+      event: null,
+    }));
   }
 
   async addNewGift(giftData: GiftDraft) {

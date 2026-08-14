@@ -59,12 +59,17 @@ export class WishlistApi {
       .single();
   }
 
-  removeEvent(eventId: string) {
+  deleteEvent(eventId: string) {
     return this.supabase.from('events').delete().eq('wishlist_id', eventId);
   }
 
   updateEvent(wishlistId: string, eventData: Partial<Event>) {
-    return this.supabase.from('events').update(eventData).eq('wishlist_id', wishlistId);
+    return this.supabase
+      .from('events')
+      .update(eventData)
+      .eq('wishlist_id', wishlistId)
+      .select()
+      .single();
   }
 
   createGift(wishlistId: string, giftData: GiftDraft) {

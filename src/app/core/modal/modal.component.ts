@@ -5,6 +5,7 @@ import { NgComponentOutlet } from '@angular/common';
 import { ModalContentStore } from './modal-content.store';
 import { Router } from '@angular/router';
 import { ConfirmationModalStore } from '../../shared/ui/confirmation-modal/confirmation-modal.store';
+import { WishlistEditorStore } from '../../features/wishlists/data/wishlist-editor.store';
 
 @Component({
   selector: 'app-modal',
@@ -18,6 +19,7 @@ export class ModalComponent implements OnInit {
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   modalContentStore = inject(ModalContentStore);
   confirmationModalStore = inject(ConfirmationModalStore);
+  wishlistEditorStore = inject(WishlistEditorStore);
 
   private document = inject(DOCUMENT);
 
@@ -54,6 +56,7 @@ export class ModalComponent implements OnInit {
       this.router.navigateByUrl(this.router.url.split('?')[0]);
       this.modalStore.clearModalRouteIntent();
       this.modalFlowRuntimeStore.clearAllSessions();
+      this.wishlistEditorStore.reset();
     });
 
     modalEl.addEventListener('cancel', (event) => {
