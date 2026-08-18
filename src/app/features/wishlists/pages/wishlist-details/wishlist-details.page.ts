@@ -85,17 +85,6 @@ export class WishlistDetailsPage implements OnInit {
 
   async ngOnInit() {
     this.scroller.scrollToPosition([0, 0]);
-    // const wishlistSlug = this.activatedRoute.snapshot.paramMap.get('id');
-    // try {
-    //   this.isLoading.set(true);
-    //   const { data, error } = await this.wishlistApi.getWishlist(wishlistSlug!);
-    //   if (error) throw error;
-    //   this.wishlistData.set(data);
-    // } catch (error) {
-    //   console.error('Error loading wishlist details:', error);
-    // } finally {
-    //   this.isLoading.set(false);
-    // }
   }
 
   goBack() {
@@ -227,7 +216,8 @@ export class WishlistDetailsPage implements OnInit {
   async reserveGift(giftId: string) {
     try {
       if (!this.authStore.isAuthenticated()) {
-        this.router.navigate([this.router.url], {
+        this.router.navigate([], {
+          relativeTo: this.activatedRoute,
           queryParams: {
             ...this.utilsService.buildFlowQueryParams(ModalFlowKey.AUTH_OTP),
           },

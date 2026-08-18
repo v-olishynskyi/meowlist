@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EventDraft, ModalFlowKey } from '../../../../core/modal/modal.types';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../core/modal/modal-flow-runtime.store';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
 import { WishlistEditorStore } from '../../data/wishlist-editor.store';
@@ -24,6 +24,7 @@ type EventForm = {
 export class EventModal {
   log = console.log;
   router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   wishlistEditorStore = inject(WishlistEditorStore);
   toastService = inject(ToastService);
@@ -92,9 +93,8 @@ export class EventModal {
 
       const flow = this.isEditMode() ? ModalFlowKey.EDIT_WISHLIST : ModalFlowKey.NEW_WISHLIST;
 
-      const baseUrl = this.router.url.split('?')[0];
-
-      this.router.navigate([baseUrl], {
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
         queryParams: {
           flow,
           step: 'edit-wishlist',

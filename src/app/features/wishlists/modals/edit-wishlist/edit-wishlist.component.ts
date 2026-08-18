@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from '../../../../core/modal/modal-flow-runtime.store';
 import { ModalFlowKey } from '../../../../core/modal/modal.types';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
@@ -23,6 +23,7 @@ export enum SortBy {
 })
 export class EditWishlistModal {
   console = console;
+  private readonly activatedRoute = inject(ActivatedRoute);
   protected readonly GiftReservationStatus = GiftReservationStatus;
   SortBy = SortBy;
   router = inject(Router);
@@ -48,9 +49,12 @@ export class EditWishlistModal {
   }
 
   addGift() {
+    const flow = this.wishlistEditorStore.modalFlowKey();
+
     this.router.navigate([], {
+      relativeTo: this.activatedRoute,
       queryParams: {
-        flow: 'new-wishlist',
+        flow,
         step: 'add-gift',
       },
     });
@@ -74,12 +78,12 @@ export class EditWishlistModal {
   }
 
   editEvent() {
-    const baseUrl = this.router.url.split('?')[0];
     const flow = this.wishlistEditorStore.isEditMode()
       ? ModalFlowKey.EDIT_WISHLIST
       : ModalFlowKey.NEW_WISHLIST;
 
-    this.router.navigate([baseUrl], {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
       queryParams: {
         flow,
         step: 'edit-event',

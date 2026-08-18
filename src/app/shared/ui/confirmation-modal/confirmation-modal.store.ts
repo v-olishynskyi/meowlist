@@ -5,7 +5,7 @@ type ConfirmationModalOptions = {
   message: string;
   cancelButtonText?: string;
   confirmButtonText?: string;
-  onConfirm: () => Promise<void>;
+  onConfirm: (() => Promise<void>) | (() => void);
 };
 
 @Injectable({

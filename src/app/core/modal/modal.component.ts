@@ -1,9 +1,9 @@
-import { Component, DOCUMENT, ElementRef, inject, OnInit, viewChild } from '@angular/core';
+import { Component, DOCUMENT, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core';
 import { ModalFlowRuntimeStore } from './modal-flow-runtime.store';
 import { ModalStore } from './modal.store';
 import { NgComponentOutlet } from '@angular/common';
 import { ModalContentStore } from './modal-content.store';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationModalStore } from '../../shared/ui/confirmation-modal/confirmation-modal.store';
 import { WishlistEditorStore } from '../../features/wishlists/data/wishlist-editor.store';
 
@@ -15,6 +15,7 @@ import { WishlistEditorStore } from '../../features/wishlists/data/wishlist-edit
 })
 export class ModalComponent implements OnInit {
   router = inject(Router);
+  activatedRoute = inject(ActivatedRoute);
   modalStore = inject(ModalStore);
   modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
   modalContentStore = inject(ModalContentStore);
@@ -34,11 +35,13 @@ export class ModalComponent implements OnInit {
 
       if (isOpen) {
         if (!modalEl.open) modalEl.showModal();
+
         body.style.setProperty('overflow', 'hidden');
         body.style.setProperty('touch-action', 'none');
         body.style.setProperty('-webkit-overflow-scrolling', 'auto');
       } else {
         if (modalEl.open) modalEl.close();
+
         body.style.removeProperty('overflow');
         body.style.removeProperty('touch-action');
         body.style.removeProperty('-webkit-overflow-scrolling');
@@ -52,8 +55,7 @@ export class ModalComponent implements OnInit {
     if (!modalEl) return;
 
     modalEl.addEventListener('close', () => {
-      // TODO:
-      this.router.navigateByUrl(this.router.url.split('?')[0]);
+      this.router.navigate([], { relativeTo: this.activatedRoute });
       this.modalStore.clearModalRouteIntent();
       this.modalFlowRuntimeStore.clearAllSessions();
       this.wishlistEditorStore.reset();

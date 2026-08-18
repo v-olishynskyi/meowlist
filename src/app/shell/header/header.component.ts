@@ -1,7 +1,7 @@
 import { Component, inject, isDevMode, signal } from '@angular/core';
 import { UtilsService } from '../../shared/utils/utils.service';
 import { AuthStore } from '../../core/auth/auth.store';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ModalComponent } from '../../core/modal/modal.component';
 import { ModalStore } from '../../core/modal/modal.store';
 import { ProfileMenuComponent } from './components/profile-menu/profile-menu.component';
@@ -17,6 +17,7 @@ export class HeaderComponent {
   modalStore = inject(ModalStore);
   authStore = inject(AuthStore);
   utilsService = inject(UtilsService);
+  activatedRoute = inject(ActivatedRoute);
 
   isLogouting = signal<boolean>(false);
 
@@ -25,7 +26,7 @@ export class HeaderComponent {
       this.utilsService.ModalFlowKey.NEW_WISHLIST,
     );
 
-    this.router.navigate([this.router.url], { queryParams });
+    this.router.navigate([], { relativeTo: this.activatedRoute, queryParams });
   }
 
   async logout() {

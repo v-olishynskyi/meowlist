@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalFlowRuntimeStore } from './modal-flow-runtime.store';
 import { getFlowDefinition, ModalFlowKey, StateOf, StepOf } from './modal.types';
 
@@ -8,6 +8,7 @@ import { getFlowDefinition, ModalFlowKey, StateOf, StepOf } from './modal.types'
 })
 export class ModalFlowLauncher {
   private readonly router = inject(Router);
+  private readonly activatedRoute = inject(ActivatedRoute);
 
   private readonly modalFlowRuntimeStore = inject(ModalFlowRuntimeStore);
 
@@ -24,7 +25,8 @@ export class ModalFlowLauncher {
 
     this.modalFlowRuntimeStore.startSession(flow, state);
 
-    await this.router.navigate([this.router.url.split('?')[0]], {
+    await this.router.navigate([], {
+      relativeTo: this.activatedRoute,
       queryParams: {
         flow,
         step: step || flowDefinition.initialStep,

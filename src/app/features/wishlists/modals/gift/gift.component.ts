@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { GiftDraft, ModalFlowKey, ROUTE_INTENTS } from '../../../../core/modal/modal.types';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ModalActionsComponent } from '../../../../core/modal/modal-actions.component';
 import { ToastService } from '../../../../core/toast/toast.service';
 import { WishlistEditorStore } from '../../data/wishlist-editor.store';
@@ -23,6 +23,7 @@ export class GiftModal {
   router = inject(Router);
   wishlistEditorStore = inject(WishlistEditorStore);
   private toastService = inject(ToastService);
+  activatedRoute = inject(ActivatedRoute);
 
   previewImageUrl = signal<string>('');
 
@@ -84,6 +85,7 @@ export class GiftModal {
       : ModalFlowKey.NEW_WISHLIST;
 
     this.router.navigate([], {
+      relativeTo: this.activatedRoute,
       queryParams: {
         flow,
         // TODO

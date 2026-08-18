@@ -107,6 +107,7 @@ export class AuthOtpModal {
 
       if (redirectUrl) {
         this.router.navigate([], {
+          relativeTo: this.activatedRoute,
           queryParams: this.utilsService.buildFlowQueryParams(redirectFlow.flow, redirectFlow.step),
           queryParamsHandling: 'merge',
         });

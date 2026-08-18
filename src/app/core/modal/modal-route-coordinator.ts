@@ -105,6 +105,7 @@ export class ModalRouteCoordinator {
             const redirectParams = encodeURIComponent(JSON.stringify(routeIntent));
 
             this.router.navigate([], {
+              relativeTo: this.activatedRoute,
               queryParams: {
                 ...this.utilsService.buildFlowQueryParams(
                   ModalFlowKey.AUTH_OTP,
